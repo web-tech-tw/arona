@@ -10,18 +10,29 @@ from nio.rooms import MatrixRoom
 from nio.events import Event
 from ..line import push as line_push
 
+from .. import config
+
+config_instance = config.read()
+
 
 def message_cb(room: MatrixRoom, event: Event):
+    if not hasattr(event, "body"):
+        return
     line_push(
-        {"name":room.user_name(event.sender)},
+        {"name": room.user_name(event.sender)},
         "",
         event.body
     )
 
 
 async def poll():
-    client = AsyncClient("https://example.org", "@alice:example.org")
+    client = AsyncClient(
+        config_instance["Matrix"]["HOME_SERVER"],
+        config_instance["Matrix"]["USER"]
+    )
     client.add_event_callback(message_cb, RoomMessageText)
 
-    await client.login("hunter1")
+    if len(config_instance["Matrix"]["PASSWORD"]) != 0:
+        await client.login(config_instance["Matrix"]["PASSWORD"])
+
     await client.sync_forever(timeout=30000)

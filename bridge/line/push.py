@@ -8,7 +8,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from linebot import LineBotApi
 from linebot.models import TextSendMessage, Sender
 
-client = LineBotApi('YOUR_CHANNEL_ACCESS_TOKEN')
+from .. import config
+
+config_instance = config.read()
+
+client = LineBotApi(config_instance["LINE"]["CHANNEL_ACCESS_TOKEN"])
 
 
 def push(sender: dict, receiver: str, content: str):

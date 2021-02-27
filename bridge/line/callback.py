@@ -8,14 +8,17 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage
+from linebot.models import MessageEvent, TextSendMessage, TextMessage
 
 from ..matrix import push as matrix_push
 
-app = Flask(__name__)
+from .. import config
 
-line_bot_api = LineBotApi('YOUR_CHANNEL_ACCESS_TOKEN')
-handler = WebhookHandler('YOUR_CHANNEL_SECRET')
+app = Flask(__name__)
+config_instance = config.read()
+
+line_bot_api = LineBotApi(config_instance["LINE"]["CHANNEL_ACCESS_TOKEN"])
+handler = WebhookHandler(config_instance["LINE"]["CHANNEL_SECRET"])
 
 
 @app.route("/callback", methods=['POST'])
@@ -33,7 +36,16 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    matrix_push(event.message.text)
+    if event.source.type == "group":
+        if event.source.groupId == config_instance["LINE"]["ROOM"]:
+            if event.type == "message":
+                if event.message.type == "text":
+                    matrix_push(event.message.text)
+        else:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=event.source.groupId)
+            )
 
 
 async def poll():

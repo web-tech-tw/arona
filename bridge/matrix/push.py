@@ -7,13 +7,21 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 from nio import AsyncClient
 
-client = AsyncClient("https://example.org", "@alice:example.org")
+from .. import config
+
+config_instance = config.read()
+
+client = AsyncClient(
+    config_instance["Matrix"]["HOME_SERVER"],
+    config_instance["Matrix"]["USER"]
+)
 
 
 async def push(content: str):
-    await client.login("hunter1")
+    if len(config_instance["Matrix"]["PASSWORD"]) != 0:
+        await client.login(config_instance["Matrix"]["PASSWORD"])
     await client.room_send(
-        room_id="!test:example.org",
+        room_id=config_instance["Matrix"]["ROOM"],
         message_type="m.room.message",
         content={
             "msgtype": "m.text",

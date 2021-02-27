@@ -26,7 +26,7 @@ client = AsyncClient(
 async def message_callback(room: MatrixRoom, event: Event):
     if not hasattr(event, "body"):
         return
-    if room.user_name(event.sender) == config_instance["Matrix"]["USERNAME"]:
+    if event.sender == config_instance["Matrix"]["USERNAME"]:
         return
     mxc_icon = room.avatar_url(event.sender)
     icon = (await client.mxc_to_http(mxc_icon)) if mxc_icon else default_icon

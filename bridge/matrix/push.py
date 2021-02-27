@@ -13,7 +13,7 @@ config_instance = config.read()
 
 client = AsyncClient(
     config_instance["Matrix"]["HOME_SERVER"],
-    config_instance["Matrix"]["USER"]
+    config_instance["Matrix"]["USERNAME"]
 )
 
 

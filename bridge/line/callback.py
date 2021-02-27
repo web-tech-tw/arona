@@ -5,6 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
+import asyncio
+
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -40,7 +42,7 @@ def handle_message(event):
         if event.source.group_id == config_instance["LINE"]["ROOM"]:
             if event.type == "message":
                 if event.message.type == "text":
-                    matrix_push(event.message.text)
+                    asyncio.run(matrix_push(event.message.text))
         else:
             line_bot_api.reply_message(
                 event.reply_token,

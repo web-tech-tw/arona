@@ -34,5 +34,7 @@ async def poll():
 
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
+    else:
+        await client.login()
 
     await client.sync_forever(timeout=30000)

@@ -20,6 +20,9 @@ client = AsyncClient(
 async def push(content: str):
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
+    else:
+        await client.login()
+
     await client.room_send(
         room_id=config_instance["Matrix"]["ROOM"],
         message_type="m.room.message",

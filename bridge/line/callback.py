@@ -49,4 +49,7 @@ def handle_message(event):
 
 
 async def poll():
-    await app.run(host="0.0.0.0")
+    await app.run(
+        host=config_instance["LINE"]["EXPOSE_HOST"],
+        port=config_instance["LINE"]["EXPOSE_PORT"]
+    )

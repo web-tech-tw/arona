@@ -49,4 +49,4 @@ def handle_message(event):
 
 
 async def poll():
-    await app.run()
+    await app.run(host="0.0.0.0")

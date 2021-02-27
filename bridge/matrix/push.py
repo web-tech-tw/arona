@@ -17,7 +17,7 @@ client = AsyncClient(
 )
 
 
-async def push(content: str):
+async def text(content: str):
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
     else:

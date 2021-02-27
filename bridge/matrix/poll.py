@@ -12,7 +12,7 @@ from nio.events import Event
 from nio.rooms import MatrixRoom
 
 from .. import config
-from ..line import push as line_push
+from ..line import text as line_push
 
 config_instance = config.read()
 default_icon = "https://raw.githubusercontent.com/supersonictw/matrix-line-bridge/master/img/profile.png"

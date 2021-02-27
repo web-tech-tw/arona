@@ -15,7 +15,7 @@ config_instance = config.read()
 client = LineBotApi(config_instance["LINE"]["CHANNEL_ACCESS_TOKEN"])
 
 
-def push(sender: dict, receiver: str, content: str):
+def text(sender: dict, receiver: str, content: str):
     sender = Sender(**sender)
     client.push_message(
         receiver,

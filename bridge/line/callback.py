@@ -13,7 +13,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextSendMessage, TextMessage
 
 from .. import config
-from ..matrix import push as matrix_push
+from ..matrix import text as matrix_push
 
 app = Flask(__name__)
 config_instance = config.read()

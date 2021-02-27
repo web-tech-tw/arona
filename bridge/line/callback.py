@@ -12,9 +12,8 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextSendMessage, TextMessage
 
-from ..matrix import push as matrix_push
-
 from .. import config
+from ..matrix import push as matrix_push
 
 app = Flask(__name__)
 config_instance = config.read()
@@ -50,8 +49,8 @@ def handle_message(event):
             )
 
 
-async def poll():
-    await app.run(
+def run():
+    app.run(
         host=config_instance["LINE"]["EXPOSE_HOST"],
         port=config_instance["LINE"]["EXPOSE_PORT"]
     )

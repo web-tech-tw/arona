@@ -5,6 +5,8 @@ This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
+import asyncio
+
 from nio import AsyncClient, RoomMessageText
 from nio.events import Event
 from nio.rooms import MatrixRoom
@@ -43,3 +45,8 @@ async def poll():
         await client.login()
 
     await client.sync_forever(timeout=30000)
+
+
+def run():
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(poll())

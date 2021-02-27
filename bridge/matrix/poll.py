@@ -19,8 +19,11 @@ def message_cb(room: MatrixRoom, event: Event):
     if not hasattr(event, "body"):
         return
     line_push(
-        {"name": room.user_name(event.sender)},
-        "",
+        {
+            "name": room.user_name(event.sender),
+            "icon_url": room.avatar_url(event.sender)
+        },
+        config_instance["LINE"]["ROOM"],
         event.body
     )
 

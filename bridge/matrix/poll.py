@@ -48,5 +48,4 @@ async def poll():
 
 
 def run():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(poll())
+    asyncio.run(poll())

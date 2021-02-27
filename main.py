@@ -12,12 +12,10 @@ from bridge.line import run as line_run
 from bridge.matrix import run as matrix_run
 
 if __name__ == "__main__":
-    pool = []
-
-    pool.append(
+    pool = [
         Thread(name=line_run.__name__, target=line_run),
         Thread(name=matrix_run.__name__, target=matrix_run)
-    )
+    ]
 
     for task in pool:
         task.start()

@@ -17,11 +17,17 @@ from ..line.push import text as line_push
 config_instance = config.read()
 default_icon = "https://raw.githubusercontent.com/supersonictw/matrix-line-bridge/master/img/profile.png"
 
+client = AsyncClient(
+    config_instance["Matrix"]["HOME_SERVER"],
+    config_instance["Matrix"]["USER"]
+)
 
-def message_callback(room: MatrixRoom, event: Event):
+
+async def message_callback(room: MatrixRoom, event: Event):
     if not hasattr(event, "body"):
         return
-    icon = room.avatar_url(event.sender) or default_icon
+    mxc_icon = room.avatar_url(event.sender)
+    icon = (await client.mxc_to_http(mxc_icon)) if mxc_icon else default_icon
     line_push(
         {
             "name": room.user_name(event.sender),
@@ -33,10 +39,6 @@ def message_callback(room: MatrixRoom, event: Event):
 
 
 async def poll():
-    client = AsyncClient(
-        config_instance["Matrix"]["HOME_SERVER"],
-        config_instance["Matrix"]["USER"]
-    )
     client.add_event_callback(message_callback, RoomMessageText)
 
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:

@@ -14,4 +14,4 @@ The documents and instructions is available on the GitHub wiki of this repositor
 
 ## Discussion
 
-Matrix room: [`!yTRzUDNyviBhrMwYGG:matrix.org`](https://matrix.to/#/!yTRzUDNyviBhrMwYGG:matrix.org?via=matrix.org)
+Matrix room: [`#line:matrix.org`](https://matrix.to/#/#line:matrix.org)

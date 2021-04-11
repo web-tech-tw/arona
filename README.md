@@ -5,3 +5,5 @@
 This is the bridge for Matrix to connect with LINE via [Messaging API](https://developers.line.biz/en/docs/messaging-api/overview/).
 
 ![logo](logo.svg)
+
+[Instruction](https://github.com/supersonictw/matrix-line-bridge/wiki)

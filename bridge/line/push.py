@@ -6,7 +6,7 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 from linebot import LineBotApi
-from linebot.models import TextSendMessage, Sender
+from linebot.models import TextSendMessage, Sender, ImageSendMessage
 
 from .. import config
 
@@ -22,5 +22,15 @@ def text(sender: dict, receiver: str, content: str):
         TextSendMessage(
             sender=sender,
             text=content
+        )
+    )
+
+def image(sender: dict, receiver: str, content: str):
+    sender = Sender(**sender)
+    client.push_message(
+        receiver,
+        ImageSendMessage(
+            original_content_url=content,
+            preview_image_url=content
         )
     )

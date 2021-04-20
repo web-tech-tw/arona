@@ -6,13 +6,15 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 import asyncio
+import json
 
-from nio import AsyncClient, RoomMessageText
+from nio import AsyncClient, RoomMessageText, RoomMessageMedia
 from nio.events import Event
 from nio.rooms import MatrixRoom
 
 from .. import config
 from ..line.push import text as line_push
+from ..line.push import image as line_image
 
 config_instance = config.read()
 default_icon = "https://raw.githubusercontent.com/supersonictw/matrix-line-bridge/master/img/profile.png"
@@ -24,14 +26,25 @@ client = AsyncClient(
 
 
 async def message_callback(room: MatrixRoom, event: Event):
-    if not hasattr(event, "body"):
-        return
     if event.sender == config_instance["Matrix"]["USERNAME"]:
         return
     if room.room_id != config_instance["Matrix"]["ROOM"]:
         return
     mxc_icon = room.avatar_url(event.sender)
     icon = (await client.mxc_to_http(mxc_icon)) if mxc_icon else default_icon
+    if hasattr(event, "url"):
+        url = (await client.mxc_to_http(event.url))
+        line_image(
+            {
+                "name": room.user_name(event.sender),
+                "icon_url": icon
+            },
+            config_instance["LINE"]["ROOM"],
+            url
+        )
+        return
+    if not hasattr(event, "body"):
+        return
     line_push(
         {
             "name": room.user_name(event.sender),
@@ -43,7 +56,7 @@ async def message_callback(room: MatrixRoom, event: Event):
 
 
 async def poll():
-    client.add_event_callback(message_callback, RoomMessageText)
+    client.add_event_callback(message_callback, (RoomMessageText,RoomMessageMedia))
 
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])

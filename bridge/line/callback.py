@@ -6,11 +6,13 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 import asyncio
+import requests
+import os
 
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextSendMessage, TextMessage, ImageMessage
+from linebot.models import MessageEvent, TextSendMessage, TextMessage, ImageMessage, StickerMessage
 
 from .. import config
 from ..matrix.push import text as matrix_push
@@ -38,10 +40,19 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 @handler.add(MessageEvent, message=ImageMessage)
+@handler.add(MessageEvent, message=StickerMessage)
 def handle_message(event):
     if event.source.type == "group":
         if event.source.group_id == config_instance["LINE"]["ROOM"]:
             if event.type == "message":
+                if event.message.type == "sticker":
+                    fileName = "img/"+event.message.sticker_id+".png"
+                    if not os.path.isfile(fileName):
+                        url = "https://stickershop.line-scdn.net/stickershop/v1/sticker/"+event.message.sticker_id+"/android/sticker.png"
+                        r = requests.get(url)
+                        with open(fileName, 'wb') as f:
+                            f.write(r.content) 
+                    asyncio.run(matrix_image(fileName))
                 if event.message.type == "image":
                     message_content = line_bot_api.get_message_content(event.message.id)
                     with open("img/"+event.message.id+".jpg", 'wb') as fd:

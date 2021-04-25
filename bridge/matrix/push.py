@@ -9,23 +9,35 @@ import magic
 from PIL import Image
 import os
 import aiofiles.os
-from nio import AsyncClient, UploadResponse
+from nio import UploadResponse, AsyncClient, InviteEvent, AsyncClientConfig
 
 from .. import config
 
 config_instance = config.read()
 
+client_config = AsyncClientConfig(
+        max_limit_exceeded=0,
+        max_timeouts=0,
+        store_sync_tokens=True,
+        encryption_enabled=False
+    )
+
 client = AsyncClient(
     config_instance["Matrix"]["HOME_SERVER"],
-    config_instance["Matrix"]["USERNAME"]
+    config_instance["Matrix"]["USERNAME"],
+    store_path="./store/",
+    config=client_config
 )
 
 
 async def text(name: str, content: str):
+    client.device_name = config_instance["Matrix"]["DEVICE_NAME"]
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
     else:
         await client.login()
+    if client.should_upload_keys:
+        await client.keys_upload()
 
     await client.room_send(
         room_id=config_instance["Matrix"]["ROOM"],
@@ -38,10 +50,14 @@ async def text(name: str, content: str):
     await client.close()
 
 async def send_image(image):
+    client.device_name = config_instance["Matrix"]["DEVICE_NAME"]
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
     else:
         await client.login()
+    if client.should_upload_keys:
+        await client.keys_upload()
+
     room_id=config_instance["Matrix"]["ROOM"]
     """Send image to toom.
 

@@ -7,8 +7,9 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """
 import asyncio
 import json
+import os
 
-from nio import AsyncClient, RoomMessageText, RoomMessageMedia
+from nio import AsyncClient, RoomMessageText, RoomMessageMedia, InviteEvent, AsyncClientConfig
 from nio.events import Event
 from nio.rooms import MatrixRoom
 
@@ -19,11 +20,23 @@ from ..line.push import image as line_image
 config_instance = config.read()
 default_icon = "https://raw.githubusercontent.com/supersonictw/matrix-line-bridge/master/img/profile.png"
 
+client_config = AsyncClientConfig(
+        max_limit_exceeded=0,
+        max_timeouts=0,
+        store_sync_tokens=True,
+        encryption_enabled=True,
+    )
+
 client = AsyncClient(
     config_instance["Matrix"]["HOME_SERVER"],
-    config_instance["Matrix"]["USERNAME"]
+    config_instance["Matrix"]["USERNAME"],
+    store_path="./store/",
+    config=client_config
 )
 
+
+async def autojoin_room(room: MatrixRoom, event: InviteEvent):
+    await client.join(room.room_id)
 
 async def message_callback(room: MatrixRoom, event: Event):
     if event.sender == config_instance["Matrix"]["USERNAME"]:
@@ -56,12 +69,17 @@ async def message_callback(room: MatrixRoom, event: Event):
 
 
 async def poll():
+    if not os.path.exists("./store/"):
+        os.makedirs("./store/")
+    client.device_name = config_instance["Matrix"]["DEVICE_NAME"]
     client.add_event_callback(message_callback, (RoomMessageText,RoomMessageMedia))
-
+    client.add_event_callback(autojoin_room, InviteEvent)
     if len(config_instance["Matrix"]["PASSWORD"]) != 0:
         await client.login(config_instance["Matrix"]["PASSWORD"])
     else:
         await client.login()
+    if client.should_upload_keys:
+        await client.keys_upload()
 
     await client.sync_forever(timeout=30000)
 

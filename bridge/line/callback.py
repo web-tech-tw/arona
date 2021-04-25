@@ -54,11 +54,13 @@ def handle_message(event):
                             f.write(r.content) 
                     asyncio.run(matrix_image(fileName))
                 if event.message.type == "image":
+                    fileName = "img/"+event.message.id+".jpg"
                     message_content = line_bot_api.get_message_content(event.message.id)
-                    with open("img/"+event.message.id+".jpg", 'wb') as fd:
+                    with open(fileName, 'wb') as fd:
                         for chunk in message_content.iter_content():
                                 fd.write(chunk)
-                    asyncio.run(matrix_image("img/"+event.message.id+".jpg"))
+                    asyncio.run(matrix_image(fileName))
+                    os.remove(fileName)
                 if event.message.type == "text":
                     profile = line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
                     asyncio.run(matrix_push(profile.display_name, event.message.text))

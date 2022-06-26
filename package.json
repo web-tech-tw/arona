@@ -1,15 +1,14 @@
 {
-  "name": "meow.recv",
+  "name": "matrix-line-bridge",
   "version": "1.0.0",
-  "description": "General MicroService Application Template",
+  "description": "The bridge for Matrix to connect with LINE via Messaging API.",
+  "author": "Taiwan Web Technology Promotion Organization",
+  "license": "MIT",
   "main": "app.ts",
   "scripts": {
     "dev": "node_modules/.bin/nodemon app.ts",
-    "serve": "node --loader ts-node/esm app.ts"
+    "start": "node --loader ts-node/esm app.ts"
   },
-  "keywords": [],
-  "author": "Taiwan Web Technology Promotion Organization",
-  "license": "MIT",
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",
     "dotenv": "^10.0.0",

@@ -6,6 +6,7 @@ import {
 export const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
 export const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
 
+// Configure the client
 const clientConfig: ClientConfig = {
     channelAccessToken, channelSecret
 };

@@ -5,7 +5,7 @@ import express, {
 } from "express";
 
 // Define the port to expose the application on.
-const exposePort = process.env.LINE_EXPOSE_PORT || 3000;
+const exposePort = process.env.HTTP_EXPOSE_PORT || 3000;
 
 // Create a new Express application.
 const app: Application = express();

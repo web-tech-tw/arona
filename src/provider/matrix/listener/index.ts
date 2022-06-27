@@ -4,13 +4,21 @@ import {
 
 import {
     client
-} from "./index";
+} from "../index";
+
+import roomMessage from "./room/message";
 
 AutojoinRoomsMixin.setupOnClient(client);
+
+const events = [
+    roomMessage,
+];
+
+events.forEach((e) => e(client));
 
 export const loopEvent = () => {
     client
         .start()
         .then(() => console.log("Client started!"))
         .catch((e) => console.error(e));
-}
+};

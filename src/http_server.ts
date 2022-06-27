@@ -4,6 +4,10 @@ import express, {
     Response
 } from "express";
 
+import {
+    expressMapper
+} from "./provider/line/listener";
+
 // Define the port to expose the application on.
 const exposePort = process.env.HTTP_EXPOSE_PORT || 3000;
 
@@ -18,6 +22,14 @@ app.get("/", async (_: Request, res: Response): Promise<Response> => {
         message: "Connected successfully!",
     });
 });
+
+const controllers = [
+    expressMapper,
+];
+
+controllers.forEach(
+    (c) => c(app)
+);
 
 export const loopEvent = async () => {
     // Create a server and listen to it.

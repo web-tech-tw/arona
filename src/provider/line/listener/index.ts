@@ -1,4 +1,8 @@
 import {
+    Application,
+} from "express";
+
+import {
     middleware,
     MiddlewareConfig,
 } from "@line/bot-sdk";
@@ -14,7 +18,7 @@ const middlewareConfig: MiddlewareConfig = {
     channelAccessToken, channelSecret
 };
 
-export const expressMapper = (app) => {
+export const expressMapper = (app: Application) => {
     // This route is used for the Webhook.
     app.post(
         "/webhook",

@@ -5,12 +5,15 @@ import {
 
 import text from "./text";
 
-const messageHandlers = {
+const messageHandlers: { [key: string]: any } = {
     text
 };
 
 export default (
     event: MessageEvent
-): Promise<MessageAPIResponseBase | undefined> => {
-    return messageHandlers[event.message.type](event);
+): Promise<MessageAPIResponseBase | undefined> | undefined => {
+    const messageTypeName: string = event.message.type;
+    if (messageTypeName in messageHandlers) {
+        return messageHandlers[event.message.type](event);
+    }
 };

@@ -14,7 +14,9 @@ const events = [
     roomMessage,
 ];
 
-events.forEach((e) => e(client));
+events.forEach(
+    (e) => e(client)
+);
 
 export const loopEvent = () => {
     client

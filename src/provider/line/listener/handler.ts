@@ -1,5 +1,6 @@
 import {
     WebhookEvent,
+    MessageAPIResponseBase,
 } from "@line/bot-sdk";
 
 import {
@@ -9,13 +10,18 @@ import {
 
 import message from "./message";
 
-const eventHandlers = {
+const eventHandlers: { [key: string]: any } = {
     message,
-}
+};
 
 // Handle single event.
-const eventHandler = (event: WebhookEvent) => {
-    return eventHandlers[event.type](event);
+const eventHandler = (
+    event: WebhookEvent
+): Promise<MessageAPIResponseBase | undefined> | undefined => {
+    const typeName: string = event.type.toString();
+    if (typeName in eventHandlers) {
+        return (eventHandlers[typeName])(event);
+    }
 };
 
 // Process all of the received events asynchronously.

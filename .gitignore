@@ -2,6 +2,7 @@
 node_modules
 /dist
 .env
+bot.json
 
 # Log files
 npm-debug.log*

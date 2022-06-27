@@ -24,8 +24,8 @@ export function sendTextMessage(text: string, roomId: string): Promise<MessageAP
 
 /**
  * Send an image message to the chat room.
- * @param {string} imageUrl URL of the image
- * @param {string} roomId ID of the chat room
+ * @param {string} imageUrl URL of the image.
+ * @param {string} roomId ID of the chat room.
  * @returns {Promise<MessageAPIResponseBase>}
  */
 export function sendImageMessage(imageUrl: string, roomId: string): Promise<MessageAPIResponseBase> {

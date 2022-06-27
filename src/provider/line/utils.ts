@@ -1,9 +1,17 @@
 import fs from 'fs';
-import axios, { AxiosRequestConfig } from "axios";
+
+import axios, {
+    AxiosRequestConfig
+} from "axios";
+
+const axiosUserAgent = process.env.DEVICE_NAME || "";
 
 const scdnClient = (() => {
     const config: AxiosRequestConfig = {
         baseURL: "https://stickershop.line-scdn.net",
+        headers: {
+            "User-Agent": axiosUserAgent,
+        },
     };
     return axios.create(config);
 })();

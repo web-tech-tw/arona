@@ -6,9 +6,13 @@ import {
     notifyClient,
 } from '../index';
 
+import {
+    stringify,
+} from 'querystring';
+
 const sendMessage =
-    (message: Object): Promise<AxiosResponse> =>
-        notifyClient.post("/api/notify", message);
+    (message: any): Promise<AxiosResponse> =>
+        notifyClient.post("/api/notify", stringify(message));
 
 /**
  * Send a text message to the chat room.
@@ -19,8 +23,7 @@ export function sendTextMessage(
     text: string
 ): Promise<AxiosResponse> {
     const message = {
-        type: "text",
-        text,
+        message: text,
     };
     return sendMessage(message);
 }

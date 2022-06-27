@@ -91,7 +91,4 @@ app.post(
   }
 );
 
-// Create a server and listen to it.
-app.listen(PORT, () => {
-  console.log(`Application is live and listening on port ${PORT}`);
-});
+export default app;

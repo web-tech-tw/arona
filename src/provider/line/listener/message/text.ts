@@ -1,4 +1,8 @@
 import {
+    Sender,
+} from "@line/bot-sdk";
+
+import {
     MessageEvent,
     TextEventMessage,
     TextMessage,
@@ -50,7 +54,10 @@ export default async (
     if (sourceId !== lineChatRoomId) return;
 
     const senderProfile = await client.getGroupMemberProfile(sourceId, senderId);
+    const sender: Sender = {
+        name: senderProfile.displayName,
+        iconUrl: senderProfile.pictureUrl,
+    };
 
-    const replyContent = `${senderProfile.displayName}: ${text}`;
-    sendTextMessage(replyContent, matrixChatRoomId);
+    sendTextMessage(sender, text, matrixChatRoomId);
 };

@@ -4,7 +4,7 @@ import {
 } from "matrix-bot-sdk";
 
 import {
-    client as prototypeClient
+    client as clientPrototype,
 } from "../index";
 
 import roomMessage from "./room/message";
@@ -14,7 +14,7 @@ export interface MatrixLintenerClient extends MatrixClient {
 };
 
 const listenerClient =
-    prototypeClient as MatrixLintenerClient;
+    clientPrototype as MatrixLintenerClient;
 
 AutojoinRoomsMixin.setupOnClient(listenerClient);
 

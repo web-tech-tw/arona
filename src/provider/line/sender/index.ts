@@ -14,6 +14,7 @@ const client = process.env.LINE_SEND_MESSAGE_MODE === "push" ? push : notify;
 
 /**
  * Send a text message to the chat room.
+ * @param {Sender} sender The sender of the message.
  * @param {string} text The text to send.
  * @param {string} roomId ID of the chat room.
  * @returns {Promise<MessageAPIResponseBase | AxiosResponse>}
@@ -28,6 +29,7 @@ export function sendTextMessage(
 
 /**
  * Send an image message to the chat room.
+ * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
  * @param {string} roomId ID of the chat room.
  * @returns {Promise<MessageAPIResponseBase | AxiosResponse>}

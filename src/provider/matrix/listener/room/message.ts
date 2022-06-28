@@ -7,20 +7,30 @@ import {
 } from '../index'
 
 import {
-    sendTextMessage as replyMessage
+    sendTextMessage as replyMessagePrototype
 } from "../../sender";
 
 import {
     sendTextMessage
 } from "../../../line/sender";
 
+const systemName = process.env.DEVICE_NAME || "System";
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
+
+const replyMessage = (roomId: string, message: any) => {
+    const sender: Sender = {
+        name: systemName,
+    };
+    return replyMessagePrototype(
+        sender, roomId, message,
+    );
+};
 
 const commands: { [key: string]: any } = {
     "getChatRoomId": (roomId: string, _: any) => {
         console.log(roomId);
-        replyMessage(roomId, roomId);
+        return replyMessage(roomId, roomId);
     }
 };
 
@@ -43,7 +53,7 @@ export default (listenerClient: MatrixLintenerClient) => listenerClient.on("room
     const sender: Sender = {
         name: senderProfile.displayname,
         iconUrl: senderIconHttp,
-    }
+    };
 
     sendTextMessage(sender, text, lineChatRoomId);
 });

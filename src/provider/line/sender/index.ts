@@ -2,6 +2,7 @@ import * as push from "./push";
 import * as notify from "./notify";
 
 import {
+    Sender,
     MessageAPIResponseBase,
 } from "@line/bot-sdk";
 
@@ -18,10 +19,11 @@ const client = process.env.LINE_SEND_MESSAGE_MODE === "push" ? push : notify;
  * @returns {Promise<MessageAPIResponseBase | AxiosResponse>}
  */
 export function sendTextMessage(
+    sender: Sender,
     text: string,
     roomId: string
 ): Promise<MessageAPIResponseBase | AxiosResponse> {
-    return client.sendTextMessage(text, roomId);
+    return client.sendTextMessage(sender, text, roomId);
 }
 
 /**
@@ -31,8 +33,9 @@ export function sendTextMessage(
  * @returns {Promise<MessageAPIResponseBase | AxiosResponse>}
  */
 export function sendImageMessage(
+    sender: Sender,
     imageUrl: string,
     roomId: string
 ): Promise<MessageAPIResponseBase | AxiosResponse> {
-    return client.sendImageMessage(imageUrl, roomId);
+    return client.sendImageMessage(sender, imageUrl, roomId);
 }

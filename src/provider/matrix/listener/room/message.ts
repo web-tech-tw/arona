@@ -1,4 +1,8 @@
 import {
+    Sender,
+} from "@line/bot-sdk";
+
+import {
     MatrixLintenerClient
 } from '../index'
 
@@ -35,7 +39,11 @@ export default (listenerClient: MatrixLintenerClient) => listenerClient.on("room
     if (roomId !== matrixChatRoomId) return;
 
     const senderProfile = await listenerClient.getUserProfile(senderId);
+    const senderIconHttp = await listenerClient.mxcToHttp(senderProfile.avatar_url);
+    const sender: Sender = {
+        name: senderProfile.displayname,
+        iconUrl: senderIconHttp,
+    }
 
-    const replyContent = `${senderProfile.displayname}: ${text}`;
-    sendTextMessage(replyContent, lineChatRoomId);
+    sendTextMessage(sender, text, lineChatRoomId);
 });

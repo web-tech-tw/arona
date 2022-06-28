@@ -1,4 +1,8 @@
 import {
+    Sender,
+} from "@line/bot-sdk";
+
+import {
     AxiosResponse,
 } from 'axios';
 
@@ -20,10 +24,11 @@ const sendMessage =
  * @returns {Promise<AxiosResponse>}
  */
 export function sendTextMessage(
+    sender: Sender,
     text: string
 ): Promise<AxiosResponse> {
     const message = {
-        message: text,
+        message: `${sender.name}: ${text}`,
     };
     return sendMessage(message);
 }
@@ -34,8 +39,10 @@ export function sendTextMessage(
  * @returns {Promise<AxiosResponse>}
  */
 export function sendImageMessage(
+    sender: Sender,
     imageUrl: string
 ): Promise<AxiosResponse> {
+    (async () => sendTextMessage(sender, "Image:"))();
     const message = {
         type: "image",
         originalContentUrl: imageUrl,

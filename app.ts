@@ -1,11 +1,11 @@
-require("dotenv").config();
+import "dotenv/config";
 
 import {
-    loopEvent as httpServerLoop
+    loopEvent as httpServerLoop,
 } from "./src/http_server";
 
 import {
-    loopEvent as matrixListenerLoop
+    loopEvent as matrixListenerLoop,
 } from "./src/provider/matrix/listener";
 
 (async () => {
@@ -14,6 +14,6 @@ import {
         matrixListenerLoop,
     ];
     await Promise.all(
-        events.map((e) => e())
+        events.map((e) => e()),
     );
 })();

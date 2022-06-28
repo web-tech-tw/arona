@@ -9,13 +9,13 @@ import {
 
 import {
     channelAccessToken,
-    channelSecret
+    channelSecret,
 } from "../index";
 
 import eventsDispatcher from "./handler";
 
 const middlewareConfig: MiddlewareConfig = {
-    channelAccessToken, channelSecret
+    channelAccessToken, channelSecret,
 };
 
 export const expressMapper = (app: Application) => {
@@ -23,6 +23,6 @@ export const expressMapper = (app: Application) => {
     app.post(
         "/webhook",
         middleware(middlewareConfig),
-        eventsDispatcher
+        eventsDispatcher,
     );
 };

@@ -5,12 +5,14 @@ import {
 
 import text from "./text";
 
-const messageHandlers: { [key: string]: any } = {
-    text
+type CommandMethod = { [key: string]: (string, any) => any };
+
+const messageHandlers: CommandMethod = {
+    text,
 };
 
 export default (
-    event: MessageEvent
+    event: MessageEvent,
 ): Promise<MessageAPIResponseBase | undefined> | undefined => {
     const messageTypeName: string = event.message.type;
     if (messageTypeName in messageHandlers) {

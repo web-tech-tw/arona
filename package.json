@@ -7,7 +7,9 @@
   "main": "app.ts",
   "scripts": {
     "dev": "node_modules/.bin/nodemon app.ts",
-    "start": "node --loader ts-node/esm app.ts"
+    "start": "node --loader ts-node/esm app.ts",
+    "lint": "eslint \"app.ts\" \"src/**/*.ts\"",
+    "lint:fix": "eslint \"app.ts\" \"src/**/*.ts\" --fix"
   },
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",
@@ -19,7 +21,11 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "eslint": "^8.18.0",
+    "eslint-config-google": "^0.14.0",
     "nodemon": "^2.0.13",
-    "typescript": "^4.5.4"
+    "typescript": "^4.7.4"
   }
 }

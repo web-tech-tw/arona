@@ -11,7 +11,7 @@ import roomMessage from "./room/message";
 
 export interface MatrixLintenerClient extends MatrixClient {
     identity: string;
-};
+}
 
 const listenerClient =
     clientPrototype as MatrixLintenerClient;
@@ -23,7 +23,7 @@ const events = [
 ];
 
 events.forEach(
-    (e) => e(listenerClient)
+    (e) => e(listenerClient),
 );
 
 export const loopEvent = async () => {

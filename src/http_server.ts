@@ -1,11 +1,11 @@
 import express, {
     Application,
     Request,
-    Response
+    Response,
 } from "express";
 
 import {
-    expressMapper
+    expressMapper,
 } from "./provider/line/listener";
 
 // Define the port to expose the application on.
@@ -24,7 +24,7 @@ app.get("/", async (_: Request, res: Response): Promise<Response> => {
 
 // This route is used to serve the static files.
 app.use("/static", express.static(
-    `${__dirname}/../static`
+    `${__dirname}/../static`,
 ));
 
 // Define controllers.
@@ -34,7 +34,7 @@ const controllers = [
 
 // Register controllers.
 controllers.forEach(
-    (c) => c(app)
+    (c) => c(app),
 );
 
 // Export loopEventHandler.

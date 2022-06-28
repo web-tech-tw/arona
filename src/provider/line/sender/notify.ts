@@ -4,15 +4,15 @@ import {
 
 import {
     AxiosResponse,
-} from 'axios';
+} from "axios";
 
 import {
     notifyClient,
-} from '../index';
+} from "../index";
 
 import {
     stringify,
-} from 'querystring';
+} from "querystring";
 
 const sendMessage =
     (message: any): Promise<AxiosResponse> =>
@@ -22,11 +22,11 @@ const sendMessage =
  * Send a text message to the chat room.
  * @param {Sender} sender The sender of the message.
  * @param {string} text The text to send.
- * @returns {Promise<AxiosResponse>}
+ * @return {Promise<AxiosResponse>}
  */
 export function sendTextMessage(
     sender: Sender,
-    text: string
+    text: string,
 ): Promise<AxiosResponse> {
     return sendMessage({
         message: `${sender.name}: ${text}`,
@@ -37,11 +37,11 @@ export function sendTextMessage(
  * Send an image message to the chat room.
  * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
- * @returns {Promise<AxiosResponse>}
+ * @return {Promise<AxiosResponse>}
  */
 export function sendImageMessage(
     sender: Sender,
-    imageUrl: string
+    imageUrl: string,
 ): Promise<AxiosResponse> {
     (async () => sendTextMessage(sender, "Image:"))();
     return sendMessage({

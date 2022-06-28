@@ -10,11 +10,11 @@ import {
 } from "@line/bot-sdk";
 
 import {
-    getSourceIdFromEvent
+    getSourceIdFromEvent,
 } from "../../utils";
 
 import {
-    sendTextMessage
+    sendTextMessage,
 } from "../../../matrix/sender";
 
 import {
@@ -24,7 +24,9 @@ import {
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
-const commands: { [key: string]: any } = {
+type CommandMethod = { [key: string]: (string, any) => any };
+
+const commands: CommandMethod = {
     "getChatRoomId": (event: MessageEvent) => {
         const sourceId = getSourceIdFromEvent(event, false) as string;
         console.log(sourceId);
@@ -33,15 +35,15 @@ const commands: { [key: string]: any } = {
             text: sourceId,
         };
         return client.replyMessage(event.replyToken, replyMessage);
-    }
+    },
 };
 
 // Function handler to receive the text.
 export default async (
-    event: MessageEvent
+    event: MessageEvent,
 ): Promise<MessageAPIResponseBase | undefined> => {
     const message: TextEventMessage = event.message as TextEventMessage;
-    const { text } = message;
+    const {text} = message;
 
     if (text.startsWith("#") && text.substring(1).length > 0) {
         const command = text.substring(1);
@@ -50,10 +52,12 @@ export default async (
         }
     }
 
-    const [sourceId, senderId] = getSourceIdFromEvent(event, true) as Array<string>;
+    const [sourceId, senderId] =
+        getSourceIdFromEvent(event, true) as Array<string>;
     if (sourceId !== lineChatRoomId) return;
 
-    const senderProfile = await client.getGroupMemberProfile(sourceId, senderId);
+    const senderProfile =
+        await client.getGroupMemberProfile(sourceId, senderId);
     const sender: Sender = {
         name: senderProfile.displayName,
         iconUrl: senderProfile.pictureUrl,

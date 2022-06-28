@@ -1,11 +1,11 @@
-import fs from 'fs';
+import fs from "fs";
 
 import {
-    EventBase
-} from '@line/bot-sdk';
+    EventBase,
+} from "@line/bot-sdk";
 
 import axios, {
-    AxiosRequestConfig
+    AxiosRequestConfig,
 } from "axios";
 
 const axiosUserAgent = process.env.DEVICE_NAME || "";
@@ -20,31 +20,41 @@ const scdnClient = (() => {
     return axios.create(config);
 })();
 
+/**
+ *
+ * @param stickerId
+ */
 export async function downloadStickerImage(stickerId: number): Promise<void> {
-    const remoteFilename: string =
-        `stickershop/v1/sticker/${stickerId}/android/sticker.png`
-    const localFilename: string = `stickers/${stickerId}.png`;
+    const remoteFilename =
+        `stickershop/v1/sticker/${stickerId}/android/sticker.png`;
+    const localFilename = `stickers/${stickerId}.png`;
     const response = await scdnClient.get(remoteFilename);
     response.data.pipe(fs.createWriteStream(localFilename));
 }
 
+/**
+ *
+ * @param event
+ * @param withOrigin
+ * @returns
+ */
 export function getSourceIdFromEvent(
-    event: EventBase, withOrigin: boolean = false
+    event: EventBase, withOrigin = false,
 ): string | null | Array<string | null | undefined> {
     switch (event.source.type) {
-        case "user":
-            return withOrigin
-                ? [event.source.userId, event.source.userId]
-                : event.source.userId;
-        case "group":
-            return withOrigin
-                ? [event.source.groupId, event.source.userId]
-                : event.source.groupId;
-        case "room":
-            return withOrigin
-                ? [event.source.roomId, event.source.userId]
-                : event.source.roomId;
-        default:
-            return withOrigin ? [null, null] : null;
+    case "user":
+        return withOrigin ?
+            [event.source.userId, event.source.userId] :
+            event.source.userId;
+    case "group":
+        return withOrigin ?
+            [event.source.groupId, event.source.userId] :
+            event.source.groupId;
+    case "room":
+        return withOrigin ?
+            [event.source.roomId, event.source.userId] :
+            event.source.roomId;
+    default:
+        return withOrigin ? [null, null] : null;
     }
 }

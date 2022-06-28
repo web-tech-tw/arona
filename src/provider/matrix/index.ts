@@ -10,5 +10,5 @@ const storage = new SimpleFsStorageProvider("bot.json");
 export const client = new MatrixClient(
     homeserverUrl,
     accessToken,
-    storage
+    storage,
 );

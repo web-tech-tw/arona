@@ -1,16 +1,41 @@
 import {
-    MatrixClient
-} from "matrix-bot-sdk";
+    MatrixLintenerClient
+} from '../index'
+
+import {
+    sendTextMessage as replyMessage
+} from "../../sender";
 
 import {
     sendTextMessage
 } from "../../../line/sender";
 
-const chatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
+const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
+const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
-export default (client: MatrixClient) => client.on("room.message", (roomId, event) => {
-    if (!event["content"]) return;
-    const sender = event["sender"];
-    const body = event["content"]["body"];
-    sendTextMessage(`${roomId}: ${sender} says '${body}`, chatRoomId);
+const commands: { [key: string]: any } = {
+    "getChatRoomId": (roomId: string, _: any) => {
+        console.log(roomId);
+        replyMessage(roomId, roomId);
+    }
+};
+
+export default (listenerClient: MatrixLintenerClient) => listenerClient.on("room.message", async (roomId, event) => {
+    const senderId = event["sender"];
+    if (senderId === listenerClient.identity || !event["content"]) return;
+
+    const text = event["content"]["body"];
+    if (text.startsWith("#") && text.substring(1).length > 0) {
+        const command = text.substring(1);
+        if (command in commands) {
+            return await commands[command](roomId, event);
+        }
+    }
+
+    if (roomId !== matrixChatRoomId) return;
+
+    const senderProfile = await listenerClient.getUserProfile(senderId);
+
+    const replyContent = `${senderProfile.displayname}: ${text}`;
+    sendTextMessage(replyContent, lineChatRoomId);
 });

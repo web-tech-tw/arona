@@ -6,6 +6,10 @@ import {
 } from "@line/bot-sdk";
 
 import {
+    getSourceIdFromEvent
+} from "../../utils";
+
+import {
     sendTextMessage
 } from "../../../matrix/sender";
 
@@ -13,22 +17,13 @@ import {
     client,
 } from "../../index";
 
-const chatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
+const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
+const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
 const commands: { [key: string]: any } = {
     "getChatRoomId": (event: MessageEvent) => {
-        const sourceId: string = (() => {
-            switch (event.source.type) {
-                case "user":
-                    return event.source.userId;
-                case "group":
-                    return event.source.groupId;
-                case "room":
-                    return event.source.roomId;
-                default:
-                    return "";
-            }
-        })();
+        const sourceId = getSourceIdFromEvent(event, false) as string;
+        console.log(sourceId);
         const replyMessage: TextMessage = {
             type: "text",
             text: sourceId,
@@ -38,18 +33,24 @@ const commands: { [key: string]: any } = {
 };
 
 // Function handler to receive the text.
-export default (
+export default async (
     event: MessageEvent
-): Promise<MessageAPIResponseBase | undefined> | undefined => {
+): Promise<MessageAPIResponseBase | undefined> => {
     const message: TextEventMessage = event.message as TextEventMessage;
     const { text } = message;
 
     if (text.startsWith("#") && text.substring(1).length > 0) {
         const command = text.substring(1);
         if (command in commands) {
-            return commands[command](event);
+            return await commands[command](event);
         }
     }
 
-    sendTextMessage(text, chatRoomId);
+    const [sourceId, senderId] = getSourceIdFromEvent(event, true) as Array<string>;
+    if (sourceId !== lineChatRoomId) return;
+
+    const senderProfile = await client.getGroupMemberProfile(sourceId, senderId);
+
+    const replyContent = `${senderProfile.displayName}: ${text}`;
+    sendTextMessage(replyContent, matrixChatRoomId);
 };

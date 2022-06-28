@@ -1,26 +1,34 @@
 import {
     AutojoinRoomsMixin,
+    MatrixClient,
 } from "matrix-bot-sdk";
 
 import {
-    client
+    client as prototypeClient
 } from "../index";
 
 import roomMessage from "./room/message";
 
-AutojoinRoomsMixin.setupOnClient(client);
+export interface MatrixLintenerClient extends MatrixClient {
+    identity: string;
+};
+
+const listenerClient =
+    prototypeClient as MatrixLintenerClient;
+
+AutojoinRoomsMixin.setupOnClient(listenerClient);
 
 const events = [
     roomMessage,
 ];
 
 events.forEach(
-    (e) => e(client)
+    (e) => e(listenerClient)
 );
 
-export const loopEvent = () => {
-    client
-        .start()
-        .then(() => console.log("Client started!"))
-        .catch((e) => console.error(e));
+export const loopEvent = async () => {
+    listenerClient.identity =
+        await listenerClient.getUserId();
+    await listenerClient.start();
+    console.log("Client started!");
 };

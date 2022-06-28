@@ -24,9 +24,14 @@ import {
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
-type CommandMethod = { [key: string]: (string, any) => any };
+type CommandMethod = (event: MessageEvent) =>
+    Promise<MessageAPIResponseBase | undefined>;
 
-const commands: CommandMethod = {
+type CommandMethodList = {
+    [key: string]: CommandMethod
+};
+
+const commands: CommandMethodList = {
     "getChatRoomId": (event: MessageEvent) => {
         const sourceId = getSourceIdFromEvent(event, false) as string;
         console.log(sourceId);

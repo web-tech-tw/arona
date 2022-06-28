@@ -10,9 +10,14 @@ import {
 
 import message from "./message";
 
-type CommandMethod = { [key: string]: (string, any) => any };
+type EventMethod = (event: WebhookEvent) =>
+    Promise<MessageAPIResponseBase | undefined> | undefined;
 
-const eventHandlers: CommandMethod = {
+type EventMethodList = {
+    [key: string]: EventMethod
+};
+
+const eventHandlers: EventMethodList = {
     message,
 };
 

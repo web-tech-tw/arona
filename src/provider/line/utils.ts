@@ -21,8 +21,8 @@ const scdnClient = (() => {
 })();
 
 /**
- *
- * @param stickerId
+ * Download a sticker image from the sticker shop.
+ * @param {number} stickerId
  */
 export async function downloadStickerImage(stickerId: number): Promise<void> {
     const remoteFilename =
@@ -33,13 +33,14 @@ export async function downloadStickerImage(stickerId: number): Promise<void> {
 }
 
 /**
- *
- * @param event
- * @param withOrigin
- * @returns
+ * Get source ID from event.
+ * @param {EventBase} event
+ * @param {boolean} withOrigin
+ * @return {string}
  */
 export function getSourceIdFromEvent(
-    event: EventBase, withOrigin = false,
+    event: EventBase,
+    withOrigin = false,
 ): string | null | Array<string | null | undefined> {
     switch (event.source.type) {
     case "user":

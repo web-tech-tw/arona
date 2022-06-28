@@ -14,8 +14,18 @@ import {
     stringify,
 } from "querystring";
 
+type Message = {
+    message: string;
+    imageThumbnail?: string;
+    imageFullsize?: string;
+    imageFile?: string;
+    stickerPackageId?: number;
+    stickerId?: number;
+    notificationDisabled?: boolean;
+};
+
 const sendMessage =
-    (message: any): Promise<AxiosResponse> =>
+    (message: Message): Promise<AxiosResponse> =>
         notifyClient.post("/api/notify", stringify(message));
 
 /**
@@ -28,9 +38,10 @@ export function sendTextMessage(
     sender: Sender,
     text: string,
 ): Promise<AxiosResponse> {
-    return sendMessage({
+    const message: Message = {
         message: `${sender.name}: ${text}`,
-    });
+    };
+    return sendMessage(message);
 }
 
 /**
@@ -43,10 +54,9 @@ export function sendImageMessage(
     sender: Sender,
     imageUrl: string,
 ): Promise<AxiosResponse> {
-    (async () => sendTextMessage(sender, "Image:"))();
-    return sendMessage({
-        type: "image",
-        originalContentUrl: imageUrl,
-        previewImageUrl: imageUrl,
-    });
+    const message: Message = {
+        message: `${sender.name}: Image:`,
+        imageFullsize: imageUrl,
+    };
+    return sendMessage(message);
 }

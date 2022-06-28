@@ -3,6 +3,10 @@ import {
 } from "@line/bot-sdk";
 
 import {
+    MatrixEvent,
+} from "matrix-bot-sdk";
+
+import {
     MatrixLintenerClient,
 } from "../index";
 
@@ -18,7 +22,7 @@ const systemName = process.env.DEVICE_NAME || "System";
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
-const replyMessage = (roomId: string, message: any) => {
+const replyMessage = (roomId: string, message: string) => {
     const sender: Sender = {
         name: systemName,
     };
@@ -27,12 +31,17 @@ const replyMessage = (roomId: string, message: any) => {
     );
 };
 
-type CommandMethod = { [key: string]: (string, any) => any };
+type CommandMethod = (roomId: string, event: MatrixEvent<string>) =>
+    Promise<void | undefined> | void | undefined;
 
-const commands: CommandMethod = {
-    "getChatRoomId": (roomId: string, _: any) => {
+type CommandMethodList = {
+    [key: string]: CommandMethod
+};
+
+const commands: CommandMethodList = {
+    "getChatRoomId": (roomId: string) => {
         console.log(roomId);
-        return replyMessage(roomId, roomId);
+        replyMessage(roomId, roomId);
     },
 };
 

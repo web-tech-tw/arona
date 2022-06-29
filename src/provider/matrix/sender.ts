@@ -1,10 +1,14 @@
 import {
     Sender,
-} from "@line/bot-sdk";
+} from "../../sender";
 
 import {
     client,
 } from "./index";
+
+export type ImageMessageOptions = {
+    thumbnailUrl?: string;
+};
 
 /**
  * Send a text message to the chat room.
@@ -19,8 +23,8 @@ export function sendTextMessage(
     roomId: string,
 ): Promise<string> {
     return client.sendMessage(roomId, {
-        "msgtype": "m.notice",
-        "body": `${sender.name}: ${text}`,
+        "msgtype": "m.text",
+        "body": `${sender.displayName}: ${text}`,
     });
 }
 
@@ -29,17 +33,27 @@ export function sendTextMessage(
  * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
  * @param {string} roomId ID of the chat room.
+ *
  * @return {Promise<string>}
  */
 export function sendImageMessage(
     sender: Sender,
     imageUrl: string,
     roomId: string,
+    options: ImageMessageOptions = {},
 ): Promise<string> {
     (async () => sendTextMessage(sender, "Image:", roomId))();
     return client.sendMessage(roomId, {
         "msgtype": "m.image",
-        "body": imageUrl,
         "url": imageUrl,
+        "body": null,
+        "info": {
+            "w": null,
+            "h": null,
+            "size": null,
+            "mimetype": null,
+            "thumbnail_info": null,
+            "thumbnail_url": options.thumbnailUrl,
+        },
     });
 }

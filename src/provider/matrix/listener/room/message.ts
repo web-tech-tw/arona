@@ -1,6 +1,6 @@
 import {
     Sender,
-} from "@line/bot-sdk";
+} from "../../../../sender";
 
 import {
     MatrixEvent,
@@ -8,7 +8,7 @@ import {
 
 import {
     MatrixLintenerClient,
-} from "../index";
+} from "../client";
 
 import {
     sendTextMessage as replyMessagePrototype,
@@ -23,9 +23,9 @@ const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
 const replyMessage = (roomId: string, message: string) => {
-    const sender: Sender = {
-        name: systemName,
-    };
+    const sender: Sender = new Sender({
+        displayName: systemName,
+    });
     return replyMessagePrototype(
         sender, roomId, message,
     );
@@ -64,10 +64,10 @@ export default (listenerClient: MatrixLintenerClient) =>
             await listenerClient.getUserProfile(senderId);
         const senderIconHttp =
             await listenerClient.mxcToHttp(senderProfile.avatar_url);
-        const sender: Sender = {
-            name: senderProfile.displayname,
-            iconUrl: senderIconHttp,
-        };
+        const sender: Sender = new Sender({
+            displayName: senderProfile.displayname,
+            pictureUrl: senderIconHttp,
+        });
 
         sendTextMessage(sender, text, lineChatRoomId);
     });

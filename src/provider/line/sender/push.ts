@@ -1,5 +1,9 @@
 import {
     Sender,
+} from "../../../sender";
+
+import {
+    Sender as LINESender,
     TextMessage,
     ImageMessage,
     MessageAPIResponseBase,
@@ -8,6 +12,10 @@ import {
 import {
     client,
 } from "../index";
+
+import {
+    ImageMessageOptions,
+} from "./index";
 
 /**
  * Send a text message to the chat room.
@@ -21,10 +29,11 @@ export function sendTextMessage(
     text: string,
     roomId: string,
 ): Promise<MessageAPIResponseBase> {
+    const lineSender: LINESender = sender.toLINE();
     const message: TextMessage = {
         type: "text",
+        sender: lineSender,
         text,
-        sender,
     };
     return client.pushMessage(roomId, message);
 }
@@ -40,12 +49,14 @@ export function sendImageMessage(
     sender: Sender,
     imageUrl: string,
     roomId: string,
+    options: ImageMessageOptions = {},
 ): Promise<MessageAPIResponseBase> {
+    const lineSender: LINESender = sender.toLINE();
     const message: ImageMessage = {
         type: "image",
+        sender: lineSender,
         originalContentUrl: imageUrl,
-        previewImageUrl: imageUrl,
-        sender,
+        previewImageUrl: options.thumbnailUrl || imageUrl,
     };
     return client.pushMessage(roomId, message);
 }

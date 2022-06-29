@@ -1,6 +1,6 @@
 import {
     Sender,
-} from "@line/bot-sdk";
+} from "../../../sender";
 
 import {
     AxiosResponse,
@@ -9,6 +9,10 @@ import {
 import {
     notifyClient,
 } from "../index";
+
+import {
+    ImageMessageOptions,
+} from "./index";
 
 import {
     stringify,
@@ -39,7 +43,7 @@ export function sendTextMessage(
     text: string,
 ): Promise<AxiosResponse> {
     const message: Message = {
-        message: `${sender.name}: ${text}`,
+        message: `${sender.displayName}: ${text}`,
     };
     return sendMessage(message);
 }
@@ -53,10 +57,13 @@ export function sendTextMessage(
 export function sendImageMessage(
     sender: Sender,
     imageUrl: string,
+    _: string,
+    options: ImageMessageOptions = {},
 ): Promise<AxiosResponse> {
     const message: Message = {
-        message: `${sender.name}: Image:`,
+        message: `${sender.displayName}: Image:`,
         imageFullsize: imageUrl,
+        imageThumbnail: options.thumbnailUrl || imageUrl,
     };
     return sendMessage(message);
 }

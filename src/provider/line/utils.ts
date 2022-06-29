@@ -25,7 +25,7 @@ const scdnClient = (() => {
  * @param {number} stickerId
  */
 export async function downloadStickerImage(
-    stickerId: number
+    stickerId: number,
 ): Promise<void> {
     const remoteFilename =
         `stickershop/v1/sticker/${stickerId}/android/sticker.png`;
@@ -37,7 +37,7 @@ export async function downloadStickerImage(
 /**
  * Get source ID from event.
  * @param {EventBase} event
- * @param {boolean} withOrigin
+ * @param {boolean} [withOrigin=false]
  * @return {string | null | undefined | Array<string | null | undefined>}
  */
 export function getSourceIdFromEvent(
@@ -45,19 +45,19 @@ export function getSourceIdFromEvent(
     withOrigin = false,
 ): string | null | undefined | Array<string | null | undefined> {
     switch (event.source.type) {
-        case "user":
-            return withOrigin ?
-                [event.source.userId, event.source.userId] :
-                event.source.userId;
-        case "group":
-            return withOrigin ?
-                [event.source.groupId, event.source.userId] :
-                event.source.groupId;
-        case "room":
-            return withOrigin ?
-                [event.source.roomId, event.source.userId] :
-                event.source.roomId;
-        default:
-            return withOrigin ? [null, null] : null;
+    case "user":
+        return withOrigin ?
+            [event.source.userId, event.source.userId] :
+            event.source.userId;
+    case "group":
+        return withOrigin ?
+            [event.source.groupId, event.source.userId] :
+            event.source.groupId;
+    case "room":
+        return withOrigin ?
+            [event.source.roomId, event.source.userId] :
+            event.source.roomId;
+    default:
+        return withOrigin ? [null, null] : null;
     }
 }

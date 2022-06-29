@@ -1,6 +1,6 @@
 import {
     Sender,
-} from "@line/bot-sdk";
+} from "../../../../sender";
 
 import {
     MessageEvent,
@@ -63,10 +63,7 @@ export default async (
 
     const senderProfile =
         await client.getGroupMemberProfile(sourceId, senderId);
-    const sender: Sender = {
-        name: senderProfile.displayName,
-        iconUrl: senderProfile.pictureUrl,
-    };
+    const sender: Sender = new Sender(senderProfile);
 
     sendTextMessage(sender, text, matrixChatRoomId);
 };

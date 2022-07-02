@@ -7,7 +7,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "node_modules/.bin/nodemon app.ts",
-    "start": "node --loader ts-node/esm app.ts",
+    "start": "node_modules/.bin/ts-node app.ts",
     "lint": "eslint \"app.ts\" \"src/**/*.ts\"",
     "lint:fix": "eslint \"app.ts\" \"src/**/*.ts\" --fix"
   },

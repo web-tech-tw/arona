@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "app.ts",
   "scripts": {
-    "dev": "node_modules/.bin/nodemon app.ts",
+    "dev": "node_modules/.bin/nodemon --watch src/ app.ts",
     "start": "node_modules/.bin/ts-node app.ts",
     "lint": "eslint \"app.ts\" \"src/**/*.ts\"",
     "lint:fix": "eslint \"app.ts\" \"src/**/*.ts\" --fix"

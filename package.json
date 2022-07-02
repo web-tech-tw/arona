@@ -7,7 +7,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "node_modules/.bin/nodemon app.ts",
-    "start": "node --loader ts-node/esm app.ts"
+    "start": "node_modules/.bin/ts-node app.ts"
   },
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",

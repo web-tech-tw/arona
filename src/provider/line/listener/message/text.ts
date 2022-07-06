@@ -18,7 +18,7 @@ import {
 } from "../../../matrix/sender";
 
 import {
-    client,
+    client as lineClient,
 } from "../../index";
 
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
@@ -39,7 +39,7 @@ const commands: CommandMethodList = {
             type: "text",
             text: sourceId,
         };
-        return client.replyMessage(event.replyToken, replyMessage);
+        return lineClient.replyMessage(event.replyToken, replyMessage);
     },
 };
 
@@ -62,7 +62,7 @@ export default async (
     if (sourceId !== lineChatRoomId) return;
 
     const senderProfile =
-        await client.getGroupMemberProfile(sourceId, senderId);
+        await lineClient.getGroupMemberProfile(sourceId, senderId);
     const sender: Sender = new Sender(senderProfile);
 
     sendTextMessage(sender, text, matrixChatRoomId);

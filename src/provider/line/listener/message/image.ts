@@ -17,9 +17,10 @@ import {
 } from "../../../matrix/sender";
 
 import {
-    client,
+    client as lineClient,
 } from "../../index";
 
+const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
 const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 
 export default async (
@@ -33,11 +34,12 @@ export default async (
     if (sourceId !== lineChatRoomId) return;
 
     const senderProfile =
-        await client.getGroupMemberProfile(sourceId, senderId);
+        await lineClient.getGroupMemberProfile(sourceId, senderId);
     const sender: Sender = new Sender(senderProfile);
 
-    const content = await client.getMessageContent(id);
+    const content = await lineClient.getMessageContent(id);
+    console.log(content);
 
-    sendImageMessage(sender, "", sourceId);
+    sendImageMessage(sender, "", matrixChatRoomId);
     return;
 };

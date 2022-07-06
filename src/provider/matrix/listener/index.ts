@@ -3,7 +3,7 @@ import {
 } from "matrix-bot-sdk";
 
 import {
-    MatrixLintenerClient,
+    MatrixListenerClient,
 } from "./client";
 
 import {
@@ -14,7 +14,7 @@ import {
 
 import roomMessage from "./room/message";
 
-const listenerClient = new MatrixLintenerClient(
+const listenerClient = new MatrixListenerClient(
     homeserverUrl,
     accessToken,
     storage,

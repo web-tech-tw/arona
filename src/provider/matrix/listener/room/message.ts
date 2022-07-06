@@ -7,7 +7,7 @@ import {
 } from "matrix-bot-sdk";
 
 import {
-    MatrixLintenerClient,
+    MatrixListenerClient,
 } from "../client";
 
 import {
@@ -45,7 +45,7 @@ const commands: CommandMethodList = {
     },
 };
 
-export default (listenerClient: MatrixLintenerClient) =>
+export default (listenerClient: MatrixListenerClient) =>
     listenerClient.on("room.message", async (roomId, event) => {
         const senderId = event["sender"];
         if (senderId === listenerClient.identity || !event["content"]) return;

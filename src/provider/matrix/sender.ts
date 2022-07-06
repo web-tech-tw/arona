@@ -6,8 +6,20 @@ import {
     client,
 } from "./index";
 
+export type ThumbnailInfo = {
+    mimetype?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+};
+
 export type ImageMessageOptions = {
+    mimetype?: string;
+    size?: number;
+    width?: number;
+    height?: number;
     thumbnailUrl?: string;
+    thumbnailInfo?: ThumbnailInfo;
 };
 
 /**
@@ -46,14 +58,14 @@ export function sendImageMessage(
     return client.sendMessage(roomId, {
         "msgtype": "m.image",
         "url": imageUrl,
-        "body": null,
+        "body": `${sender.displayName}: Image:`,
         "info": {
-            "w": null,
-            "h": null,
-            "size": null,
-            "mimetype": null,
-            "thumbnail_info": null,
+            "mimetype": options.mimetype,
+            "size": options.size,
+            "w": options.width,
+            "h": options.height,
             "thumbnail_url": options.thumbnailUrl,
+            "thumbnail_info": options.thumbnailInfo,
         },
     });
 }

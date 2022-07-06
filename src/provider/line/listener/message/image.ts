@@ -19,12 +19,12 @@ import {
 } from "../../../matrix/sender";
 
 import {
-    client as matrixClient,
-} from "../../../matrix";
-
-import {
     client as lineClient,
 } from "../../index";
+
+import {
+    client as matrixClient,
+} from "../../../matrix";
 
 import images, { FILE_TYPE } from "images";
 import imageType, { ImageTypeResult } from "image-type";
@@ -86,5 +86,4 @@ export default async (
 
     const mxcUrl: string = await matrixClient.uploadContent(imageBuffer);
     sendImageMessage(sender, mxcUrl, matrixChatRoomId, sendOptions);
-    return;
 };

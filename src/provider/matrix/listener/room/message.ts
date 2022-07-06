@@ -40,7 +40,7 @@ type CommandMethodList = {
 
 const commands: CommandMethodList = {
     "getChatRoomId": (roomId: string) => {
-        console.log(roomId);
+        console.info(roomId);
         replyMessage(roomId, roomId);
     },
 };

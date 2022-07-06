@@ -41,6 +41,6 @@ controllers.forEach(
 export const loopEvent = async () => {
     // Create a server and listen to it.
     app.listen(exposePort, () => {
-        console.log(`Application is live and listening on port ${exposePort}`);
+        console.info(`Application is live and listening on port ${exposePort}`);
     });
 };

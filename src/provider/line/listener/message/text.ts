@@ -34,7 +34,7 @@ type CommandMethodList = {
 const commands: CommandMethodList = {
     "getChatRoomId": (event: MessageEvent) => {
         const sourceId = getSourceIdFromEvent(event, false) as string;
-        console.log(sourceId);
+        console.info(sourceId);
         const replyMessage: TextMessage = {
             type: "text",
             text: sourceId,

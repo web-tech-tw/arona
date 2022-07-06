@@ -32,5 +32,5 @@ events.forEach(
 
 export const loopEvent = async () => {
     await listenerClient.start();
-    console.log("Client started!");
+    console.info("Client started!");
 };

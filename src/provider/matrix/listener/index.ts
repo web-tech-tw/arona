@@ -12,7 +12,7 @@ import {
     storage,
 } from "../index";
 
-import roomMessage from "./room/message";
+import roomMessage from "./room_message";
 
 const listenerClient = new MatrixListenerClient(
     homeserverUrl,

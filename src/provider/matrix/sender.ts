@@ -64,7 +64,7 @@ export function sendImageMessage(
             "size": options.size,
             "w": options.width,
             "h": options.height,
-            "thumbnail_url": options.thumbnailUrl,
+            "thumbnail_url": options.thumbnailUrl || imageUrl,
             "thumbnail_info": options.thumbnailInfo,
         },
     });

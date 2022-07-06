@@ -15,13 +15,13 @@ const notifyToken = process.env.LINE_NOTIFY_TOKEN || "";
 
 // Configure clients
 const clientConfig: ClientConfig = {
-    channelAccessToken, channelSecret
+    channelAccessToken, channelSecret,
 };
 const notifyClientConfig: AxiosRequestConfig = {
     baseURL: "https://notify-api.line.me",
     headers: {
-        Authorization: `Bearer ${notifyToken}`,
-        "User-Agent": axiosUserAgent
+        "Authorization": `Bearer ${notifyToken}`,
+        "User-Agent": axiosUserAgent,
     },
 };
 

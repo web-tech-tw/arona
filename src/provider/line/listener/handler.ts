@@ -10,13 +10,20 @@ import {
 
 import message from "./message";
 
-const eventHandlers: { [key: string]: any } = {
+type EventMethod = (event: WebhookEvent) =>
+    Promise<MessageAPIResponseBase | undefined> | undefined;
+
+type EventMethodList = {
+    [key: string]: EventMethod
+};
+
+const eventHandlers: EventMethodList = {
     message,
 };
 
 // Handle single event.
 const eventHandler = (
-    event: WebhookEvent
+    event: WebhookEvent,
 ): Promise<MessageAPIResponseBase | undefined> | undefined => {
     const typeName: string = event.type.toString();
     if (typeName in eventHandlers) {
@@ -25,7 +32,9 @@ const eventHandler = (
 };
 
 // Process all of the received events asynchronously.
-const eventsDispatcher = async (req: Request, res: Response): Promise<Response> => {
+const eventsDispatcher = async (
+    req: Request, res: Response,
+): Promise<Response> => {
     const events: WebhookEvent[] = req.body.events;
 
     try {
@@ -33,7 +42,7 @@ const eventsDispatcher = async (req: Request, res: Response): Promise<Response> 
         return res.status(200).json({
             status: "success",
             results: await Promise.all(
-                events.map(eventHandler)
+                events.map(eventHandler),
             ),
         });
     } catch (err: unknown) {
@@ -47,6 +56,6 @@ const eventsDispatcher = async (req: Request, res: Response): Promise<Response> 
             status: "error",
         });
     }
-}
+};
 
 export default eventsDispatcher;

@@ -1,30 +1,71 @@
 import {
-    client
+    Sender,
+} from "../../sender";
+
+import {
+    client,
 } from "./index";
+
+export type ThumbnailInfo = {
+    mimetype?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+};
+
+export type ImageMessageOptions = {
+    mimetype?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+    thumbnailUrl?: string;
+    thumbnailInfo?: ThumbnailInfo;
+};
 
 /**
  * Send a text message to the chat room.
- * @param text The text to send.
- * @param roomId ID of the chat room.
- * @returns {Promise<string>}
+ * @param {Sender} sender The sender of the message.
+ * @param {string} text The text to send.
+ * @param {string} roomId ID of the chat room.
+ * @return {Promise<string>}
  */
-export function sendTextMessage(text: string, roomId: string): Promise<string> {
+export function sendTextMessage(
+    sender: Sender,
+    text: string,
+    roomId: string,
+): Promise<string> {
     return client.sendMessage(roomId, {
-        "msgtype": "m.notice",
-        "body": text,
+        "msgtype": "m.text",
+        "body": `${sender.displayName}: ${text}`,
     });
 }
 
 /**
  * Send an image message to the chat room.
- * @param imageUrl URL of the image.
- * @param roomId ID of the chat room.
- * @returns {Promise<string>}
+ * @param {Sender} sender The sender of the message.
+ * @param {string} imageUrl URL of the image.
+ * @param {string} roomId ID of the chat room.
+ *
+ * @return {Promise<string>}
  */
-export function sendImageMessage(imageUrl: string, roomId: string): Promise<string> {
+export function sendImageMessage(
+    sender: Sender,
+    imageUrl: string,
+    roomId: string,
+    options: ImageMessageOptions = {},
+): Promise<string> {
+    (async () => sendTextMessage(sender, "Image:", roomId))();
     return client.sendMessage(roomId, {
         "msgtype": "m.image",
-        "body": imageUrl,
         "url": imageUrl,
+        "body": `${sender.displayName}: Image:`,
+        "info": {
+            "mimetype": options.mimetype,
+            "size": options.size,
+            "w": options.width,
+            "h": options.height,
+            "thumbnail_url": options.thumbnailUrl || imageUrl,
+            "thumbnail_info": options.thumbnailInfo,
+        },
     });
 }

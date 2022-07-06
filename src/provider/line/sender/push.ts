@@ -1,30 +1,39 @@
 import {
     Sender,
+} from "../../../sender";
+
+import {
+    Sender as LINESender,
     TextMessage,
     ImageMessage,
     MessageAPIResponseBase,
 } from "@line/bot-sdk";
 
 import {
-    client
-} from '../index';
+    client,
+} from "../index";
+
+import {
+    ImageMessageOptions,
+} from "./index";
 
 /**
  * Send a text message to the chat room.
  * @param {Sender} sender The sender of the message.
  * @param {string} text The text to send.
  * @param {string} roomId ID of the chat room.
- * @returns {Promise<MessageAPIResponseBase>}
+ * @return {Promise<MessageAPIResponseBase>}
  */
 export function sendTextMessage(
     sender: Sender,
     text: string,
-    roomId: string
+    roomId: string,
 ): Promise<MessageAPIResponseBase> {
+    const lineSender: LINESender = sender.toLINE();
     const message: TextMessage = {
         type: "text",
+        sender: lineSender,
         text,
-        sender,
     };
     return client.pushMessage(roomId, message);
 }
@@ -34,18 +43,20 @@ export function sendTextMessage(
  * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
  * @param {string} roomId ID of the chat room.
- * @returns {Promise<MessageAPIResponseBase>}
+ * @return {Promise<MessageAPIResponseBase>}
  */
 export function sendImageMessage(
     sender: Sender,
     imageUrl: string,
-    roomId: string
+    roomId: string,
+    options: ImageMessageOptions = {},
 ): Promise<MessageAPIResponseBase> {
+    const lineSender: LINESender = sender.toLINE();
     const message: ImageMessage = {
         type: "image",
+        sender: lineSender,
         originalContentUrl: imageUrl,
-        previewImageUrl: imageUrl,
-        sender,
+        previewImageUrl: options.thumbnailUrl || imageUrl,
     };
     return client.pushMessage(roomId, message);
 }

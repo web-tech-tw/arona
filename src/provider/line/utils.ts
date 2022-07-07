@@ -1,5 +1,3 @@
-import fs from "fs";
-
 import {
     EventBase,
 } from "@line/bot-sdk";
@@ -27,19 +25,19 @@ export function getSourceIdFromEvent(
     withOrigin = false,
 ): string | null | undefined | Array<string | null | undefined> {
     switch (event.source.type) {
-        case "user":
-            return withOrigin ?
-                [event.source.userId, event.source.userId] :
-                event.source.userId;
-        case "group":
-            return withOrigin ?
-                [event.source.groupId, event.source.userId] :
-                event.source.groupId;
-        case "room":
-            return withOrigin ?
-                [event.source.roomId, event.source.userId] :
-                event.source.roomId;
-        default:
-            return withOrigin ? [null, null] : null;
+    case "user":
+        return withOrigin ?
+            [event.source.userId, event.source.userId] :
+            event.source.userId;
+    case "group":
+        return withOrigin ?
+            [event.source.groupId, event.source.userId] :
+            event.source.groupId;
+    case "room":
+        return withOrigin ?
+            [event.source.roomId, event.source.userId] :
+            event.source.roomId;
+    default:
+        return withOrigin ? [null, null] : null;
     }
 }

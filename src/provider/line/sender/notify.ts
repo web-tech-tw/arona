@@ -52,6 +52,8 @@ export function sendTextMessage(
  * Send an image message to the chat room.
  * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
+ * @param {string} _ Please make the field empty.
+ * @param {ImageMessageOptions} options The options to send image message.
  * @return {Promise<AxiosResponse>}
  */
 export function sendImageMessage(

@@ -45,7 +45,7 @@ export function sendTextMessage(
  * @param {Sender} sender The sender of the message.
  * @param {string} imageUrl URL of the image.
  * @param {string} roomId ID of the chat room.
- *
+ * @param {ImageMessageOptions} options The options to send image message.
  * @return {Promise<string>}
  */
 export function sendImageMessage(

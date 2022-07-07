@@ -4,7 +4,7 @@ import {
 
 import {
     MessageEvent,
-    FileMessageEventContent
+    FileMessageEventContent,
 } from "matrix-bot-sdk";
 
 import {
@@ -21,10 +21,10 @@ const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
 export default async (
     listenerClient: MatrixListenerClient,
     roomId: string,
-    event: MessageEvent<any>
+    event: MessageEvent<any>,
 ): Promise<undefined> => {
     const messageEvent = new MessageEvent<FileMessageEventContent>(event.raw);
-    
+
     if (roomId !== matrixChatRoomId) return;
 
     const senderProfile =
@@ -40,4 +40,4 @@ export default async (
     const httpUrl = listenerClient.mxcToHttp(mxcUrl);
 
     sendImageMessage(sender, httpUrl, lineChatRoomId);
-}
+};

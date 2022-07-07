@@ -1,8 +1,8 @@
 .DS_Store
 node_modules
 /dist
+/data
 .env
-bot.json
 
 # Log files
 npm-debug.log*

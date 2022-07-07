@@ -43,6 +43,7 @@ export default async (
     const sender: Sender = new Sender(senderProfile);
 
     const sourceImageUrl = getStickerImageUrl(stickerId);
-    const mxcUrl: string = await matrixClient.uploadContentFromUrl(sourceImageUrl);
+    const mxcUrl: string =
+        await matrixClient.uploadContentFromUrl(sourceImageUrl);
     sendImageMessage(sender, mxcUrl, matrixChatRoomId);
 };

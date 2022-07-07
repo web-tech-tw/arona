@@ -48,7 +48,7 @@ const commands: CommandMethodList = {
 export default async (
     listenerClient: MatrixListenerClient,
     roomId: string,
-    event: MessageEvent<any>
+    event: MessageEvent<any>,
 ): Promise<undefined> => {
     const messageEvent = event;
 
@@ -73,4 +73,4 @@ export default async (
     });
 
     sendTextMessage(sender, text, lineChatRoomId);
-}
+};

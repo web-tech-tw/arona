@@ -13,6 +13,7 @@ import {
 
 import {
     sendImageMessage,
+    ImageMessageOptions,
 } from "../../../line/sender";
 
 const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
@@ -37,7 +38,15 @@ export default async (
     });
 
     const mxcUrl = messageEvent.content.url;
-    const httpUrl = listenerClient.mxcToHttp(mxcUrl);
+    const thumbnailMxcUrl =
+        messageEvent.content.info?.thumbnail_url || messageEvent.content.url;
 
-    sendImageMessage(sender, httpUrl, lineChatRoomId);
+    const httpUrl = listenerClient.mxcToHttp(mxcUrl);
+    const thumbnailHttpUrl = listenerClient.mxcToHttp(thumbnailMxcUrl);
+
+    const sendOptions: ImageMessageOptions = {
+        thumbnailUrl: thumbnailHttpUrl,
+    };
+
+    sendImageMessage(sender, httpUrl, lineChatRoomId, sendOptions);
 };

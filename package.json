@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "node_modules/.bin/nodemon --watch src/ app.ts",
     "start": "node_modules/.bin/ts-node app.ts",
-    "lint": "eslint \"app.ts\" \"src/**/*.ts\"",
-    "lint:fix": "eslint \"app.ts\" \"src/**/*.ts\" --fix"
+    "get-matrix-access": "node_modules/.bin/ts-node get_matrix_access.ts",
+    "lint": "eslint \"app.ts\" \"get_matrix_access.ts\" \"src/**/*.ts\"",
+    "lint:fix": "eslint \"app.ts\" \"get_matrix_access.ts\" \"src/**/*.ts\" --fix"
   },
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",
@@ -18,10 +19,12 @@
     "express": "^4.17.3",
     "image-type": "^4.1.0",
     "images": "^3.2.4",
+    "inquirer": "^8.2.4",
     "matrix-bot-sdk": "^0.5.19",
     "ts-node": "^10.4.0"
   },
   "devDependencies": {
+    "@types/inquirer": "^8.2.1",
     "@types/node": "^17.0.4",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
     "@typescript-eslint/parser": "^5.30.0",

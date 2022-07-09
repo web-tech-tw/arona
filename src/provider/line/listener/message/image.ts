@@ -67,6 +67,8 @@ export default async (
     );
     const thumbnailBuffer: Buffer =
         thumbnail.toBuffer(ext as FILE_TYPE);
+
+    const mxcUrl: string = await matrixClient.uploadContent(imageBuffer);
     const thumbnailMxcUrl: string =
         await matrixClient.uploadContent(thumbnailBuffer);
 
@@ -86,6 +88,5 @@ export default async (
         thumbnailInfo,
     };
 
-    const mxcUrl: string = await matrixClient.uploadContent(imageBuffer);
     sendImageMessage(sender, mxcUrl, matrixChatRoomId, sendOptions);
 };

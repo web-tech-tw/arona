@@ -22,12 +22,18 @@ const questions = [{
     message: "Password: ",
 }];
 
+console.info(
+    "Get the AccessToken from Matrix",
+    `(homeserver: ${homeserverUrl || "undefined"})`,
+    "\n",
+);
 inquirer.prompt(questions).then(({username, password}) => {
+    console.log();
     auth.passwordLogin(username, password).then((client) => {
-        console.info(client.accessToken);
+        console.info("AccessToken:", client.accessToken);
         return client.getUserId();
     }).then((userId) => {
-        console.info(userId);
+        console.info("User ID:", userId);
     }).catch(() => {
         console.error("Unauthorized");
     });

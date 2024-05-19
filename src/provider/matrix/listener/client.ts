@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     MatrixClient,
 } from "matrix-bot-sdk";
@@ -7,7 +8,6 @@ import {
  */
 export class MatrixListenerClient extends MatrixClient {
     identity?: string;
-    e2eeMode?: boolean;
 
     /**
      * Starts syncing the client with an optional filter
@@ -16,7 +16,8 @@ export class MatrixListenerClient extends MatrixClient {
      */
     async start(filter?: any): Promise<any> {
         this.identity = await this.getUserId();
-        this.e2eeMode = false;
+        const joinedRooms = await this.getJoinedRooms();
+        await this.crypto.prepare(joinedRooms);
         return await super.start(filter);
     }
 }

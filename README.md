@@ -6,13 +6,13 @@ This is the bridge for Matrix to connect with [LINE](https://line.me) via [Messa
 
 [Bridge](https://matrix.org/bridges/) is the idea makes **[Matrix](https://matrix.org)** cross connecting every Instant Message Providers.
 
-![Arona](logo.svg)
+![Arona](icon.min.png)
 
 ## Documentation
 
-The documents and instructions is available on the GitHub wiki of this repository.
+The documents and instructions is available on `/docs` of this repository.
 
-[Here](https://github.com/web-tech-tw/arona/wiki)
+[Here](docs/README.md)
 
 ## Discussion
 

@@ -55,7 +55,8 @@ export default async (
     const imageBuffer = Buffer.concat(contentChunks);
     const image = images(imageBuffer);
     const imageSize = image.size();
-    const {ext, mime: imageMIME} = imageType(imageBuffer) as ImageTypeResult;
+    const imageTypeData = await imageType(imageBuffer);
+    const {ext, mime: imageMIME} = imageTypeData as ImageTypeResult;
 
     const thumbnailSize = {
         width: Math.floor(imageSize.width / 2),

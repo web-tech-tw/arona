@@ -1,5 +1,3 @@
-import config from "../../../../../config";
-
 import {
     Sender,
 } from "../../../../sender";
@@ -14,11 +12,8 @@ import MatrixSend from "../../../submitter";
 import Link from "../../../../link";
 import Pair from "../../../../pair";
 
-const systemName = config.deviceName || "System";
 const replyOneMessage = (chatId: string, text: string) => {
-    const sender: Sender = new Sender({
-        displayName: systemName,
-    });
+    const sender: Sender = new Sender({});
     const send = new MatrixSend();
     return send.text({sender, chatId, text});
 };

@@ -29,19 +29,12 @@ export function sendTextMessage(
     chatId: string,
     text: string,
 ): Promise<messagingApi.PushMessageResponse> {
-    const message: TextMessage = {
-        type: "text",
-        text,
-    };
-
-    const lineSender: LINESender = sender.toLINE();
-    lineSender.name = lineSender.name ?? "Unknown";
-    if (lineSender.name?.length <= 20) {
-        message.sender = lineSender;
+    const message: TextMessage = {type: "text", text};
+    if (sender.prefix.length <= 20) {
+        message.sender = sender.toLINE();
     } else {
-        message.text = `${lineSender.name}\n${message.text}`;
+        message.text = `${sender.prefix}\n${message.text}`;
     }
-
     return chatClient.pushMessage({
         to: chatId,
         messages: [message],

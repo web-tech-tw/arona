@@ -8,23 +8,19 @@ import {
 import {
     SendProvider,
     SendProviderType,
-    allSendProviders,
+    sendProviderList,
 } from "./sender";
 
 /**
- * The broadcast function.
+ * The callback to send message.
  */
-export type BroadcastCallback = (
+export type SendMessageCallback = (
     provider: SendProvider,
     chatId: string,
 ) => void;
 
 // eslint-disable-next-line no-unused-vars
 type LinkBridgeMapping = {[T in SendProviderType]: string};
-type LinkConstructorParameters = {
-    key: string,
-    bridge?: LinkBridgeMapping,
-};
 
 /**
  * The link class.
@@ -35,9 +31,9 @@ export default class Link {
 
     /**
      * The constructor.
-     * @param {LinkConstructorParameters} params - The parameters.
+     * @param {Partial<Link>} params - The parameters.
      */
-    constructor(params: LinkConstructorParameters) {
+    constructor(params: Partial<Link>) {
         Object.assign(this, params);
     }
 
@@ -149,41 +145,54 @@ export default class Link {
     }
 
     /**
-     * Get a send provider with the chat type.
+     * Send to the specified send provider.
      * @param {SendProviderType} chatType - The chat type.
-     * @return {SendProvider} The send provider.
+     * @param {SendMessageCallback} callback - The callback to send.
+     * @return {void}
      */
-    toSend(chatType: SendProviderType): SendProvider {
-        return allSendProviders[chatType];
+    toSend(
+        chatType: SendProviderType,
+        callback: SendMessageCallback,
+    ): void {
+        const matcher = (i: SendProvider) => i.type() === chatType;
+        const sender = sendProviderList.find(matcher) ?? null;
+        if (!sender) {
+            return;
+        }
+        const chatId = this.chat(chatType);
+        if (!chatId) {
+            return;
+        }
+        callback(sender, chatId);
     }
 
     /**
      * Broadcast to all send providers.
-     * @param {BroadcastCallback} callback - The callback to broadcast.
+     * @param {SendMessageCallback} callback - The callback to send.
      */
-    toBroadcast(callback: BroadcastCallback): void {
+    toBroadcast(callback: SendMessageCallback): void {
         if (!this.bridge) {
             return;
         }
-        Object.entries(this.bridge).forEach(([key, chatId]) => {
-            const senderTypeName = key as SendProviderType;
-            const matcher = (i: SendProvider) => i.type() === senderTypeName;
-            const sender = allSendProviders.find(matcher);
-            if (sender) {
-                callback(sender, chatId);
+        Object.entries(this.bridge).forEach(([chatType, chatId]) => {
+            const matcher = (i: SendProvider) => i.type() === chatType;
+            const sender = sendProviderList.find(matcher) ?? null;
+            if (!sender) {
+                return;
             }
+            callback(sender, chatId);
         });
     }
 
     /**
      * Broadcast to all send providers except the specified one.
      * @param {SendProviderType} except - The send provider to exclude.
-     * @param {BroadcastCallback} callback - The callback to broadcast.
+     * @param {SendMessageCallback} callback - The callback to send.
      * @return {void}
      */
     toBroadcastExcept(
         except: SendProviderType,
-        callback: BroadcastCallback,
+        callback: SendMessageCallback,
     ): void {
         this.toBroadcast((provider, chatId) => {
             if (provider.type() !== except) {

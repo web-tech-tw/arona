@@ -40,6 +40,16 @@ export class Sender {
     }
 
     /**
+     * Get the text prefix.
+     * @return {string}
+     */
+    get prefix(): string {
+        return this.provider ?
+            `${this.displayName} ⬗ ${this.providerName()}` :
+            "⬖ System";
+    }
+
+    /**
      * Create a Sender from LINE Source.
      * @param {EventSource} source - LINE Event Source
      * @return {Promise<Sender>}
@@ -74,7 +84,7 @@ export class Sender {
      * @return {LINESender}
      */
     toLINE(): LINESender {
-        const name = `${this.displayName} ⬗ ${this.providerName()}`;
+        const name = this.prefix;
         const iconUrl = this.pictureUrl;
         return {name, iconUrl};
     }
@@ -86,7 +96,7 @@ export class Sender {
     providerName(): string {
         const {provider} = this;
         if (!provider) {
-            return "Unknown";
+            throw new Error("Provider is not set");
         }
         return SendProviderName[provider];
     }
@@ -136,9 +146,9 @@ export interface SendProvider {
 }
 
 /**
- * All Send Providers
+ * The list of SendProvider.
  */
-export const allSendProviders: Array<SendProvider> = [
+export const sendProviderList: Array<SendProvider> = [
     new LINESend(),
     new MatrixSend(),
 ];

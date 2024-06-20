@@ -45,11 +45,10 @@ export default class MatrixSend implements SendProvider {
      */
     async text(params: SendTextParameters): Promise<void> {
         const {sender, chatId, text} = params;
-        const displayName = sender.displayName;
-        const providerName = sender.providerName();
+        const {prefix} = sender;
         client.sendMessage(chatId, {
             "msgtype": "m.text",
-            "body": `${displayName} ⬗ ${providerName}\n${text}`,
+            "body": `${prefix}\n${text}`,
         });
     }
 
@@ -60,14 +59,13 @@ export default class MatrixSend implements SendProvider {
      */
     async image(params: SendImageParameters): Promise<void> {
         const {sender, chatId, imageBuffer} = params;
-        const displayName = sender.displayName;
-        const providerName = sender.providerName();
+        const {prefix} = sender;
         const text = "Sent an image.";
         this.text({sender, chatId, text});
         client.sendMessage(chatId, {
             "msgtype": "m.image",
             "url": await client.uploadContent(imageBuffer),
-            "body": `${displayName} ⬗ ${providerName}`,
+            "body": prefix,
         });
     }
 
@@ -78,14 +76,13 @@ export default class MatrixSend implements SendProvider {
      */
     async imageUrl(params: SendImageUrlParameters): Promise<void> {
         const {sender, chatId, imageUrl} = params;
-        const displayName = sender.displayName;
-        const providerName = sender.providerName();
+        const {prefix} = sender;
         const text = "Sent an image.";
         this.text({sender, chatId, text});
         client.sendMessage(chatId, {
             "msgtype": "m.image",
             "url": await client.uploadContentFromUrl(imageUrl),
-            "body": `${displayName} ⬗ ${providerName}`,
+            "body": prefix,
         });
     }
 }

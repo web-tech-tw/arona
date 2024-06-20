@@ -35,9 +35,10 @@ type CommandMethodList = {
 };
 
 const replyOneMessage = (replyToken: string, text: string) => {
+    const sender: Sender = new Sender({});
     const replyMessage: TextMessage = {
         type: "text",
-        text,
+        text: `${sender.prefix}\n${text}`,
     };
     chatClient.replyMessage({
         replyToken: replyToken,

@@ -1,6 +1,6 @@
 import {
     Sender,
-} from "../../../sender";
+} from "../../sender";
 
 import {
     AxiosResponse,
@@ -8,11 +8,7 @@ import {
 
 import {
     notifyClient,
-} from "../index";
-
-import {
-    ImageMessageOptions,
-} from "./index";
+} from "../client";
 
 import {
     stringify,
@@ -28,18 +24,25 @@ type Message = {
     notificationDisabled?: boolean;
 };
 
-const sendMessage =
-    (message: Message): Promise<AxiosResponse> =>
-        notifyClient.post("/api/notify", stringify(message));
+/**
+ * Send a message to the chat room.
+ * @param {Message} message The message to send.
+ * @return {Promise<AxiosResponse>}
+ */
+function sendMessage(message: Message): Promise<AxiosResponse> {
+    return notifyClient.post("/api/notify", stringify(message));
+}
 
 /**
  * Send a text message to the chat room.
- * @param {Sender} sender The sender of the message.
- * @param {string} text The text to send.
+ * @param {Sender} sender - The sender of the message.
+ * @param {string} chatId - The ID of the chat room.
+ * @param {string} text - The text to send.
  * @return {Promise<AxiosResponse>}
  */
 export function sendTextMessage(
     sender: Sender,
+    chatId: string,
     text: string,
 ): Promise<AxiosResponse> {
     const message: Message = {
@@ -50,22 +53,21 @@ export function sendTextMessage(
 
 /**
  * Send an image message to the chat room.
- * @param {Sender} sender The sender of the message.
- * @param {string} imageUrl URL of the image.
- * @param {string} _ Please make the field empty.
- * @param {ImageMessageOptions} options The options to send image message.
+ * @param {Sender} sender - The sender of the message.
+ * @param {string} chatId - The ID of the chat room.
+ * @param {string} imageUrl - The image URL.
+ * @param {ImageMessageOptions} options - The options to send image message.
  * @return {Promise<AxiosResponse>}
  */
 export function sendImageMessage(
     sender: Sender,
+    chatId: string,
     imageUrl: string,
-    _: string,
-    options: ImageMessageOptions = {},
 ): Promise<AxiosResponse> {
     const message: Message = {
         message: `${sender.displayName}: Image:`,
         imageFullsize: imageUrl,
-        imageThumbnail: options.thumbnailUrl || imageUrl,
+        imageThumbnail: imageUrl,
     };
     return sendMessage(message);
 }

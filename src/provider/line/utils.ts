@@ -1,6 +1,65 @@
 import {
-    EventBase,
+    EventSource,
 } from "@line/bot-sdk";
+
+import {
+    Profile,
+    SourceInfo,
+} from "./types";
+
+import {
+    messagingClient as chatClient,
+} from "./client";
+
+/**
+ * Get a profile from the source.
+ * @param {EventSource} source
+ * @return {Promise<Profile | null>}
+ */
+export async function getProfileFromSource(
+    source: EventSource,
+): Promise<Profile | null> {
+    if (!source.userId) {
+        return null;
+    }
+    switch (source.type) {
+    case "user": {
+        const profile = await chatClient.getProfile(
+            source.userId,
+        );
+        return {
+            displayName: profile.displayName,
+            userId: profile.userId,
+            pictureUrl: profile.pictureUrl,
+        };
+    }
+    case "group": {
+        const profile = await chatClient.getGroupMemberProfile(
+            source.groupId,
+            source.userId,
+        );
+        return {
+            displayName: profile.displayName,
+            userId: profile.userId,
+            pictureUrl: profile.pictureUrl,
+        };
+    }
+    case "room": {
+        const profile = await chatClient.getRoomMemberProfile(
+            source.roomId,
+            source.userId,
+        );
+        return {
+            displayName: profile.displayName,
+            userId: profile.userId,
+            pictureUrl: profile.pictureUrl,
+        };
+    }
+    default: {
+        return null;
+    }
+    }
+}
 
 /**
  * Get a sticker image URL from the sticker shop.
@@ -15,29 +74,28 @@ export function getStickerImageUrl(stickerId: string): string {
 }
 
 /**
- * Get source ID from event.
- * @param {EventBase} event
- * @param {boolean} [withOrigin=false]
- * @return {string | null | undefined | Array<string | null | undefined>}
+ * Get the IDs from the source.
+ * @param {EventSource} source
+ * @return {SourceInfo}
  */
-export function getSourceIdFromEvent(
-    event: EventBase,
-    withOrigin = false,
-): string | null | undefined | Array<string | null | undefined> {
-    switch (event.source.type) {
+export function getInfoFromSource(source: EventSource): SourceInfo {
+    switch (source.type) {
     case "user":
-        return withOrigin ?
-            [event.source.userId, event.source.userId] :
-            event.source.userId;
+        return {
+            chatId: source.userId,
+            fromId: source.userId,
+        };
     case "group":
-        return withOrigin ?
-            [event.source.groupId, event.source.userId] :
-            event.source.groupId;
+        return {
+            chatId: source.groupId,
+            fromId: source.userId,
+        };
     case "room":
-        return withOrigin ?
-            [event.source.roomId, event.source.userId] :
-            event.source.roomId;
+        return {
+            chatId: source.roomId,
+            fromId: source.userId,
+        };
     default:
-        return withOrigin ? [null, null] : null;
+        throw new Error("Invalid source type.");
     }
 }

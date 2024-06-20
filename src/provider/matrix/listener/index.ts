@@ -1,38 +1,18 @@
 import {
-    AutojoinRoomsMixin,
-} from "matrix-bot-sdk";
+    client,
+} from "../client";
 
-import {
-    MatrixListenerClient,
-} from "./client";
+import roomFailedDecryption from "./room/failed_decryption";
+import roomMessage from "./room/message";
 
-import {
-    homeserverUrl,
-    accessToken,
-    storage,
-    crypto,
-} from "../index";
+const events = {
+    "room.failed_decryption": roomFailedDecryption,
+    "room.message": roomMessage,
+};
 
-import roomMessage from "./room_message";
-
-const listenerClient = new MatrixListenerClient(
-    homeserverUrl,
-    accessToken,
-    storage,
-    crypto,
-);
-
-AutojoinRoomsMixin.setupOnClient(listenerClient);
-
-const events = [
-    roomMessage,
-];
-
-events.forEach(
-    (e) => e(listenerClient),
-);
-
-export const loopEvent = async () => {
-    await listenerClient.start();
-    console.info("Client started!");
+export default () => {
+    Object.entries(events).forEach(([name, handler]) => {
+        client.on(name, handler);
+    });
+    client.start();
 };

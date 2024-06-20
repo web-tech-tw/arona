@@ -1,7 +1,6 @@
 import {
-    MessageAPIResponseBase,
-    MessageEvent,
     WebhookEvent,
+    MessageEvent,
 } from "@line/bot-sdk";
 
 import text from "./text";
@@ -9,22 +8,20 @@ import image from "./image";
 import sticker from "./sticker";
 
 type MessageTypeMethod = (event: MessageEvent) =>
-    Promise<MessageAPIResponseBase | undefined> | undefined;
+    Promise<void> | void;
 
-type MessageTypeMethodList = { [key: string]: MessageTypeMethod };
-
-const messageHandlers: MessageTypeMethodList = {
-    text,
-    image,
-    sticker,
+type MessageTypeMethodList = {
+    [type: string]: MessageTypeMethod
 };
 
-export default (
-    event: WebhookEvent,
-): Promise<MessageAPIResponseBase | undefined> | undefined => {
-    event = event as MessageEvent;
-    const messageTypeName: string = event.message.type;
-    if (messageTypeName in messageHandlers) {
-        return messageHandlers[messageTypeName](event);
+const methodList: MessageTypeMethodList = {
+    text, image, sticker,
+};
+
+export default (event: WebhookEvent): Promise<void> | void => {
+    const e = event as MessageEvent;
+    const {type} = e.message;
+    if (type in methodList) {
+        methodList[type](e);
     }
 };

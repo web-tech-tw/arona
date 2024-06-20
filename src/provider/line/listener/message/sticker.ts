@@ -1,49 +1,31 @@
 import {
-    Sender,
-} from "../../../../sender";
-
-import {
     MessageEvent,
     StickerEventMessage,
-    MessageAPIResponseBase,
 } from "@line/bot-sdk";
 
 import {
+    getInfoFromSource,
     getStickerImageUrl,
-    getSourceIdFromEvent,
 } from "../../utils";
 
 import {
-    sendImageMessage,
-} from "../../../matrix/sender";
+    Sender,
+} from "../../../sender";
 
-import {
-    client as lineClient,
-} from "../../index";
+import Link from "../../../link";
 
-import {
-    client as matrixClient,
-} from "../../../matrix";
-
-const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
-const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
-
-export default async (
-    event: MessageEvent,
-): Promise<MessageAPIResponseBase | undefined> => {
+export default async (event: MessageEvent): Promise<void> => {
     const message: StickerEventMessage = event.message as StickerEventMessage;
     const {stickerId} = message;
 
-    const [sourceId, senderId] =
-        getSourceIdFromEvent(event, true) as Array<string>;
-    if (sourceId !== lineChatRoomId) return;
+    const {chatId} = getInfoFromSource(event.source);
+    const link = Link.find("line", chatId);
+    if (!link) return;
 
-    const senderProfile =
-        await lineClient.getGroupMemberProfile(sourceId, senderId);
-    const sender: Sender = new Sender(senderProfile);
+    const sender = await Sender.fromLINESource(event.source);
+    const imageUrl = getStickerImageUrl(stickerId);
 
-    const sourceImageUrl = getStickerImageUrl(stickerId);
-    const mxcUrl: string =
-        await matrixClient.uploadContentFromUrl(sourceImageUrl);
-    sendImageMessage(sender, mxcUrl, matrixChatRoomId);
+    link.toBroadcastExcept("line", (provider, chatId) => {
+        provider.imageUrl(sender, chatId, imageUrl);
+    });
 };

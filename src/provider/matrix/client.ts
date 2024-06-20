@@ -1,14 +1,20 @@
 import {
-    MatrixClient,
     SimpleFsStorageProvider,
     RustSdkCryptoStorageProvider,
+    AutojoinRoomsMixin,
 } from "matrix-bot-sdk";
 
 import {
     StoreType,
 } from "@matrix-org/matrix-sdk-crypto-nodejs";
 
-const dataDirectoryPath = `${__dirname}/../../../data`;
+import {
+    MatrixListenerClient,
+} from "./types";
+
+const {
+    pathname: dataDirectoryPath,
+} = new URL("../../../data", import.meta.url);
 
 export const homeserverUrl = process.env.MATRIX_HOMESERVER_URL || "";
 export const accessToken = process.env.MATRIX_ACCESS_TOKEN || "";
@@ -20,8 +26,10 @@ export const crypto = new RustSdkCryptoStorageProvider(
     StoreType.Sled,
 );
 
-export const client = new MatrixClient(
+export const client = new MatrixListenerClient(
     homeserverUrl,
     accessToken,
     storage,
+    crypto,
 );
+AutojoinRoomsMixin.setupOnClient(client);

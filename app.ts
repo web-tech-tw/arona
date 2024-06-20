@@ -1,19 +1,30 @@
+// Purpose: Main entry point for the application.
+
+// Import the environment variables.
 import "dotenv/config";
 
-import {
-    loopEvent as httpServerLoop,
-} from "./src/http_server";
+// Import the application.
+import {app} from "./src/http_server";
 
-import {
-    loopEvent as matrixListenerLoop,
-} from "./src/provider/matrix/listener";
+// Import all listeners.
+import matrixListener from "./src/provider/matrix/listener";
 
-(async () => {
-    const events = [
-        httpServerLoop,
-        matrixListenerLoop,
-    ];
-    await Promise.all(
-        events.map((e) => e()),
-    );
-})();
+// Define all listeners.
+const listeners = [
+    matrixListener,
+];
+
+// Run all listeners.
+Promise.all(listeners.map(
+    (handler) => handler(),
+));
+
+// Define the port to expose the application on.
+const exposePort = process.env.HTTP_EXPOSE_PORT || 3000;
+
+// Create a server and listen to it.
+app.listen(exposePort, () => {
+    console.info("Arona");
+    console.info("===");
+    console.info(`Listening on port ${exposePort}`);
+});

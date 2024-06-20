@@ -5,10 +5,11 @@
   "author": "Taiwan Web Technology Promotion Organization",
   "license": "MIT",
   "main": "app.ts",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src/ app.ts",
-    "start": "ts-node app.ts",
-    "matrix-access": "ts-node matrix_access.ts",
+    "dev": "tsx watch app.ts",
+    "start": "tsx app.ts",
+    "matrix-access": "tsx matrix_access.ts",
     "lint": "eslint \"app.ts\" \"matrix_access.ts\" \"src/**/*.ts\"",
     "lint:fix": "eslint \"app.ts\" \"matrix_access.ts\" \"src/**/*.ts\" --fix"
   },
@@ -18,21 +19,22 @@
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "image-type": "^4.1.0",
-    "images": "^3.2.4",
     "inquirer": "^8.2.4",
     "lowdb": "^7.0.1",
     "matrix-bot-sdk": "^0.7.1",
-    "ts-node": "^10.9.2"
+    "nanoid": "^5.0.7",
+    "node-cache": "^5.1.2",
+    "tsx": "^4.15.6"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
+    "@types/lowdb": "^1.0.15",
+    "@types/nanoid": "^3.0.0",
     "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
     "eslint": "^8.56.0",
     "eslint-config-google": "^0.14.0",
-    "nodemon": "^3.1.0",
     "typescript": "^5.4.5"
   }
 }

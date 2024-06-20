@@ -1,69 +1,123 @@
 import {
-    Sender,
-} from "../../../../sender";
-
-import {
     MessageEvent,
     TextEventMessage,
     TextMessage,
-    MessageAPIResponseBase,
 } from "@line/bot-sdk";
 
 import {
-    getSourceIdFromEvent,
+    getInfoFromSource,
 } from "../../utils";
 
 import {
-    sendTextMessage,
-} from "../../../matrix/sender";
+    Sender,
+} from "../../../sender";
 
 import {
-    client as lineClient,
-} from "../../index";
+    messagingClient as chatClient,
+} from "../../client";
 
-const matrixChatRoomId = process.env.MATRIX_CHAT_ROOM_ID || "";
-const lineChatRoomId = process.env.LINE_CHAT_ROOM_ID || "";
+import Link from "../../../link";
+import Pair from "../../../pair";
 
-type CommandMethod = (event: MessageEvent) =>
-    Promise<MessageAPIResponseBase | undefined>;
-
+type CommandMethodParameters = {
+    event: MessageEvent,
+    args: Array<string>
+};
+type CommandMethod = (params: CommandMethodParameters) =>
+    Promise<void> | void;
 type CommandMethodList = {
     [key: string]: CommandMethod
 };
 
 const commands: CommandMethodList = {
-    "getChatRoomId": (event: MessageEvent) => {
-        const sourceId = getSourceIdFromEvent(event, false) as string;
-        console.info(sourceId);
+    "chatId": ({event}) => {
+        const {chatId} = getInfoFromSource(event.source);
         const replyMessage: TextMessage = {
             type: "text",
-            text: sourceId,
+            text: chatId,
         };
-        return lineClient.replyMessage(event.replyToken, replyMessage);
+        chatClient.replyMessage({
+            replyToken: event.replyToken,
+            messages: [replyMessage],
+        });
+    },
+    "pair": ({event}) => {
+        if (event.source.type !== "group") {
+            return;
+        }
+
+        const {chatId} = getInfoFromSource(event.source);
+        const pairId = new Pair({
+            chatFrom: "line",
+            chatId,
+        }).create();
+
+        const replyMessage: TextMessage = {
+            type: "text",
+            text: pairId,
+        };
+        chatClient.replyMessage({
+            replyToken: event.replyToken,
+            messages: [replyMessage],
+        });
+    },
+    "riap": async ({event, args}) => {
+        if (event.message.type !== "text") {
+            return;
+        }
+
+        const pair = Pair.find(args[1]);
+        if (!pair || pair.chatFrom === "line") {
+            const replyMessage: TextMessage = {
+                type: "text",
+                text: "Invalid pair ID",
+            };
+            chatClient.replyMessage({
+                replyToken: event.replyToken,
+                messages: [replyMessage],
+            });
+            return;
+        }
+
+        const {chatId} = getInfoFromSource(event.source);
+        new Link({line: chatId, matrix: pair.chatId}).create();
+        pair.delete();
+
+        const replyMessage: TextMessage = {
+            type: "text",
+            text: "OK",
+        };
+        chatClient.replyMessage({
+            replyToken: event.replyToken,
+            messages: [replyMessage],
+        });
     },
 };
 
 // Function handler to receive the text.
-export default async (
-    event: MessageEvent,
-): Promise<MessageAPIResponseBase | undefined> => {
+export default async (event: MessageEvent): Promise<void> => {
     const message: TextEventMessage = event.message as TextEventMessage;
     const {text} = message;
 
-    if (text.startsWith("#") && text.substring(1).length > 0) {
-        const command = text.substring(1);
-        if (command in commands) {
-            return await commands[command](event);
+    if (text.startsWith("#")) {
+        const args = text.substring(1).split(" ");
+        const command = args[0];
+        if (!(command in commands)) {
+            return;
         }
+        await commands[command]({
+            event, args,
+        });
+        return;
     }
 
-    const [sourceId, senderId] =
-        getSourceIdFromEvent(event, true) as Array<string>;
-    if (sourceId !== lineChatRoomId) return;
+    const {chatId} = getInfoFromSource(event.source);
 
-    const senderProfile =
-        await lineClient.getGroupMemberProfile(sourceId, senderId);
-    const sender: Sender = new Sender(senderProfile);
+    const link = Link.find("line", chatId);
+    if (!link) return;
 
-    sendTextMessage(sender, text, matrixChatRoomId);
+    const sender = await Sender.fromLINESource(event.source);
+    link.toBroadcastExcept("line", (provider, chatId) => {
+        provider.text(sender, chatId, text);
+    });
 };

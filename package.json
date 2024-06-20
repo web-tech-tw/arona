@@ -17,14 +17,17 @@
     "@line/bot-sdk": "^9.2.2",
     "@matrix-org/matrix-sdk-crypto-nodejs": "0.1.0-beta.6",
     "axios": "^1.6.8",
-    "dotenv": "^16.4.5",
+    "discord.js": "^14.15.3",
     "express": "^4.19.2",
     "inquirer": "^8.2.4",
     "lowdb": "^7.0.1",
     "matrix-bot-sdk": "^0.7.1",
     "nanoid": "^5.0.7",
     "node-cache": "^5.1.2",
-    "tsx": "^4.15.6"
+    "node-telegram-bot-api": "^0.66.0",
+    "openai": "^4.52.0",
+    "tsx": "^4.15.6",
+    "yaml": "^2.4.5"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.7",

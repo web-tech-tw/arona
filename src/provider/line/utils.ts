@@ -74,7 +74,7 @@ export function getStickerImageUrl(stickerId: string): string {
 }
 
 /**
- * Get the IDs from the source.
+ * Get information of the source.
  * @param {EventSource} source
  * @return {SourceInfo}
  */

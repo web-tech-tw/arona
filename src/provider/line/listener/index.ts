@@ -1,3 +1,5 @@
+import config from "../../../config";
+
 import {
     Application,
     Request,
@@ -10,15 +12,13 @@ import {
     WebhookEvent,
 } from "@line/bot-sdk";
 
-import {
-    channelAccessToken,
-    channelSecret,
-} from "../client";
-
 import message from "./message";
 
+const {
+    channelSecret,
+} = config.bridgeProvider.line;
+
 const middlewareConfig: MiddlewareConfig = {
-    channelAccessToken,
     channelSecret,
 };
 

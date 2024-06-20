@@ -1,6 +1,9 @@
 import {
-    Sender,
     SendProvider,
+    SendProviderType,
+    SendTextParameters,
+    SendImageParameters,
+    SendImageUrlParameters,
 } from "../sender";
 
 import {
@@ -28,20 +31,23 @@ export type ImageMessageOptions = {
  */
 export default class MatrixSend implements SendProvider {
     /**
+     * Get the provider type.
+     * @return {SendProviderType}
+     */
+    type(): SendProviderType {
+        return "matrix";
+    }
+
+    /**
      * Send a text message to the chat room.
-     * @param {Sender} sender The sender of the message.
-     * @param {string} roomId ID of the chat room.
-     * @param {string} text The text to send.
+     * @param {SendTextParameters} params - The parameters.
      * @return {Promise<void>}
      */
-    async text(
-        sender: Sender,
-        roomId: string,
-        text: string,
-    ): Promise<void> {
+    async text(params: SendTextParameters): Promise<void> {
+        const {sender, chatId, text} = params;
         const displayName = sender.displayName;
         const providerName = sender.providerName();
-        client.sendMessage(roomId, {
+        client.sendMessage(chatId, {
             "msgtype": "m.text",
             "body": `${displayName} ⬗ ${providerName}\n${text}`,
         });
@@ -49,19 +55,15 @@ export default class MatrixSend implements SendProvider {
 
     /**
      * Send an image message to the chat room.
-     * @param {Sender} sender - The sender of the message.
-     * @param {string} chatId - The ID of the chat room.
-     * @param {Buffer} imageBuffer - The image buffer.
+     * @param {SendImageParameters} params - The parameters.
      * @return {Promise<void>}
      */
-    async image(
-        sender: Sender,
-        chatId: string,
-        imageBuffer: Buffer,
-    ): Promise<void> {
+    async image(params: SendImageParameters): Promise<void> {
+        const {sender, chatId, imageBuffer} = params;
         const displayName = sender.displayName;
         const providerName = sender.providerName();
-        this.text(sender, chatId, "Sent an image.");
+        const text = "Sent an image.";
+        this.text({sender, chatId, text});
         client.sendMessage(chatId, {
             "msgtype": "m.image",
             "url": await client.uploadContent(imageBuffer),
@@ -71,19 +73,15 @@ export default class MatrixSend implements SendProvider {
 
     /**
      * Send an image message to the chat room.
-     * @param {Sender} sender - The sender of the message.
-     * @param {string} chatId - The ID of the chat room.
-     * @param {string} imageUrl - The image URL.
+     * @param {SendImageUrlParameters} params - The parameters.
      * @return {Promise<void>}
      */
-    async imageUrl(
-        sender: Sender,
-        chatId: string,
-        imageUrl: string,
-    ): Promise<void> {
+    async imageUrl(params: SendImageUrlParameters): Promise<void> {
+        const {sender, chatId, imageUrl} = params;
         const displayName = sender.displayName;
         const providerName = sender.providerName();
-        this.text(sender, chatId, "Sent an image.");
+        const text = "Sent an image.";
+        this.text({sender, chatId, text});
         client.sendMessage(chatId, {
             "msgtype": "m.image",
             "url": await client.uploadContentFromUrl(imageUrl),

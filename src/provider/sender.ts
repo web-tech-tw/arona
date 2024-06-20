@@ -9,12 +9,8 @@ import {
     Sender as LINESender,
 } from "@line/bot-sdk";
 
-export type SendProviderType = "line" | "matrix";
-export type SendProviderMap = {
-    // eslint-disable-next-line no-unused-vars
-    [key in SendProviderType]: SendProvider;
-};
-
+export type SendProviderType =
+    "line" | "matrix" | "discord" | "telegram" | "openai";
 export type SendProviderNameMap = {
     // eslint-disable-next-line no-unused-vars
     [key in SendProviderType]: string;
@@ -22,6 +18,9 @@ export type SendProviderNameMap = {
 export const SendProviderName: SendProviderNameMap = {
     line: "LINE",
     matrix: "Matrix",
+    discord: "Discord",
+    telegram: "Telegram",
+    openai: "OpenAI",
 };
 
 /**
@@ -94,30 +93,52 @@ export class Sender {
 }
 
 /**
+ * @param {Sender} sender - The sender of the message.
+ * @param {string} chatId - The ID of the chat room.
+ * @param {string} text - The text to send.
+ */
+export type SendTextParameters = {
+    sender: Sender,
+    chatId: string,
+    text: string,
+}
+
+/**
+ * @param {Sender} sender - The sender of the message.
+ * @param {string} chatId - The ID of the chat room.
+ * @param {Buffer} imageBuffer - The image buffer.
+ */
+export type SendImageParameters = {
+    sender: Sender,
+    chatId: string,
+    imageBuffer: Buffer,
+}
+
+/**
+ * @param {Sender} sender - The sender of the message.
+ * @param {string} chatId - The ID of the chat room.
+ * @param {string} imageUrl - The image URL.
+ */
+export type SendImageUrlParameters = {
+    sender: Sender,
+    chatId: string,
+    imageUrl: string,
+}
+
+/**
  * SendProvider
  */
 export interface SendProvider {
-    text: (
-        sender: Sender,
-        chatId: string,
-        text: string,
-    ) => Promise<void>;
-    image: (
-        sender: Sender,
-        chatId: string,
-        imageBuffer: Buffer,
-    ) => Promise<void>;
-    imageUrl: (
-        sender: Sender,
-        chatId: string,
-        imageUrl: string,
-    ) => Promise<void>;
+    type(): SendProviderType;
+    text: (params: SendTextParameters) => Promise<void>;
+    image: (params: SendImageParameters) => Promise<void>;
+    imageUrl: (params: SendImageUrlParameters) => Promise<void>;
 }
 
 /**
  * All Send Providers
  */
-export const allSendProviders: SendProviderMap = {
-    line: new LINESend(),
-    matrix: new MatrixSend(),
-};
+export const allSendProviders: Array<SendProvider> = [
+    new LINESend(),
+    new MatrixSend(),
+];

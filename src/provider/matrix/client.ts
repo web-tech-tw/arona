@@ -1,3 +1,5 @@
+import config from "../../config";
+
 import {
     SimpleFsStorageProvider,
     RustSdkCryptoStorageProvider,
@@ -16,8 +18,11 @@ const {
     pathname: dataDirectoryPath,
 } = new URL("../../../data", import.meta.url);
 
-export const homeserverUrl = process.env.MATRIX_HOMESERVER_URL || "";
-export const accessToken = process.env.MATRIX_ACCESS_TOKEN || "";
+const {
+    homeserverUrl,
+    accessToken,
+} = config.bridgeProvider.matrix;
+
 export const storage = new SimpleFsStorageProvider(
     `${dataDirectoryPath}/storage.json`,
 );

@@ -1,3 +1,5 @@
+import config from "../../config";
+
 import {
     ClientConfig,
     messagingApi,
@@ -7,11 +9,16 @@ import axios, {
     AxiosRequestConfig,
 } from "axios";
 
-const axiosUserAgent = process.env.DEVICE_NAME || "";
+const {
+    deviceName,
+    bridgeProvider,
+} = config;
 
-export const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || "";
-export const channelSecret = process.env.LINE_CHANNEL_SECRET || "";
-const notifyToken = process.env.LINE_NOTIFY_TOKEN || "";
+const {
+    channelAccessToken,
+    channelSecret,
+    notifyClientSecret,
+} = bridgeProvider.line;
 
 const {
     MessagingApiClient,
@@ -25,8 +32,8 @@ const clientConfig: ClientConfig = {
 const notifyClientConfig: AxiosRequestConfig = {
     baseURL: "https://notify-api.line.me",
     headers: {
-        "Authorization": `Bearer ${notifyToken}`,
-        "User-Agent": axiosUserAgent,
+        "Authorization": `Bearer ${notifyClientSecret}`,
+        "User-Agent": deviceName,
     },
 };
 

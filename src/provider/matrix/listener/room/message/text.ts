@@ -1,3 +1,5 @@
+import config from "../../../../../config";
+
 import {
     Sender,
 } from "../../../../sender";
@@ -12,16 +14,13 @@ import MatrixSend from "../../../submitter";
 import Link from "../../../../link";
 import Pair from "../../../../pair";
 
-const systemName = process.env.DEVICE_NAME || "System";
-
-const replyMessage = (roomId: string, message: string) => {
+const systemName = config.deviceName || "System";
+const replyOneMessage = (chatId: string, text: string) => {
     const sender: Sender = new Sender({
         displayName: systemName,
     });
     const send = new MatrixSend();
-    return send.text(
-        sender, roomId, message,
-    );
+    return send.text({sender, chatId, text});
 };
 
 type CommandMethodParameters = {
@@ -37,26 +36,66 @@ type CommandMethodList = {
 
 const commands: CommandMethodList = {
     "chatId": ({roomId}) => {
-        replyMessage(roomId, roomId);
+        replyOneMessage(roomId, roomId);
     },
     "pair": ({roomId}) => {
+        const link = Link.use("matrix", roomId);
+        if (link.exists()) {
+            replyOneMessage(roomId, "Already paired");
+            return;
+        }
+
         const pairId = new Pair({
             chatFrom: "matrix",
             chatId: roomId,
         }).create();
-        replyMessage(roomId, pairId);
+        replyOneMessage(
+            roomId,
+            `Pairing ID: ${pairId}\n\n` +
+            "Please send the following command to the target chat room:\n" +
+            `#pairLink ${pairId}`,
+        );
     },
-    "riap": ({roomId, args}) => {
+    "pairStatus": ({roomId}) => {
+        const link = Link.use("matrix", roomId);
+        if (!link.exists()) {
+            replyOneMessage(roomId, "Not paired");
+            return;
+        }
+        replyOneMessage(roomId, JSON.stringify(link));
+    },
+    "pairLink": ({roomId, args}) => {
         const pair = Pair.find(args[1]);
         if (!pair || pair.chatFrom === "matrix") {
-            replyMessage(roomId, "Invalid pair ID");
+            replyOneMessage(roomId, "Invalid pair ID");
             return;
         }
 
-        new Link({line: roomId, matrix: pair.chatId}).create();
+        const link = Link.use("matrix", roomId);
+        link.connect(pair.chatFrom, pair.chatId);
+        link.save();
         pair.delete();
 
-        replyMessage(roomId, "OK");
+        replyOneMessage(roomId, "OK");
+    },
+    "pairUnlink": async ({roomId}) => {
+        const link = Link.use("matrix", roomId);
+        if (!link.exists()) {
+            replyOneMessage(roomId, "Not paired");
+            return;
+        }
+        link.disconnect("matrix");
+        link.save();
+        replyOneMessage(roomId, "Unpaired");
+    },
+    "pairFlush": async ({roomId}) => {
+        const link = Link.use("matrix", roomId);
+        if (!link) {
+            replyOneMessage(roomId, "Not paired");
+            return;
+        }
+        link.remove();
+        replyOneMessage(roomId, "Flushed");
     },
 };
 
@@ -77,11 +116,11 @@ export default async (
         return;
     }
 
-    const link = Link.find("matrix", roomId);
-    if (!link) return;
+    const link = Link.use("matrix", roomId);
+    if (!link.exists()) return;
 
     const sender = await Sender.fromMatrixSender(event.sender);
     link.toBroadcastExcept("matrix", (provider, chatId) => {
-        provider.text(sender, chatId, text);
+        provider.text({sender, chatId, text});
     });
 };

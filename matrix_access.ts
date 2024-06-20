@@ -1,14 +1,14 @@
-import "dotenv/config";
+import config from "./src/config";
 
 import {
     MatrixAuth,
 } from "matrix-bot-sdk";
 
-import {
-    homeserverUrl,
-} from "./src/provider/matrix";
-
 import inquirer from "inquirer";
+
+const {
+    homeserverUrl,
+} = config.bridgeProvider.matrix;
 
 const auth = new MatrixAuth(homeserverUrl);
 
@@ -28,7 +28,7 @@ console.info(
     "\n",
 );
 inquirer.prompt(questions).then(({username, password}) => {
-    console.log();
+    console.info();
     auth.passwordLogin(username, password).then((client) => {
         console.info("AccessToken:", client.accessToken);
         return client.getUserId();

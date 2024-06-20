@@ -16,12 +16,17 @@ import {
     messagingClient as chatClient,
 } from "../../client";
 
+import {
+    SourceInfo,
+} from "../../types";
+
 import Link from "../../../link";
 import Pair from "../../../pair";
 
 type CommandMethodParameters = {
     event: MessageEvent,
-    args: Array<string>
+    args: Array<string>,
+    source: SourceInfo
 };
 type CommandMethod = (params: CommandMethodParameters) =>
     Promise<void> | void;
@@ -29,68 +34,72 @@ type CommandMethodList = {
     [key: string]: CommandMethod
 };
 
+const replyOneMessage = (replyToken: string, text: string) => {
+    const replyMessage: TextMessage = {
+        type: "text",
+        text,
+    };
+    chatClient.replyMessage({
+        replyToken: replyToken,
+        messages: [replyMessage],
+    });
+};
+
 const commands: CommandMethodList = {
-    "chatId": ({event}) => {
-        const {chatId} = getInfoFromSource(event.source);
-        const replyMessage: TextMessage = {
-            type: "text",
-            text: chatId,
-        };
-        chatClient.replyMessage({
-            replyToken: event.replyToken,
-            messages: [replyMessage],
-        });
+    "chatId": ({event, source}) => {
+        const {chatId} = source;
+        replyOneMessage(event.replyToken, chatId);
     },
-    "pair": ({event}) => {
-        if (event.source.type !== "group") {
+    "pair": ({event, source: {chatId}}) => {
+        const pair = new Pair({chatFrom: "line", chatId});
+        const pairId = pair.create();
+        replyOneMessage(
+            event.replyToken,
+            `Pairing ID: ${pairId}\n\n` +
+            "Please send the following command to the target chat room:\n" +
+            `#pairLink ${pairId}`,
+        );
+    },
+    "pairStatus": ({event, source: {chatId}}) => {
+        const link = Link.use("line", chatId);
+        if (!link.exists()) {
+            replyOneMessage(event.replyToken, "Not paired");
             return;
         }
-
-        const {chatId} = getInfoFromSource(event.source);
-        const pairId = new Pair({
-            chatFrom: "line",
-            chatId,
-        }).create();
-
-        const replyMessage: TextMessage = {
-            type: "text",
-            text: pairId,
-        };
-        chatClient.replyMessage({
-            replyToken: event.replyToken,
-            messages: [replyMessage],
-        });
+        replyOneMessage(event.replyToken, JSON.stringify(link));
     },
-    "riap": async ({event, args}) => {
-        if (event.message.type !== "text") {
-            return;
-        }
-
+    "pairLink": async ({event, args, source: {chatId}}) => {
         const pair = Pair.find(args[1]);
         if (!pair || pair.chatFrom === "line") {
-            const replyMessage: TextMessage = {
-                type: "text",
-                text: "Invalid pair ID",
-            };
-            chatClient.replyMessage({
-                replyToken: event.replyToken,
-                messages: [replyMessage],
-            });
+            replyOneMessage(event.replyToken, "Invalid pair ID");
             return;
         }
 
-        const {chatId} = getInfoFromSource(event.source);
-        new Link({line: chatId, matrix: pair.chatId}).create();
+        const link = Link.use("line", chatId);
+        link.connect(pair.chatFrom, pair.chatId);
+        link.save();
         pair.delete();
 
-        const replyMessage: TextMessage = {
-            type: "text",
-            text: "OK",
-        };
-        chatClient.replyMessage({
-            replyToken: event.replyToken,
-            messages: [replyMessage],
-        });
+        replyOneMessage(event.replyToken, "Paired");
+    },
+    "pairUnlink": async ({event, source: {chatId}}) => {
+        const link = Link.use("line", chatId);
+        if (!link.exists()) {
+            replyOneMessage(event.replyToken, "Not paired");
+            return;
+        }
+        link.disconnect("line");
+        link.save();
+        replyOneMessage(event.replyToken, "Unpaired");
+    },
+    "pairFlush": async ({event, source: {chatId}}) => {
+        const link = Link.use("line", chatId);
+        if (!link.exists()) {
+            replyOneMessage(event.replyToken, "Not paired");
+            return;
+        }
+        link.remove();
+        replyOneMessage(event.replyToken, "Unpaired");
     },
 };
 
@@ -105,19 +114,20 @@ export default async (event: MessageEvent): Promise<void> => {
         if (!(command in commands)) {
             return;
         }
+        const source = getInfoFromSource(event.source);
         await commands[command]({
-            event, args,
+            event, args, source,
         });
         return;
     }
 
     const {chatId} = getInfoFromSource(event.source);
 
-    const link = Link.find("line", chatId);
-    if (!link) return;
+    const link = Link.use("line", chatId);
+    if (!link.exists()) return;
 
     const sender = await Sender.fromLINESource(event.source);
     link.toBroadcastExcept("line", (provider, chatId) => {
-        provider.text(sender, chatId, text);
+        provider.text({sender, chatId, text});
     });
 };

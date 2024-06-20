@@ -21,8 +21,8 @@ export default async (event: MessageEvent): Promise<void> => {
     const message: ImageEventMessage = event.message as ImageEventMessage;
 
     const {chatId} = getInfoFromSource(event.source);
-    const link = Link.find("line", chatId);
-    if (!link) return;
+    const link = Link.use("line", chatId);
+    if (!link.exists()) return;
 
     const {id: messageId} = message;
     const contentStream = await bloblient.getMessageContent(
@@ -38,6 +38,6 @@ export default async (event: MessageEvent): Promise<void> => {
     const imageBuffer = Buffer.concat(contentChunks);
 
     link.toBroadcastExcept("line", (provider, chatId) =>
-        provider.image(sender, chatId, imageBuffer),
+        provider.image({sender, chatId, imageBuffer}),
     );
 };

@@ -1,5 +1,8 @@
 // Purpose: Define the HTTP server.
 
+// Import configuration.
+import config from "./config";
+
 // Import dependencies.
 import express, {
     Application,
@@ -32,7 +35,7 @@ export function staticFileHttpUrl(
     filename: string,
 ): string {
     const name = `file_${filename}`;
-    const {HTTP_BASE_URL: baseUrl} = process.env;
+    const {baseUrl} = config.http;
     return `${baseUrl}/static/${name}`;
 }
 

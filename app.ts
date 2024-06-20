@@ -1,7 +1,7 @@
 // Purpose: Main entry point for the application.
 
-// Import the environment variables.
-import "dotenv/config";
+// Import the configuration.
+import config from "./src/config";
 
 // Import the application.
 import {app} from "./src/http_server";
@@ -20,11 +20,16 @@ Promise.all(listeners.map(
 ));
 
 // Define the port to expose the application on.
-const exposePort = process.env.HTTP_EXPOSE_PORT || 3000;
+const {
+    bindHost,
+    bindPort,
+} = config.http;
 
 // Create a server and listen to it.
-app.listen(exposePort, () => {
+app.listen(bindPort, bindHost, () => {
+    const url = `http://${bindHost}:${bindPort}`;
+
     console.info("Arona");
     console.info("===");
-    console.info(`Listening on port ${exposePort}`);
+    console.info(`Listening on ${url}`);
 });

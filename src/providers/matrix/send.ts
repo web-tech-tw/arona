@@ -1,6 +1,9 @@
 import {
-    SendProvider,
     BridgeProviderType,
+} from "../../types";
+
+import {
+    SendProvider,
     SendTextParameters,
     SendImageParameters,
     SendImageUrlParameters,

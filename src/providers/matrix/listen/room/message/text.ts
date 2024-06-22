@@ -105,21 +105,6 @@ const commands: CommandMethodList = {
             locale.text("pairing_removed"),
         );
     },
-    "pairFlush": async ({roomId, locale}) => {
-        const link = Link.use("matrix", roomId);
-        if (!link) {
-            replyOneMessage(
-                roomId,
-                locale.text("pairing_not_exists"),
-            );
-            return;
-        }
-        link.remove();
-        replyOneMessage(
-            roomId,
-            locale.text("pairing_flushed"),
-        );
-    },
 };
 
 export default async (

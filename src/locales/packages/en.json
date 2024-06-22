@@ -5,6 +5,5 @@
 	"pairing_notice": "Please send the following command to the target chat room",
 	"pairing_success": "Pairing successful",
 	"pairing_not_exists": "No pairing exists",
-	"pairing_removed": "Pairing removed",
-	"pairing_flushed": "Pairing flushed"
+	"pairing_removed": "Pairing removed"
 }

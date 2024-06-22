@@ -138,6 +138,9 @@ export default class Link {
         if (this.exists()) {
             this.remove();
         }
+        if (!this.bridge || Object.keys(this.bridge).length < 1) {
+            return;
+        }
         store.data.links = [...store.data.links, this];
         store.write();
     }

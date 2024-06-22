@@ -115,21 +115,6 @@ const commands: CommandMethodList = {
             locale.text("pairing_removed"),
         );
     },
-    "pairFlush": async ({event, source: {chatId}, locale}) => {
-        const link = Link.use("line", chatId);
-        if (!link.exists()) {
-            replyOneMessage(
-                event.replyToken,
-                locale.text("pairing_not_exists"),
-            );
-            return;
-        }
-        link.remove();
-        replyOneMessage(
-            event.replyToken,
-            locale.text("pairing_flushed"),
-        );
-    },
 };
 
 // Function handler to receive the text.

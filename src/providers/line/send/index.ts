@@ -1,16 +1,21 @@
-import config from "../../../config";
+import {
+    bridgeProviderConfig
+} from "../../../config";
+
+import {
+    BridgeProviderType,
+} from "../../../types";
 
 import {
     SendProvider,
-    SendProviderType,
     SendTextParameters,
     SendImageParameters,
     SendImageUrlParameters,
-} from "../../sender";
+} from "../../types";
 
 import {
     writeStaticFile,
-} from "../../../http_server";
+} from "../../../server";
 
 import {
     nanoid,
@@ -20,8 +25,12 @@ import * as push from "./push";
 import * as notify from "./notify";
 
 const {
+    line: lineConfig,
+} = bridgeProviderConfig();
+
+const {
     notifyEnable,
-} = config.bridgeProvider.line;
+} = lineConfig;
 
 export type ImageMessageOptions = {
     thumbnailUrl?: string;
@@ -33,9 +42,9 @@ export type ImageMessageOptions = {
 export default class LINESend implements SendProvider {
     /**
      * Get the provider type.
-     * @return {SendProviderType}
+     * @return {BridgeProviderType}
      */
-    type(): SendProviderType {
+    type(): BridgeProviderType {
         return "line";
     }
 

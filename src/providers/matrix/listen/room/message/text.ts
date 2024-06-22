@@ -1,13 +1,15 @@
+import Locale from "../../../../../locales";
+
 import {
     Sender,
-} from "../../../../sender";
+} from "../../../../types";
 
 import {
     MessageEvent,
     TextualMessageEventContent,
 } from "matrix-bot-sdk";
 
-import MatrixSend from "../../../submitter";
+import MatrixSend from "../../../send";
 
 import Link from "../../../../link";
 import Pair from "../../../../pair";
@@ -22,6 +24,7 @@ type CommandMethodParameters = {
     roomId: string,
     event: MessageEvent<TextualMessageEventContent>,
     args: Array<string>,
+    locale: Locale,
 };
 type CommandMethod = (params: CommandMethodParameters) =>
     Promise<void | undefined> | void | undefined;
@@ -30,10 +33,14 @@ type CommandMethodList = {
 };
 
 const commands: CommandMethodList = {
-    "chatId": ({roomId}) => {
-        replyOneMessage(roomId, roomId);
+    "chatId": ({roomId, locale}) => {
+        replyOneMessage(
+            roomId,
+            `${locale.text("chat_id_here")}:\n` +
+            `${roomId}`,
+        );
     },
-    "pair": ({roomId}) => {
+    "pair": ({roomId, locale}) => {
         const link = Link.use("matrix", roomId);
         if (link.exists()) {
             replyOneMessage(roomId, "Already paired");
@@ -46,23 +53,29 @@ const commands: CommandMethodList = {
         }).create();
         replyOneMessage(
             roomId,
-            `Pairing ID: ${pairId}\n\n` +
-            "Please send the following command to the target chat room:\n" +
+            `${locale.text('pairing_id')}: ${pairId}\n\n` +
+            `${locale.text('pairing_notice')}:\n` +
             `#pairLink ${pairId}`,
         );
     },
-    "pairStatus": ({roomId}) => {
+    "pairStatus": ({roomId, locale}) => {
         const link = Link.use("matrix", roomId);
         if (!link.exists()) {
-            replyOneMessage(roomId, "Not paired");
+            replyOneMessage(
+                roomId,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         replyOneMessage(roomId, JSON.stringify(link));
     },
-    "pairLink": ({roomId, args}) => {
+    "pairLink": ({roomId, args, locale}) => {
         const pair = Pair.find(args[1]);
         if (!pair || pair.chatFrom === "matrix") {
-            replyOneMessage(roomId, "Invalid pair ID");
+            replyOneMessage(
+                roomId,
+                locale.text("pairing_id_invalid"),
+            );
             return;
         }
 
@@ -71,26 +84,41 @@ const commands: CommandMethodList = {
         link.save();
         pair.delete();
 
-        replyOneMessage(roomId, "OK");
+        replyOneMessage(
+            roomId,
+            locale.text("pairing_success"),
+        );
     },
-    "pairUnlink": async ({roomId}) => {
+    "pairUnlink": async ({roomId, locale}) => {
         const link = Link.use("matrix", roomId);
         if (!link.exists()) {
-            replyOneMessage(roomId, "Not paired");
+            replyOneMessage(
+                roomId,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         link.disconnect("matrix");
         link.save();
-        replyOneMessage(roomId, "Unpaired");
+        replyOneMessage(
+            roomId,
+            locale.text("pairing_removed"),
+        );
     },
-    "pairFlush": async ({roomId}) => {
+    "pairFlush": async ({roomId, locale}) => {
         const link = Link.use("matrix", roomId);
         if (!link) {
-            replyOneMessage(roomId, "Not paired");
+            replyOneMessage(
+                roomId,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         link.remove();
-        replyOneMessage(roomId, "Flushed");
+        replyOneMessage(
+            roomId,
+            locale.text("pairing_flushed"),
+        );
     },
 };
 
@@ -100,13 +128,14 @@ export default async (
 ): Promise<undefined> => {
     const text = event.textBody;
     if (text.startsWith("#")) {
+        const locale = new Locale("en");
         const args = text.substring(1).split(" ");
         const command = args[0];
         if (!(command in commands)) {
             return;
         }
         await commands[command]({
-            roomId, event, args,
+            roomId, event, args, locale,
         });
         return;
     }

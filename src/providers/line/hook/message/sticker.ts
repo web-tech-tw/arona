@@ -10,7 +10,7 @@ import {
 
 import {
     Sender,
-} from "../../../sender";
+} from "../../../types";
 
 import Link from "../../../link";
 

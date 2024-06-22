@@ -1,3 +1,5 @@
+import Locale from "../../../../locales";
+
 import {
     MessageEvent,
     TextEventMessage,
@@ -10,7 +12,7 @@ import {
 
 import {
     Sender,
-} from "../../../sender";
+} from "../../../types";
 
 import {
     messagingClient as chatClient,
@@ -26,7 +28,8 @@ import Pair from "../../../pair";
 type CommandMethodParameters = {
     event: MessageEvent,
     args: Array<string>,
-    source: SourceInfo
+    source: SourceInfo,
+    locale: Locale,
 };
 type CommandMethod = (params: CommandMethodParameters) =>
     Promise<void> | void;
@@ -47,32 +50,42 @@ const replyOneMessage = (replyToken: string, text: string) => {
 };
 
 const commands: CommandMethodList = {
-    "chatId": ({event, source}) => {
+    "chatId": ({event, source, locale}) => {
         const {chatId} = source;
-        replyOneMessage(event.replyToken, chatId);
+        replyOneMessage(
+            event.replyToken,
+            `${locale.text("chat_id_here")}:\n` +
+            `${chatId}`,
+        );
     },
-    "pair": ({event, source: {chatId}}) => {
+    "pair": ({event, source: {chatId}, locale}) => {
         const pair = new Pair({chatFrom: "line", chatId});
         const pairId = pair.create();
         replyOneMessage(
             event.replyToken,
-            `Pairing ID: ${pairId}\n\n` +
-            "Please send the following command to the target chat room:\n" +
+            `${locale.text('pairing_id')}: ${pairId}\n\n` +
+            `${locale.text('pairing_notice')}:\n` +
             `#pairLink ${pairId}`,
         );
     },
-    "pairStatus": ({event, source: {chatId}}) => {
+    "pairStatus": ({event, source: {chatId}, locale}) => {
         const link = Link.use("line", chatId);
         if (!link.exists()) {
-            replyOneMessage(event.replyToken, "Not paired");
+            replyOneMessage(
+                event.replyToken,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         replyOneMessage(event.replyToken, JSON.stringify(link));
     },
-    "pairLink": async ({event, args, source: {chatId}}) => {
+    "pairLink": async ({event, args, source: {chatId}, locale}) => {
         const pair = Pair.find(args[1]);
         if (!pair || pair.chatFrom === "line") {
-            replyOneMessage(event.replyToken, "Invalid pair ID");
+            replyOneMessage(
+                event.replyToken,
+                locale.text("pairing_id_invalid"),
+            );
             return;
         }
 
@@ -81,26 +94,41 @@ const commands: CommandMethodList = {
         link.save();
         pair.delete();
 
-        replyOneMessage(event.replyToken, "Paired");
+        replyOneMessage(
+            event.replyToken,
+            locale.text("pairing_success"),
+        );
     },
-    "pairUnlink": async ({event, source: {chatId}}) => {
+    "pairUnlink": async ({event, source: {chatId}, locale}) => {
         const link = Link.use("line", chatId);
         if (!link.exists()) {
-            replyOneMessage(event.replyToken, "Not paired");
+            replyOneMessage(
+                event.replyToken,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         link.disconnect("line");
         link.save();
-        replyOneMessage(event.replyToken, "Unpaired");
+        replyOneMessage(
+            event.replyToken,
+            locale.text("pairing_removed"),
+        );
     },
-    "pairFlush": async ({event, source: {chatId}}) => {
+    "pairFlush": async ({event, source: {chatId}, locale}) => {
         const link = Link.use("line", chatId);
         if (!link.exists()) {
-            replyOneMessage(event.replyToken, "Not paired");
+            replyOneMessage(
+                event.replyToken,
+                locale.text("pairing_not_exists"),
+            );
             return;
         }
         link.remove();
-        replyOneMessage(event.replyToken, "Unpaired");
+        replyOneMessage(
+            event.replyToken,
+            locale.text("pairing_flushed"),
+        );
     },
 };
 
@@ -116,8 +144,9 @@ export default async (event: MessageEvent): Promise<void> => {
             return;
         }
         const source = getInfoFromSource(event.source);
+        const locale = new Locale("en");
         await commands[command]({
-            event, args, source,
+            event, args, source, locale,
         });
         return;
     }

@@ -1,4 +1,7 @@
-import config from "./src/config";
+import {
+    BridgeProviderMatrixConfigSchema,
+    bridgeProviderConfig,
+} from "./src/config";
 
 import {
     MatrixAuth,
@@ -7,8 +10,12 @@ import {
 import inquirer from "inquirer";
 
 const {
+    matrix: matrixConfig,
+} = bridgeProviderConfig();
+
+const {
     homeserverUrl,
-} = config.bridgeProvider.matrix;
+} = matrixConfig;
 
 const auth = new MatrixAuth(homeserverUrl);
 

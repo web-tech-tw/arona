@@ -7,7 +7,7 @@ import {
  * MatrixListenerClient
  */
 export class MatrixListenerClient extends MatrixClient {
-    identity?: string;
+    public identity?: string;
 
     /**
      * Starts syncing the client with an optional filter

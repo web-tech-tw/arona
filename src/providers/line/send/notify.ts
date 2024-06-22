@@ -1,6 +1,6 @@
 import {
     Sender,
-} from "../../sender";
+} from "../../types";
 
 import {
     AxiosResponse,

@@ -1,4 +1,7 @@
-import config from "../../config";
+import {
+    appConfig,
+    bridgeProviderConfig,
+} from "../../config";
 
 import {
     ClientConfig,
@@ -11,14 +14,17 @@ import axios, {
 
 const {
     deviceName,
-    bridgeProvider,
-} = config;
+} = appConfig();
+
+const {
+    line: lineConfig,
+} = bridgeProviderConfig();
 
 const {
     channelAccessToken,
     channelSecret,
     notifyClientSecret,
-} = bridgeProvider.line;
+} = lineConfig;
 
 const {
     MessagingApiClient,

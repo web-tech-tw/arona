@@ -1,13 +1,16 @@
 // Purpose: Define the HTTP server.
 
 // Import configuration.
-import config from "./config";
+import {
+    httpConfig,
+} from "./config";
 
 // Import dependencies.
 import express, {
     Application,
     Request,
     Response,
+    static as staticMiddleware,
 } from "express";
 
 import {
@@ -16,15 +19,24 @@ import {
     unlink,
 } from "fs/promises";
 
-// Import LINE listener.
-import {
-    expressMapper,
-} from "./provider/line/listener";
+// Create a new Express application.
+export const app: Application = express();
+
+// Define the index handler.
+export const indexHandler = async (_: Request, res: Response): Promise<Response> => {
+    return res.status(200).json({
+        status: "success",
+        message: "Connected successfully!",
+    });
+}
 
 // Define the static directory path.
 export const {
-    pathname: staticDirectoryPath,
-} = new URL("../static", import.meta.url);
+    pathname: staticBasePath,
+} = new URL("../static/", import.meta.url);
+
+// Define the static handler.
+export const staticHandler = staticMiddleware(staticBasePath);
 
 /**
  * Get the HTTP URL of a static file.
@@ -35,7 +47,7 @@ export function staticFileHttpUrl(
     filename: string,
 ): string {
     const name = `file_${filename}`;
-    const {baseUrl} = config.http;
+    const {baseUrl} = httpConfig();
     return `${baseUrl}/static/${name}`;
 }
 
@@ -48,8 +60,8 @@ export async function readStaticFile(
     filename: string,
 ): Promise<Buffer> {
     const name = `file_${filename}`;
-    const path = new URL(name, staticDirectoryPath);
-    const file = await readFile(path);
+    const pathUrl = new URL(name, staticBasePath);
+    const file = await readFile(pathUrl);
     return Buffer.from(file);
 }
 
@@ -64,8 +76,8 @@ export async function writeStaticFile(
     buffer: Buffer,
 ): Promise<string> {
     const name = `file_${filename}`;
-    const path = new URL(name, staticDirectoryPath);
-    await writeFile(path, buffer);
+    const pathUrl = new URL(name, staticBasePath);
+    await writeFile(pathUrl, buffer);
     return staticFileHttpUrl(filename);
 }
 
@@ -78,32 +90,6 @@ export async function deleteStaticFile(
     filename: string,
 ): Promise<void> {
     const name = `file_${filename}`;
-    const path = new URL(name, staticDirectoryPath);
-    await unlink(path);
+    const pathUrl = new URL(name, staticBasePath);
+    await unlink(pathUrl);
 }
-
-// Create a new Express application.
-export const app: Application = express();
-
-// This route is used to receive connection tests.
-app.get("/", async (_: Request, res: Response): Promise<Response> => {
-    return res.status(200).json({
-        status: "success",
-        message: "Connected successfully!",
-    });
-});
-
-// This route is used to serve the static files.
-app.use("/static", express.static(
-    staticDirectoryPath,
-));
-
-// Define controllers.
-const controllers = [
-    expressMapper,
-];
-
-// Register controllers.
-controllers.forEach(
-    (c) => c(app),
-);

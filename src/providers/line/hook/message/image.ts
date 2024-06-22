@@ -9,7 +9,7 @@ import {
 
 import {
     Sender,
-} from "../../../sender";
+} from "../../../types";
 
 import {
     messagingBlobClient as bloblient,

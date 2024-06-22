@@ -1,5 +1,9 @@
 // Import dependencies.
 import {
+    BridgeProviderType,
+    bridgeProviders,
+} from "../types";
+import {
     store,
 } from "../memory";
 import {
@@ -7,9 +11,16 @@ import {
 } from "nanoid";
 import {
     SendProvider,
-    SendProviderType,
-    sendProviderList,
-} from "./sender";
+} from "./types";
+
+// Import all providers.
+import LINESend from "./line/send";
+import MatrixSend from "./matrix/send";
+
+const senders : Array<SendProvider> = [
+    new LINESend(),
+    new MatrixSend(),
+];
 
 /**
  * The callback to send message.
@@ -20,14 +31,14 @@ export type SendMessageCallback = (
 ) => void;
 
 // eslint-disable-next-line no-unused-vars
-type LinkBridgeMapping = {[T in SendProviderType]: string};
+type LinkBridgeMapping = {[T in BridgeProviderType]: string};
 
 /**
  * The link class.
  */
 export default class Link {
-    key: string;
-    bridge?: LinkBridgeMapping;
+    public key: string;
+    public bridge?: LinkBridgeMapping;
 
     /**
      * The constructor.
@@ -39,11 +50,11 @@ export default class Link {
 
     /**
      * Find the link by chat type and chat ID, new one if not found.
-     * @param {SendProviderType} chatTo - The chat type.
+     * @param {BridgeProviderType} chatTo - The chat type.
      * @param {string} chatId - The chat ID.
      * @return {Link} The link.
      */
-    static use(chatTo: SendProviderType, chatId: string): Link {
+    static use(chatTo: BridgeProviderType, chatId: string): Link {
         const {links} = store.data;
         const matcher = (link: Link) => {
             return link && link.bridge && link.bridge[chatTo] === chatId;
@@ -64,10 +75,10 @@ export default class Link {
 
     /**
      * Get the chat ID.
-     * @param {SendProviderType} chatTo - The chat type.
+     * @param {BridgeProviderType} chatTo - The chat type.
      * @return {string|null} The chat ID.
      */
-    chat(chatTo: SendProviderType): string | null {
+    chat(chatTo: BridgeProviderType): string | null {
         if (!this.bridge || !this.bridge[chatTo]) {
             return null;
         }
@@ -76,11 +87,11 @@ export default class Link {
 
     /**
      * Connect the chat.
-     * @param {SendProviderType} chatTo - The chat type.
+     * @param {BridgeProviderType} chatTo - The chat type.
      * @param {string} chatId - The chat ID to set.
      * @return {void}
      */
-    connect(chatTo: SendProviderType, chatId: string): void {
+    connect(chatTo: BridgeProviderType, chatId: string): void {
         if (!this.bridge) {
             const newMapping = {[chatTo]: chatId};
             this.bridge = newMapping as LinkBridgeMapping;
@@ -91,10 +102,10 @@ export default class Link {
 
     /**
      * Disconnect the chat.
-     * @param {SendProviderType} chatTo - The chat type.
+     * @param {BridgeProviderType} chatTo - The chat type.
      * @return {void}
      */
-    disconnect(chatTo: SendProviderType): void {
+    disconnect(chatTo: BridgeProviderType): void {
         if (!this.bridge || !this.bridge[chatTo]) {
             return;
         }
@@ -146,16 +157,16 @@ export default class Link {
 
     /**
      * Send to the specified send provider.
-     * @param {SendProviderType} chatType - The chat type.
+     * @param {BridgeProviderType} chatType - The chat type.
      * @param {SendMessageCallback} callback - The callback to send.
      * @return {void}
      */
     toSend(
-        chatType: SendProviderType,
+        chatType: BridgeProviderType,
         callback: SendMessageCallback,
     ): void {
         const matcher = (i: SendProvider) => i.type() === chatType;
-        const sender = sendProviderList.find(matcher) ?? null;
+        const sender = senders.find(matcher) ?? null;
         if (!sender) {
             return;
         }
@@ -176,7 +187,7 @@ export default class Link {
         }
         Object.entries(this.bridge).forEach(([chatType, chatId]) => {
             const matcher = (i: SendProvider) => i.type() === chatType;
-            const sender = sendProviderList.find(matcher) ?? null;
+            const sender = senders.find(matcher) ?? null;
             if (!sender) {
                 return;
             }
@@ -186,12 +197,12 @@ export default class Link {
 
     /**
      * Broadcast to all send providers except the specified one.
-     * @param {SendProviderType} except - The send provider to exclude.
+     * @param {BridgeProviderType} except - The send provider to exclude.
      * @param {SendMessageCallback} callback - The callback to send.
      * @return {void}
      */
     toBroadcastExcept(
-        except: SendProviderType,
+        except: BridgeProviderType,
         callback: SendMessageCallback,
     ): void {
         this.toBroadcast((provider, chatId) => {

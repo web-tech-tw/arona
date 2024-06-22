@@ -1,4 +1,6 @@
-import config from "../../config";
+import {
+    bridgeProviderConfig,
+} from "../../config";
 
 import {
     SimpleFsStorageProvider,
@@ -19,9 +21,13 @@ const {
 } = new URL("../../../data", import.meta.url);
 
 const {
+    matrix: matrixConfig,
+} = bridgeProviderConfig();
+
+const {
     homeserverUrl,
     accessToken,
-} = config.bridgeProvider.matrix;
+} = matrixConfig;
 
 export const storage = new SimpleFsStorageProvider(
     `${dataDirectoryPath}/storage.json`,

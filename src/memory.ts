@@ -7,7 +7,7 @@ import {
 } from "lowdb/node";
 
 // Import types for the store.
-import Link from "./provider/link";
+import Link from "./providers/link";
 
 /**
  * The cache, for temporary storage.

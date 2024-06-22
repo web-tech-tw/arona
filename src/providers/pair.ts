@@ -6,14 +6,14 @@ import {
     cache,
 } from "../memory";
 import {
-    SendProviderType,
-} from "./sender";
+    BridgeProviderType,
+} from "../types";
 
 /**
  * The pair constructor parameters.
  */
 type PairConstructorParameters = {
-    chatFrom: SendProviderType,
+    chatFrom: BridgeProviderType,
     chatId: string,
 };
 
@@ -21,9 +21,9 @@ type PairConstructorParameters = {
  * The pair object.
  */
 export default class Pair {
-    pairId: string;
-    chatFrom: SendProviderType;
-    chatId: string;
+    public pairId: string;
+    public chatFrom: BridgeProviderType;
+    public chatId: string;
 
     /**
      * The constructor.

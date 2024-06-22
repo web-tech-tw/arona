@@ -1,10 +1,10 @@
 import {
     SendProvider,
-    SendProviderType,
+    BridgeProviderType,
     SendTextParameters,
     SendImageParameters,
     SendImageUrlParameters,
-} from "../sender";
+} from "../types";
 
 import {
     client,
@@ -32,9 +32,9 @@ export type ImageMessageOptions = {
 export default class MatrixSend implements SendProvider {
     /**
      * Get the provider type.
-     * @return {SendProviderType}
+     * @return {BridgeProviderType}
      */
-    type(): SendProviderType {
+    type(): BridgeProviderType {
         return "matrix";
     }
 

@@ -1,5 +1,11 @@
-import LINESend from "./line/submitter";
-import MatrixSend from "./matrix/submitter";
+import {
+    Router,
+} from "express";
+
+import {
+    BridgeProviderType,
+    bridgeProviders,
+} from "../types";
 
 import {getProfileFromSource} from "./line/utils";
 import {client} from "./matrix/client";
@@ -9,27 +15,13 @@ import {
     Sender as LINESender,
 } from "@line/bot-sdk";
 
-export type SendProviderType =
-    "line" | "matrix" | "discord" | "telegram" | "openai";
-export type SendProviderNameMap = {
-    // eslint-disable-next-line no-unused-vars
-    [key in SendProviderType]: string;
-};
-export const SendProviderName: SendProviderNameMap = {
-    line: "LINE",
-    matrix: "Matrix",
-    discord: "Discord",
-    telegram: "Telegram",
-    openai: "OpenAI",
-};
-
 /**
  * Sender
  */
 export class Sender {
-    displayName?: string;
-    pictureUrl?: string;
-    provider?: SendProviderType;
+    public displayName?: string;
+    public pictureUrl?: string;
+    public provider?: BridgeProviderType;
 
     /**
      * Constructor
@@ -75,7 +67,7 @@ export class Sender {
         const profile = await client.getUserProfile(sender);
         const displayName = profile.displayname;
         const pictureUrl = client.mxcToHttp(profile.avatar_url);
-        const provider: SendProviderType = "matrix";
+        const provider: BridgeProviderType = "matrix";
         return new Sender({displayName, pictureUrl, provider});
     }
 
@@ -98,7 +90,7 @@ export class Sender {
         if (!provider) {
             throw new Error("Provider is not set");
         }
-        return SendProviderName[provider];
+        return bridgeProviders[provider];
     }
 }
 
@@ -139,16 +131,18 @@ export type SendImageUrlParameters = {
  * SendProvider
  */
 export interface SendProvider {
-    type(): SendProviderType;
+    type(): BridgeProviderType;
     text: (params: SendTextParameters) => Promise<void>;
     image: (params: SendImageParameters) => Promise<void>;
     imageUrl: (params: SendImageUrlParameters) => Promise<void>;
 }
 
-/**
- * The list of SendProvider.
- */
-export const sendProviderList: Array<SendProvider> = [
-    new LINESend(),
-    new MatrixSend(),
-];
+export interface ListenProvider {
+    type(): BridgeProviderType;
+    listen(): void;
+}
+
+export interface HookProvider {
+    type(): BridgeProviderType;
+    hook(router: Router): void;
+}

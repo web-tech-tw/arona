@@ -4,12 +4,15 @@ import {
 
 import {
     Profile,
-    SourceInfo,
 } from "./types";
 
 import {
-    messagingClient as chatClient,
+    messagingClient,
 } from "./client";
+
+import {
+    CommandSource,
+} from "../../commands/types";
 
 /**
  * Get a profile from the source.
@@ -19,12 +22,15 @@ import {
 export async function getProfileFromSource(
     source: EventSource,
 ): Promise<Profile | null> {
+    if (!messagingClient) {
+        throw new Error("Client is not initialized");
+    }
     if (!source.userId) {
         return null;
     }
     switch (source.type) {
     case "user": {
-        const profile = await chatClient.getProfile(
+        const profile = await messagingClient.getProfile(
             source.userId,
         );
         return {
@@ -34,7 +40,7 @@ export async function getProfileFromSource(
         };
     }
     case "group": {
-        const profile = await chatClient.getGroupMemberProfile(
+        const profile = await messagingClient.getGroupMemberProfile(
             source.groupId,
             source.userId,
         );
@@ -45,7 +51,7 @@ export async function getProfileFromSource(
         };
     }
     case "room": {
-        const profile = await chatClient.getRoomMemberProfile(
+        const profile = await messagingClient.getRoomMemberProfile(
             source.roomId,
             source.userId,
         );
@@ -76,24 +82,28 @@ export function getStickerImageUrl(stickerId: string): string {
 /**
  * Get information of the source.
  * @param {EventSource} source
- * @return {SourceInfo}
+ * @return {CommandSource}
  */
-export function getInfoFromSource(source: EventSource): SourceInfo {
+export function toCommandSource(source: EventSource): CommandSource {
+    const providerType = "line";
     switch (source.type) {
     case "user":
         return {
+            providerType,
             chatId: source.userId,
             fromId: source.userId,
         };
     case "group":
         return {
+            providerType,
             chatId: source.groupId,
-            fromId: source.userId,
+            fromId: source.userId || "",
         };
     case "room":
         return {
+            providerType,
             chatId: source.roomId,
-            fromId: source.userId,
+            fromId: source.userId || "",
         };
     default:
         throw new Error("Invalid source type.");

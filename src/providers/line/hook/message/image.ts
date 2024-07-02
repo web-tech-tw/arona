@@ -4,28 +4,29 @@ import {
 } from "@line/bot-sdk";
 
 import {
-    getInfoFromSource,
+    toCommandSource,
 } from "../../utils";
 
-import {
-    Sender,
-} from "../../../types";
+import Sender from "../../../../types/sender";
+import Link from "../../../../types/link";
 
 import {
-    messagingBlobClient as bloblient,
+    messagingBlobClient as blobClient,
 } from "../../client";
 
-import Link from "../../../link";
-
 export default async (event: MessageEvent): Promise<void> => {
+    if (!blobClient) {
+        throw new Error("Client is not initialized.");
+    }
+
     const message: ImageEventMessage = event.message as ImageEventMessage;
 
-    const {chatId} = getInfoFromSource(event.source);
+    const {chatId} = toCommandSource(event.source);
     const link = Link.use("line", chatId);
     if (!link.exists()) return;
 
     const {id: messageId} = message;
-    const contentStream = await bloblient.getMessageContent(
+    const contentStream = await blobClient.getMessageContent(
         messageId,
     );
 

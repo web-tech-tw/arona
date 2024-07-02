@@ -1,0 +1,146 @@
+import {
+    CommandMethodList,
+    CommandMethodParameters,
+} from "./types";
+
+import {
+    providers,
+} from "../types/provider";
+
+import Pair from "../types/pair";
+import Link from "../types/link";
+
+export const textToArguments = (
+    text: string,
+    trigger: string,
+): Array<string> | null => {
+    if (!text.startsWith(trigger)) {
+        return null;
+    }
+    return text.substring(1).split(" ");
+};
+
+export const commandExecutor = async (
+    params: CommandMethodParameters,
+): Promise<void> => {
+    const {args} = params;
+    const key = args[0];
+    if (!(key in commands)) {
+        return;
+    }
+    const {
+        method,
+    } = commands[key];
+    await method(params);
+};
+
+export const commands: CommandMethodList = {
+    "chatId": {
+        description: "Get chat ID",
+        method: ({source, locale, reply}) => {
+            const {chatId} = source;
+            reply(
+                `${locale.text("chat_id_here")}:\n` +
+                `${chatId}`,
+            );
+        },
+    },
+    "pair": {
+        description: "Pair with another chat",
+        method: ({source, locale, reply}) => {
+            const pair = new Pair({
+                chatFrom: source.providerType,
+                chatId: source.chatId,
+            });
+            const pairId = pair.create();
+            reply(
+                `${locale.text("pairing_id")}: ${pairId}\n\n` +
+                `${locale.text("pairing_notice")}:\n` +
+                `/pairLink ${pairId}`,
+            );
+        },
+    },
+    "pairStatus": {
+        description: "Get pairing status",
+        method: ({source, locale, reply}) => {
+            const link = Link.use(
+                source.providerType,
+                source.chatId,
+            );
+            if (!link.exists()) {
+                reply(
+                    locale.text("pairing_not_exists"),
+                );
+                return;
+            }
+            const {key, bridge} = link;
+            if (bridge && Object.keys(bridge).length) {
+                reply("Linked Bridges:\n\n" + Object.entries(bridge).map(
+                    ([key, value]) => `${providers[key]}: ${value}`,
+                ).join("\n") + `\n\nLink Chain: ${key}`);
+            } else {
+                reply(
+                    locale.text("pairing_no_bridge"),
+                );
+            }
+        },
+    },
+    "pairLink": {
+        description: "Link with another chat",
+        method: async ({source, args, locale, reply}) => {
+            const pair = Pair.find(args[1]);
+            if (!pair || pair.chatFrom === source.providerType) {
+                reply(locale.text("pairing_id_invalid"));
+                return;
+            }
+
+            let link: Link;
+            link = Link.use(
+                pair.chatFrom,
+                pair.chatId,
+            );
+            if (link.exists()) {
+                link.connect(
+                    source.providerType,
+                    source.chatId,
+                );
+            } else {
+                link = Link.use(
+                    source.providerType,
+                    source.chatId,
+                );
+                link.connect(
+                    pair.chatFrom,
+                    pair.chatId,
+                );
+            }
+
+            link.save();
+            pair.delete();
+
+            reply(locale.text("pairing_success"));
+        },
+        options: [{
+            name: "pairId",
+            type: "string",
+            description: "Pairing ID",
+            required: true,
+        }],
+    },
+    "pairUnlink": {
+        description: "Unlink with another chat",
+        method: async ({source, locale, reply}) => {
+            const link = Link.use(
+                source.providerType,
+                source.chatId,
+            );
+            if (!link.exists()) {
+                reply(locale.text("pairing_not_exists"));
+                return;
+            }
+            link.disconnect(source.providerType);
+            link.save();
+            reply(locale.text("pairing_removed"));
+        },
+    },
+};

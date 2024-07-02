@@ -19,13 +19,19 @@ import {
     HookProvider,
 } from "./src/providers/types";
 
-// Import all providers.
+// Import listen providers.
 import MatrixListen from "./src/providers/matrix/listen";
+import DiscordListen from "./src/providers/discord/listen";
+import TelegramListen from "./src/providers/telegram/listen";
+
+// Import hook providers.
 import LINEHook from "./src/providers/line/hook";
 
 // Define all listeners.
 const listeners: Array<ListenProvider> = [
     new MatrixListen(),
+    new DiscordListen(),
+    new TelegramListen(),
 ];
 
 // Define all Hookers.
@@ -35,13 +41,23 @@ const hookers: Array<HookProvider> = [
 
 // Run all listeners.
 await Promise.all(listeners.map(
-    (provider) => provider.listen(),
+    (provider: ListenProvider) => {
+        if (!provider || !provider.enabled) {
+            return;
+        }
+        provider.listen();
+    },
 ));
 
 // Run all Hookers.
 const hookRouter = createRouter();
 await Promise.all(hookers.map(
-    (provider) => provider.hook(hookRouter),
+    (provider: HookProvider) => {
+        if (!provider || !provider.enabled) {
+            return;
+        }
+        provider.hook(hookRouter);
+    },
 ));
 
 // This route is used to handle the index.

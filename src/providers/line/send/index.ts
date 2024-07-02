@@ -1,17 +1,18 @@
 import {
-    bridgeProviderConfig
+    bridgeProviderConfig,
 } from "../../../config";
 
 import {
-    BridgeProviderType,
-} from "../../../types";
+    ProviderType,
+    ProviderBase,
+} from "../../../types/provider";
 
 import {
     SendProvider,
     SendTextParameters,
     SendImageParameters,
     SendImageUrlParameters,
-} from "../../types";
+} from "../../../types/provider/send";
 
 import {
     writeStaticFile,
@@ -39,12 +40,12 @@ export type ImageMessageOptions = {
 /**
  * SendProvider
  */
-export default class LINESend implements SendProvider {
+export default class LINESend extends ProviderBase implements SendProvider {
     /**
      * Get the provider type.
-     * @return {BridgeProviderType}
+     * @return {ProviderType}
      */
-    type(): BridgeProviderType {
+    get type(): ProviderType {
         return "line";
     }
 

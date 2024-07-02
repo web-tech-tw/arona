@@ -3,141 +3,57 @@ import Locale from "../../../../locales";
 import {
     MessageEvent,
     TextEventMessage,
-    TextMessage,
 } from "@line/bot-sdk";
 
 import {
-    getInfoFromSource,
+    toCommandSource,
 } from "../../utils";
 
-import {
-    Sender,
-} from "../../../types";
+import Sender from "../../../../types/sender";
+import Link from "../../../../types/link";
 
 import {
-    messagingClient as chatClient,
+    textToArguments,
+    commandExecutor,
+} from "../../../../commands";
+import {
+    CommandMethodParameters,
+} from "../../../../commands/types";
+
+import {
+    messagingClient,
 } from "../../client";
-
-import {
-    SourceInfo,
-} from "../../types";
-
-import Link from "../../../link";
-import Pair from "../../../pair";
-
-type CommandMethodParameters = {
-    event: MessageEvent,
-    args: Array<string>,
-    source: SourceInfo,
-    locale: Locale,
-};
-type CommandMethod = (params: CommandMethodParameters) =>
-    Promise<void> | void;
-type CommandMethodList = {
-    [key: string]: CommandMethod
-};
-
-const replyOneMessage = (replyToken: string, text: string) => {
-    const sender: Sender = new Sender({});
-    const replyMessage: TextMessage = {
-        type: "text",
-        text: `${sender.prefix}\n${text}`,
-    };
-    chatClient.replyMessage({
-        replyToken: replyToken,
-        messages: [replyMessage],
-    });
-};
-
-const commands: CommandMethodList = {
-    "chatId": ({event, source, locale}) => {
-        const {chatId} = source;
-        replyOneMessage(
-            event.replyToken,
-            `${locale.text("chat_id_here")}:\n` +
-            `${chatId}`,
-        );
-    },
-    "pair": ({event, source: {chatId}, locale}) => {
-        const pair = new Pair({chatFrom: "line", chatId});
-        const pairId = pair.create();
-        replyOneMessage(
-            event.replyToken,
-            `${locale.text('pairing_id')}: ${pairId}\n\n` +
-            `${locale.text('pairing_notice')}:\n` +
-            `#pairLink ${pairId}`,
-        );
-    },
-    "pairStatus": ({event, source: {chatId}, locale}) => {
-        const link = Link.use("line", chatId);
-        if (!link.exists()) {
-            replyOneMessage(
-                event.replyToken,
-                locale.text("pairing_not_exists"),
-            );
-            return;
-        }
-        replyOneMessage(event.replyToken, JSON.stringify(link));
-    },
-    "pairLink": async ({event, args, source: {chatId}, locale}) => {
-        const pair = Pair.find(args[1]);
-        if (!pair || pair.chatFrom === "line") {
-            replyOneMessage(
-                event.replyToken,
-                locale.text("pairing_id_invalid"),
-            );
-            return;
-        }
-
-        const link = Link.use("line", chatId);
-        link.connect(pair.chatFrom, pair.chatId);
-        link.save();
-        pair.delete();
-
-        replyOneMessage(
-            event.replyToken,
-            locale.text("pairing_success"),
-        );
-    },
-    "pairUnlink": async ({event, source: {chatId}, locale}) => {
-        const link = Link.use("line", chatId);
-        if (!link.exists()) {
-            replyOneMessage(
-                event.replyToken,
-                locale.text("pairing_not_exists"),
-            );
-            return;
-        }
-        link.disconnect("line");
-        link.save();
-        replyOneMessage(
-            event.replyToken,
-            locale.text("pairing_removed"),
-        );
-    },
-};
 
 // Function handler to receive the text.
 export default async (event: MessageEvent): Promise<void> => {
     const message: TextEventMessage = event.message as TextEventMessage;
     const {text} = message;
 
-    if (text.startsWith("#")) {
-        const args = text.substring(1).split(" ");
-        const command = args[0];
-        if (!(command in commands)) {
-            return;
-        }
-        const source = getInfoFromSource(event.source);
+    const args = textToArguments(text, "/");
+    const source = toCommandSource(event.source);
+    if (args) {
         const locale = new Locale("en");
-        await commands[command]({
-            event, args, source, locale,
-        });
+        const reply = async (text: string): Promise<void> => {
+            if (!messagingClient) {
+                throw new Error("Client is not initialized");
+            }
+
+            messagingClient.replyMessage({
+                replyToken: event.replyToken,
+                messages: [{
+                    type: "text",
+                    text,
+                }],
+            });
+        };
+        const params: CommandMethodParameters = {
+            args, source, locale, reply,
+        };
+        await commandExecutor(params);
         return;
     }
 
-    const {chatId} = getInfoFromSource(event.source);
-
+    const {chatId} = source;
     const link = Link.use("line", chatId);
     if (!link.exists()) return;
 

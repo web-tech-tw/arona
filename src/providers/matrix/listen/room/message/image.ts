@@ -1,8 +1,5 @@
-import {
-    Sender,
-} from "../../../../types";
-
-import Link from "../../../../link";
+import Sender from "../../../../../types/sender";
+import Link from "../../../../../types/link";
 
 import {
     MessageEvent,
@@ -17,6 +14,10 @@ export default async (
     roomId: string,
     event: MessageEvent<FileMessageEventContent>,
 ): Promise<undefined> => {
+    if (!client) {
+        throw new Error("Client is not initialized");
+    }
+
     const link = Link.use("matrix", roomId);
     if (!link.exists()) return;
 

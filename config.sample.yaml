@@ -35,6 +35,7 @@ bridgeProvider:
   # Discord
   discord:
     enable: false
+    appId: "YourAppId"
     botToken: "YourBotToken"
 
   # Telegram

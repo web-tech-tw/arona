@@ -6,14 +6,14 @@ import {
     cache,
 } from "../memory";
 import {
-    BridgeProviderType,
-} from "../types";
+    ProviderType,
+} from "./provider";
 
 /**
  * The pair constructor parameters.
  */
 type PairConstructorParameters = {
-    chatFrom: BridgeProviderType,
+    chatFrom: ProviderType,
     chatId: string,
 };
 
@@ -22,14 +22,14 @@ type PairConstructorParameters = {
  */
 export default class Pair {
     public pairId: string;
-    public chatFrom: BridgeProviderType;
+    public chatFrom: ProviderType;
     public chatId: string;
 
     /**
      * The constructor.
      * @param {PairConstructorParameters} params - The parameters.
      */
-    constructor(params: PairConstructorParameters) {
+    public constructor(params: PairConstructorParameters) {
         this.pairId = nanoid();
         this.chatFrom = params.chatFrom;
         this.chatId = params.chatId;
@@ -40,7 +40,7 @@ export default class Pair {
      * @param {string} pairId - The pair ID to find the pair by.
      * @return {Pair|null} The pair object.
      */
-    static find(pairId: string): Pair | null {
+    public static find(pairId: string): Pair | null {
         const pair = cache.get(pairId);
         if (pair instanceof Pair) {
             return pair;
@@ -52,7 +52,7 @@ export default class Pair {
      * Create a pair.
      * @return {string} - The pair ID.
      */
-    create(): string {
+    public create(): string {
         cache.set(this.pairId, this);
         return this.pairId;
     }
@@ -61,7 +61,7 @@ export default class Pair {
      * Delete a pair.
      * @return {void}
      */
-    delete(): void {
+    public delete(): void {
         cache.del(this.pairId);
     }
 }

@@ -29,6 +29,9 @@ export function sendTextMessage(
     chatId: string,
     text: string,
 ): Promise<messagingApi.PushMessageResponse> {
+    if (!chatClient) {
+        throw new Error("Client is not initialized.");
+    }
     const message: TextMessage = {type: "text", text};
     if (sender.prefix.length <= 20) {
         message.sender = sender.toLINE();
@@ -55,6 +58,9 @@ export function sendImageMessage(
     imageUrl: string,
     options: ImageMessageOptions = {},
 ): Promise<messagingApi.PushMessageResponse> {
+    if (!chatClient) {
+        throw new Error("Client is not initialized.");
+    }
     const lineSender: LINESender = sender.toLINE();
     const message: ImageMessage = {
         type: "image",

@@ -4,21 +4,18 @@ import {
 } from "@line/bot-sdk";
 
 import {
-    getInfoFromSource,
+    toCommandSource,
     getStickerImageUrl,
 } from "../../utils";
 
-import {
-    Sender,
-} from "../../../types";
-
-import Link from "../../../link";
+import Sender from "../../../../types/sender";
+import Link from "../../../../types/link";
 
 export default async (event: MessageEvent): Promise<void> => {
     const message: StickerEventMessage = event.message as StickerEventMessage;
     const {stickerId} = message;
 
-    const {chatId} = getInfoFromSource(event.source);
+    const {chatId} = toCommandSource(event.source);
     const link = Link.use("line", chatId);
     if (!link.exists()) return;
 

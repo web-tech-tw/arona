@@ -23,6 +23,10 @@ const messageHandlers: MessageTypeMethodList = {
 };
 
 export default async (roomId: string, event: MatrixEvent) => {
+    if (!client) {
+        throw new Error("Client is not initialized");
+    }
+
     const messageEvent = new MessageEvent(event);
     if (
         !messageEvent.content ||

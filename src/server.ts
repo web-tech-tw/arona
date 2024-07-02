@@ -23,12 +23,15 @@ import {
 export const app: Application = express();
 
 // Define the index handler.
-export const indexHandler = async (_: Request, res: Response): Promise<Response> => {
+export const indexHandler = async (
+    _req: Request,
+    res: Response,
+): Promise<Response> => {
     return res.status(200).json({
         status: "success",
         message: "Connected successfully!",
     });
-}
+};
 
 // Define the static directory path.
 export const {

@@ -11,6 +11,7 @@ export class MatrixListenerClient extends MatrixClient {
 
     /**
      * Starts syncing the client with an optional filter
+     * @override
      * @param {any} filter The filter to use, or null for none
      * @return {Promise<any>} Resolves when the client has started syncing
      */

@@ -3,12 +3,13 @@ import {
 } from "../../../config";
 
 import {
-    BridgeProviderType,
-} from "../../../types";
+    ProviderType,
+    ProviderBase,
+} from "../../../types/provider";
 
 import {
     HookProvider,
-} from "../../types";
+} from "../../../types/provider/hook";
 
 import {
     Router,
@@ -48,11 +49,22 @@ async function runEvent(event: WebhookEvent): Promise<void> {
     }
 }
 
-export default class LINEHook implements HookProvider {
-    type(): BridgeProviderType {
+/**
+ * Hook provider for LINE.
+ */
+export default class LINEHook extends ProviderBase implements HookProvider {
+    /**
+     * Get the type.
+     */
+    public get type(): ProviderType {
         return "line";
     }
 
+    /**
+     * Async hook.
+     * @param {Router} router - The router.
+     * @return {Promise<void>}
+     */
     async hook(router: Router): Promise<void> {
         router.post(
             "/line",
@@ -61,6 +73,10 @@ export default class LINEHook implements HookProvider {
         );
     }
 
+    /**
+     * Get the middleware.
+     * @return {Handler}
+     */
     get middleware(): Handler {
         const {
             line: lineConfig,
@@ -74,8 +90,13 @@ export default class LINEHook implements HookProvider {
         return middleware(config);
     }
 
+    /**
+     * The controller.
+     * @param {Request} req - The request.
+     * @param {Response} res - The response.
+     * @return {Promise<void>}
+     */
     async controller(req: Request, res: Response): Promise<void> {
-        
         // Get the events from the request.
         const events: WebhookEvent[] = req.body.events;
         // Try to process the events.

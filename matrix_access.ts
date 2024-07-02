@@ -1,5 +1,4 @@
 import {
-    BridgeProviderMatrixConfigSchema,
     bridgeProviderConfig,
 } from "./src/config";
 

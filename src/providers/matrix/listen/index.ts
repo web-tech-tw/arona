@@ -1,6 +1,11 @@
 import {
-    BridgeProviderType,
-} from "../../../types";
+    ProviderBase,
+    ProviderType,
+} from "../../../types/provider";
+
+import {
+    ListenProvider,
+} from "../../../types/provider/listen";
 
 import {
     client,
@@ -14,15 +19,29 @@ const events = {
     "room.message": roomMessage,
 };
 
-export default class MatrixListen {
-    type(): BridgeProviderType {
+/**
+ * Listen provider for Matrix.
+ */
+export default class MatrixListen
+    extends ProviderBase
+    implements ListenProvider {
+    /**
+     * Get the type.
+     */
+    public get type(): ProviderType {
         return "matrix";
     }
 
+    /**
+     * Listen.
+     */
     async listen(): Promise<void> {
-        Object.entries(events).forEach(([name, handler]) => {
-            client.on(name, handler);
-        });
+        if (!client) {
+            throw new Error("Client is not initialized");
+        }
+        for (const [event, handler] of Object.entries(events)) {
+            client.on(event, handler);
+        }
         client.start();
     }
-};
+}

@@ -9,6 +9,7 @@ import {
 } from "@line/bot-sdk";
 
 import axios, {
+    AxiosInstance,
     AxiosRequestConfig,
 } from "axios";
 
@@ -20,30 +21,86 @@ const {
     line: lineConfig,
 } = bridgeProviderConfig();
 
+/**
+ * Get the LINE client configuration.
+ * @return {ClientConfig}
+ */
+function getMessagingClientConfig(): ClientConfig {
+    const {
+        channelAccessToken,
+        channelSecret,
+    } = lineConfig;
+
+    return {
+        channelAccessToken, channelSecret,
+    };
+}
+
+/**
+ * Create a new LINE client.
+ * @return {messagingApi.MessagingApiClient}
+ */
+function newMessagingApiClient(): messagingApi.MessagingApiClient {
+    const {MessagingApiClient} = messagingApi;
+    const clientConfig = getMessagingClientConfig();
+    return new MessagingApiClient(clientConfig);
+}
+
+/**
+ * Create a new LINE client.
+ * @return {messagingApi.MessagingApiBlobClient}
+ */
+function newMessagingApiBlobClient(): messagingApi.MessagingApiBlobClient {
+    const {MessagingApiBlobClient} = messagingApi;
+    const clientConfig = getMessagingClientConfig();
+    return new MessagingApiBlobClient(clientConfig);
+}
+
+/**
+ * Create a new LINE client.
+ * @return {AxiosInstance}
+ */
+function newNotifyClient(): AxiosInstance {
+    const {
+        notifyClientSecret,
+    } = lineConfig;
+
+    // Configure client
+    const notifyClientConfig: AxiosRequestConfig = {
+        baseURL: "https://notify-api.line.me",
+        headers: {
+            "Authorization": `Bearer ${notifyClientSecret}`,
+            "User-Agent": deviceName,
+        },
+    };
+
+    // Create a new LINE client.
+    const notifyClient = axios.create(notifyClientConfig);
+
+    return notifyClient;
+}
+
 const {
-    channelAccessToken,
-    channelSecret,
-    notifyClientSecret,
+    enable: isEnabled,
 } = lineConfig;
 
-const {
-    MessagingApiClient,
-    MessagingApiBlobClient,
-} = messagingApi;
+/**
+ * The LINE client.
+ */
+export const messagingClient = isEnabled ?
+    newMessagingApiClient() :
+    null;
 
-// Configure clients
-const clientConfig: ClientConfig = {
-    channelAccessToken, channelSecret,
-};
-const notifyClientConfig: AxiosRequestConfig = {
-    baseURL: "https://notify-api.line.me",
-    headers: {
-        "Authorization": `Bearer ${notifyClientSecret}`,
-        "User-Agent": deviceName,
-    },
-};
+/**
+ * The LINE client.
+ */
+export const messagingBlobClient = isEnabled ?
+    newMessagingApiBlobClient() :
+    null;
 
-// Create a new LINE clients.
-export const messagingClient = new MessagingApiClient(clientConfig);
-export const messagingBlobClient = new MessagingApiBlobClient(clientConfig);
-export const notifyClient = axios.create(notifyClientConfig);
+/**
+ * The LINE client.
+ */
+export const notifyClient = isEnabled ?
+    newNotifyClient() :
+    null;

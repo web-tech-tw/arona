@@ -1,1 +1,9 @@
-{}
+{
+	"chat_id_here": "這裡是您的聊天 ID",
+	"pairing_id": "配對 ID",
+	"pairing_id_invalid": "無效的配對 ID",
+	"pairing_notice": "請將以下命令發送到目標聊天室",
+	"pairing_success": "配對成功",
+	"pairing_not_exists": "不存在配對",
+	"pairing_removed": "配對已移除"
+}

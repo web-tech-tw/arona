@@ -30,6 +30,9 @@ type Message = {
  * @return {Promise<AxiosResponse>}
  */
 function sendMessage(message: Message): Promise<AxiosResponse> {
+    if (!notifyClient) {
+        throw new Error("Client is not initialized.");
+    }
     return notifyClient.post("/api/notify", stringify(message));
 }
 

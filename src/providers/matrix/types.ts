@@ -1,4 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import SenderBase from "../../types/sender";
+
+import {
+    client,
+} from "./client";
+
 import {
     MatrixClient,
 } from "matrix-bot-sdk";
@@ -20,5 +26,30 @@ export class MatrixListenerClient extends MatrixClient {
         const joinedRooms = await this.getJoinedRooms();
         await this.crypto.prepare(joinedRooms);
         return await super.start(filter);
+    }
+}
+
+/**
+ * Sender of Matrix
+ */
+export class MatrixSender extends SenderBase {
+    /**
+     * Create a Sender from Matrix Sender.
+     * @param {string} senderId - Matrix Sender
+     * @return {Promise<Sender>}
+     */
+    static async fromSenderId(senderId: string): Promise<MatrixSender> {
+        if (!client) {
+            throw new Error("Client is not initialized");
+        }
+
+        const profile = await client.getUserProfile(senderId);
+        const displayName = profile.displayname;
+        const pictureUrl = client.mxcToHttp(profile.avatar_url);
+        return new MatrixSender({
+            displayName,
+            pictureUrl,
+            providerType: "matrix",
+        });
     }
 }

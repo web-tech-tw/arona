@@ -8,17 +8,6 @@ import {
 // Import the application.
 import {app, indexHandler, staticHandler} from "./src/server";
 
-// Import the router.
-import {
-    Router as createRouter,
-} from "express";
-
-// Import all provider types.
-import {
-    ListenProvider,
-    HookProvider,
-} from "./src/providers/types";
-
 // Import listen providers.
 import MatrixListen from "./src/providers/matrix/listen";
 import DiscordListen from "./src/providers/discord/listen";
@@ -27,38 +16,38 @@ import TelegramListen from "./src/providers/telegram/listen";
 // Import hook providers.
 import LINEHook from "./src/providers/line/hook";
 
-// Define all listeners.
-const listeners: Array<ListenProvider> = [
+// Import send providers.
+import LINESend from "./src/providers/line/send";
+import MatrixSend from "./src/providers/matrix/send";
+import DiscordSend from "./src/providers/discord/send";
+import TelegramSend from "./src/providers/telegram/send";
+
+import {
+    hookRouter,
+    registerSendProviders,
+    registerHookProviders,
+    registerListenProviders,
+} from "./src/registry";
+
+// Register all senders.
+await registerSendProviders([
+    new LINESend(),
+    new MatrixSend(),
+    new DiscordSend(),
+    new TelegramSend(),
+]);
+
+// Register all listeners.
+await registerListenProviders([
     new MatrixListen(),
     new DiscordListen(),
     new TelegramListen(),
-];
+]);
 
-// Define all Hookers.
-const hookers: Array<HookProvider> = [
+// Register all Hookers.
+await registerHookProviders([
     new LINEHook(),
-];
-
-// Run all listeners.
-await Promise.all(listeners.map(
-    (provider: ListenProvider) => {
-        if (!provider || !provider.enabled) {
-            return;
-        }
-        provider.listen();
-    },
-));
-
-// Run all Hookers.
-const hookRouter = createRouter();
-await Promise.all(hookers.map(
-    (provider: HookProvider) => {
-        if (!provider || !provider.enabled) {
-            return;
-        }
-        provider.hook(hookRouter);
-    },
-));
+]);
 
 // This route is used to handle the index.
 app.get("/", indexHandler);

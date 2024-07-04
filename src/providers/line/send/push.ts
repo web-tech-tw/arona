@@ -1,9 +1,10 @@
+import SenderBase from "../../../types/sender";
 import {
-    Sender,
-} from "../../types";
+    LINESender,
+} from "../types";
 
 import {
-    Sender as LINESender,
+    Sender as RealSender,
     TextMessage,
     ImageMessage,
     messagingApi,
@@ -19,13 +20,13 @@ import {
 
 /**
  * Send a text message to the chat room.
- * @param {Sender} sender - The sender of the message.
+ * @param {SenderBase} sender - The sender of the message.
  * @param {string} chatId - The ID of the chat room.
  * @param {string} text - The text to send.
  * @return {Promise<messagingApi.PushMessageResponse>}
  */
 export function sendTextMessage(
-    sender: Sender,
+    sender: SenderBase,
     chatId: string,
     text: string,
 ): Promise<messagingApi.PushMessageResponse> {
@@ -34,7 +35,7 @@ export function sendTextMessage(
     }
     const message: TextMessage = {type: "text", text};
     if (sender.prefix.length <= 20) {
-        message.sender = sender.toLINE();
+        message.sender = new LINESender(sender).toLINE();
     } else {
         message.text = `${sender.prefix}\n${message.text}`;
     }
@@ -46,14 +47,14 @@ export function sendTextMessage(
 
 /**
  * Send an image message to the chat room.
- * @param {Sender} sender - The sender of the message.
+ * @param {SenderBase} sender - The sender of the message.
  * @param {string} chatId - The ID of the chat room.
  * @param {string} imageUrl - The image URL.
  * @param {ImageMessageOptions} options - The options to send image message.
  * @return {Promise<messagingApi.PushMessageResponse>}
  */
 export function sendImageMessage(
-    sender: Sender,
+    sender: SenderBase,
     chatId: string,
     imageUrl: string,
     options: ImageMessageOptions = {},
@@ -61,10 +62,8 @@ export function sendImageMessage(
     if (!chatClient) {
         throw new Error("Client is not initialized.");
     }
-    const lineSender: LINESender = sender.toLINE();
     const message: ImageMessage = {
         type: "image",
-        sender: lineSender,
         originalContentUrl: imageUrl,
         previewImageUrl: options.thumbnailUrl || imageUrl,
     };

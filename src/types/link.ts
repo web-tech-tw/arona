@@ -11,15 +11,9 @@ import {
 import {
     SendProvider,
 } from "./provider/send";
-
-// Import all providers.
-import LINESend from "../providers/line/send";
-import MatrixSend from "../providers/matrix/send";
-
-const senders : Array<SendProvider> = [
-    new LINESend(),
-    new MatrixSend(),
-];
+import {
+    senders,
+} from "../registry";
 
 /**
  * The callback to send message.

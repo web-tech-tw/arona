@@ -45,6 +45,7 @@ export type SendImageUrlParameters = {
  * @property {Function} imageUrl - Send an image message to the chat room.
  */
 export interface SendProvider extends BaseProvider {
+    ensure(): Promise<void>;
     text: (params: SendTextParameters) => Promise<void>;
     image: (params: SendImageParameters) => Promise<void>;
     imageUrl: (params: SendImageUrlParameters) => Promise<void>;

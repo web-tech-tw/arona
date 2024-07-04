@@ -12,8 +12,10 @@ import {
     CommandMethodParameters,
 } from "../../../commands/types";
 
-import Sender from "../../../types/sender";
 import Link from "../../../types/link";
+import {
+    TelegramSender,
+} from "../types";
 
 import {
     client,
@@ -22,10 +24,11 @@ import {
 import Locale from "../../../locales";
 
 export default async (message: Message) => {
-    const {text} = message;
-    if (!text) {
-        return;
+    if (!client) {
+        throw new Error("Client is not initialized");
     }
+
+    const text = message.text || "";
 
     const args = textToArguments(text, "/");
     const source: CommandSource = {
@@ -56,11 +59,26 @@ export default async (message: Message) => {
     const link = Link.use(providerType, source.chatId);
     if (!link.exists()) return;
 
-    const sender = new Sender({
-        providerType: providerType,
-        displayName: message.from?.first_name,
-    });
-    link.toBroadcastExcept(providerType, (provider, chatId) => {
-        provider.text({sender, chatId, text});
-    });
+    const sender = TelegramSender.fromMessageFromUser(message.from);
+    if (text) {
+        link.toBroadcastExcept(providerType, (provider, chatId) => {
+            provider.text({sender, chatId, text});
+        });
+    }
+
+    if (message.photo) {
+        const photo = message.photo[message.photo.length - 1];
+        const stream = client?.getFileStream(photo.file_id);
+        if (!stream) {
+            throw new Error("Failed to get file stream");
+        }
+        const contentChunks: Buffer[] = [];
+        for await (const chunk of stream) {
+            contentChunks.push(chunk as never);
+        }
+        const imageBuffer = Buffer.concat(contentChunks);
+        link.toBroadcastExcept(providerType, (provider, chatId) => {
+            provider.image({sender, chatId, imageBuffer});
+        });
+    }
 };

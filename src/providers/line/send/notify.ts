@@ -1,6 +1,4 @@
-import {
-    Sender,
-} from "../../types";
+import Sender from "../../../types/sender";
 
 import {
     AxiosResponse,

@@ -50,6 +50,14 @@ export default class LINESend extends ProviderBase implements SendProvider {
     }
 
     /**
+     * Ensure the provider is ready.
+     * @return {Promise<void>}
+     */
+    ensure(): Promise<void> {
+        return Promise.resolve();
+    }
+
+    /**
      * Send a text message to the chat room.
      * @param {SendTextParameters} params - The parameters.
      * @return {Promise<void>}

@@ -34,9 +34,8 @@ export const indexHandler = async (
 };
 
 // Define the static directory path.
-export const {
-    pathname: staticBasePath,
-} = new URL("../static/", import.meta.url);
+export const staticBasePathUrl = new URL("../static/", import.meta.url);
+export const {pathname: staticBasePath} = staticBasePathUrl;
 
 // Define the static handler.
 export const staticHandler = staticMiddleware(staticBasePath);
@@ -63,7 +62,7 @@ export async function readStaticFile(
     filename: string,
 ): Promise<Buffer> {
     const name = `file_${filename}`;
-    const pathUrl = new URL(name, staticBasePath);
+    const pathUrl = new URL(name, staticBasePathUrl);
     const file = await readFile(pathUrl);
     return Buffer.from(file);
 }
@@ -79,7 +78,7 @@ export async function writeStaticFile(
     buffer: Buffer,
 ): Promise<string> {
     const name = `file_${filename}`;
-    const pathUrl = new URL(name, staticBasePath);
+    const pathUrl = new URL(name, staticBasePathUrl);
     await writeFile(pathUrl, buffer);
     return staticFileHttpUrl(filename);
 }
@@ -93,6 +92,6 @@ export async function deleteStaticFile(
     filename: string,
 ): Promise<void> {
     const name = `file_${filename}`;
-    const pathUrl = new URL(name, staticBasePath);
+    const pathUrl = new URL(name, staticBasePathUrl);
     await unlink(pathUrl);
 }

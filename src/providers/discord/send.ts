@@ -1,4 +1,8 @@
 import {
+    Events,
+} from "discord.js";
+
+import {
     ProviderType,
     ProviderBase,
 } from "../../types/provider";
@@ -26,6 +30,21 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
     }
 
     /**
+     * Ensure the provider is ready.
+     * @return {Promise<void>}
+     */
+    ensure(): Promise<void> {
+        return new Promise((resolve) => {
+            if (!chatClient) {
+                throw new Error("Client is not initialized.");
+            }
+            chatClient.once(Events.ClientReady, () => {
+                resolve();
+            });
+        });
+    }
+
+    /**
      * Send text.
      * @param {SendTextParameters} params - The parameters
      * @return {Promise<void>}
@@ -35,7 +54,8 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
-        channel.send(params.text);
+        const message = `${params.sender.prefix}\n${params.text}`;
+        channel.send(message);
     }
 
     /**
@@ -48,7 +68,10 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
-        channel.send({files: [params.imageBuffer]});
+        channel.send({
+            content: params.sender.prefix,
+            files: [params.imageBuffer],
+        });
     }
 
     /**
@@ -61,7 +84,6 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
-        const markdown = `![image](${params.imageUrl})`;
-        channel.send(markdown);
+        channel.send(`${params.sender.prefix}\n${params.imageUrl}`);
     }
 }

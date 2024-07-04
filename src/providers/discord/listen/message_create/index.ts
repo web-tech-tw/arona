@@ -34,7 +34,18 @@ export default async (message: Message): Promise<void> => {
         providerType: providerType,
         displayName: message.author.username,
     });
-    link.toBroadcastExcept(providerType, (provider, chatId) => {
-        provider.text({sender, chatId, text});
-    });
+
+    if (text) {
+        link.toBroadcastExcept(providerType, (provider, chatId) => {
+            provider.text({sender, chatId, text});
+        });
+    }
+
+    if (message.attachments.size > 0) {
+        for (const attachment of message.attachments.values()) {
+            link.toBroadcastExcept(providerType, (provider, chatId) => {
+                provider.imageUrl({sender, chatId, imageUrl: attachment.url});
+            });
+        }
+    }
 };

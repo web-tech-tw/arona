@@ -1,11 +1,18 @@
-import {ProviderType} from "../../types";
 import {
+    ProviderType,
     ProviderBase,
+} from "../../types/provider";
+
+import {
     SendProvider,
     SendTextParameters,
     SendImageParameters,
     SendImageUrlParameters,
-} from "../types";
+} from "../../types/provider/send";
+
+import {
+    chatWithAI,
+} from "./client";
 
 /**
  * Send provider for OpenAI.
@@ -19,13 +26,22 @@ export default class OpenaiSend extends ProviderBase implements SendProvider {
     }
 
     /**
+     * Ensure the provider is ready.
+     * @return {Promise<void>}
+     */
+    ensure(): Promise<void> {
+        return Promise.resolve();
+    }
+
+    /**
      * Send text.
      * @param {SendTextParameters} params - The parameters
      * @return {Promise<void>}
      */
-    public text(params: SendTextParameters): Promise<void> {
-        console.log(`Sending text to OpenAI: ${params.chatId}`);
-        return Promise.resolve();
+    public async text(params: SendTextParameters): Promise<void> {
+        const {chatId, text} = params;
+        const response = await chatWithAI(chatId, text);
+        console.log(response);
     }
 
     /**

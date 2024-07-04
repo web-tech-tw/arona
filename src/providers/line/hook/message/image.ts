@@ -7,8 +7,10 @@ import {
     toCommandSource,
 } from "../../utils";
 
-import Sender from "../../../../types/sender";
 import Link from "../../../../types/link";
+import {
+    LINESender,
+} from "../../types";
 
 import {
     messagingBlobClient as blobClient,
@@ -35,7 +37,7 @@ export default async (event: MessageEvent): Promise<void> => {
         contentChunks.push(chunk as never);
     }
 
-    const sender = await Sender.fromLINESource(event.source);
+    const sender = await LINESender.fromEventSource(event.source);
     const imageBuffer = Buffer.concat(contentChunks);
 
     link.toBroadcastExcept("line", (provider, chatId) =>

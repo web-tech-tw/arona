@@ -24,6 +24,19 @@ export default class TelegramSend extends ProviderBase implements SendProvider {
     }
 
     /**
+     * Ensure the provider is ready.
+     * @return {Promise<void>}
+     */
+    ensure(): Promise<void> {
+        return new Promise((resolve) => {
+            if (!client) {
+                throw new Error("Client is not initialized.");
+            }
+            resolve();
+        });
+    }
+
+    /**
      * Send text.
      * @param {SendTextParameters} params - The parameters
      * @return {Promise<void>}
@@ -32,7 +45,8 @@ export default class TelegramSend extends ProviderBase implements SendProvider {
         if (!client) {
             throw new Error("Client is not initialized.");
         }
-        client.sendMessage(params.chatId, params.text);
+        const message = `${params.sender.prefix}\n${params.text}`;
+        client.sendMessage(params.chatId, message);
     }
 
     /**
@@ -44,7 +58,10 @@ export default class TelegramSend extends ProviderBase implements SendProvider {
         if (!client) {
             throw new Error("Client is not initialized.");
         }
-        client.sendPhoto(params.chatId, params.imageBuffer);
+        const {sender, chatId, imageBuffer} = params;
+        const text = "Sent an image.";
+        this.text({sender, chatId, text});
+        client.sendPhoto(chatId, imageBuffer);
     }
 
     /**
@@ -56,6 +73,9 @@ export default class TelegramSend extends ProviderBase implements SendProvider {
         if (!client) {
             throw new Error("Client is not initialized.");
         }
-        client.sendPhoto(params.chatId, params.imageUrl);
+        const {sender, chatId, imageUrl} = params;
+        const text = "Sent an image.";
+        this.text({sender, chatId, text});
+        client.sendPhoto(chatId, imageUrl);
     }
 }

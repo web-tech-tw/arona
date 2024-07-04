@@ -9,8 +9,10 @@ import {
     toCommandSource,
 } from "../../utils";
 
-import Sender from "../../../../types/sender";
 import Link from "../../../../types/link";
+import {
+    LINESender,
+} from "../../types";
 
 import {
     textToArguments,
@@ -57,7 +59,7 @@ export default async (event: MessageEvent): Promise<void> => {
     const link = Link.use("line", chatId);
     if (!link.exists()) return;
 
-    const sender = await Sender.fromLINESource(event.source);
+    const sender = await LINESender.fromEventSource(event.source);
     link.toBroadcastExcept("line", (provider, chatId) => {
         provider.text({sender, chatId, text});
     });

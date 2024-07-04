@@ -8,8 +8,10 @@ import {
     getStickerImageUrl,
 } from "../../utils";
 
-import Sender from "../../../../types/sender";
 import Link from "../../../../types/link";
+import {
+    LINESender,
+} from "../../types";
 
 export default async (event: MessageEvent): Promise<void> => {
     const message: StickerEventMessage = event.message as StickerEventMessage;
@@ -19,7 +21,7 @@ export default async (event: MessageEvent): Promise<void> => {
     const link = Link.use("line", chatId);
     if (!link.exists()) return;
 
-    const sender = await Sender.fromLINESource(event.source);
+    const sender = await LINESender.fromEventSource(event.source);
     const imageUrl = getStickerImageUrl(stickerId);
 
     link.toBroadcastExcept("line", (provider, chatId) => {

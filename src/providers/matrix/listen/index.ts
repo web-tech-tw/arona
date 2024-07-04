@@ -42,6 +42,6 @@ export default class MatrixListen
         for (const [event, handler] of Object.entries(events)) {
             client.on(event, handler);
         }
-        client.start();
+        await client.start();
     }
 }

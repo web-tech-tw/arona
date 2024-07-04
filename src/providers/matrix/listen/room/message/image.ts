@@ -1,5 +1,7 @@
-import Sender from "../../../../../types/sender";
 import Link from "../../../../../types/link";
+import {
+    MatrixSender,
+} from "../../../types";
 
 import {
     MessageEvent,
@@ -21,7 +23,7 @@ export default async (
     const link = Link.use("matrix", roomId);
     if (!link.exists()) return;
 
-    const sender = await Sender.fromMatrixSender(event.sender);
+    const sender = await MatrixSender.fromSenderId(event.sender);
     const imageUrl = client.mxcToHttp(event.content.url);
 
     link.toBroadcastExcept("matrix", (provider, chatId) => {

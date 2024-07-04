@@ -41,7 +41,7 @@ export default class Pair {
      * @return {Pair|null} The pair object.
      */
     public static find(pairId: string): Pair | null {
-        const pair = cache.get(pairId);
+        const pair = cache.get(`pair:${pairId}`);
         if (pair instanceof Pair) {
             return pair;
         }
@@ -53,8 +53,9 @@ export default class Pair {
      * @return {string} - The pair ID.
      */
     public create(): string {
-        cache.set(this.pairId, this);
-        return this.pairId;
+        const {pairId} = this;
+        cache.set(`pair:${pairId}`, this);
+        return pairId;
     }
 
     /**
@@ -62,6 +63,7 @@ export default class Pair {
      * @return {void}
      */
     public delete(): void {
-        cache.del(this.pairId);
+        const {pairId} = this;
+        cache.del(`pair:${pairId}`);
     }
 }

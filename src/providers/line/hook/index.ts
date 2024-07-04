@@ -25,6 +25,9 @@ import {
 } from "@line/bot-sdk";
 
 import message from "./message";
+import {
+    authNotifyCode,
+} from "../send/notify";
 
 type EventMethod = (event: WebhookEvent) =>
     Promise<void> | void;
@@ -70,6 +73,10 @@ export default class LINEHook extends ProviderBase implements HookProvider {
             "/line",
             this.middleware,
             this.controller,
+        );
+        router.get(
+            "/line/notify",
+            this.notifyAuth,
         );
     }
 
@@ -118,5 +125,28 @@ export default class LINEHook extends ProviderBase implements HookProvider {
                 status: "error",
             });
         }
+    }
+
+    /**
+     * Notify Authorization.
+     * @param {Request} req - The request.
+     * @param {Response} res - The response.
+     * @return {Promise<void>}
+     */
+    async notifyAuth(req: Request, res: Response): Promise<void> {
+        const {state, code} = req.query;
+        if (!state || !code) {
+            res.status(400).json({
+                status: "error",
+            });
+            return;
+        }
+        await authNotifyCode(
+            state as string,
+            code as string,
+        );
+        res.status(200).json({
+            status: "success",
+        });
     }
 }

@@ -25,7 +25,7 @@ export default class Sender {
      */
     get prefix(): string {
         return this.providerType ?
-            `${this.displayName} ⬗ ${this.providerName()}` :
+            `${this.displayName} ⬗ ${this.providerName}` :
             "⬖ System";
     }
 
@@ -33,7 +33,7 @@ export default class Sender {
      * Get the provider name.
      * @return {string}
      */
-    providerName(): string {
+    get providerName(): string {
         const {providerType} = this;
         if (!providerType) {
             throw new Error("Provider is not set");

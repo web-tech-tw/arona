@@ -27,10 +27,13 @@ export const indexHandler = async (
     _req: Request,
     res: Response,
 ): Promise<Response> => {
-    return res.status(200).json({
-        status: "success",
-        message: "Connected successfully!",
-    });
+    return res.status(200).send(`
+        <div>
+            <b>Arona</b><br />
+            The perfectest bridging for every messenger.<br />
+            <a href="https://github.com/web-tech-tw/arona">GitHub</a>
+        </div>
+    `);
 };
 
 // Define the static directory path.

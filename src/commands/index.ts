@@ -1,4 +1,8 @@
 import {
+    bridgeProviderConfig,
+} from "../config";
+
+import {
     CommandMethodList,
     CommandMethodParameters,
 } from "./types";
@@ -9,6 +13,21 @@ import {
 
 import Pair from "../types/pair";
 import Link from "../types/link";
+
+import {
+    chatWithAI,
+} from "../providers/openai/client";
+import {
+    createNotifyAuthUrl,
+} from "../providers/line/send/notify";
+
+const {
+    line: lineConfig,
+} = bridgeProviderConfig();
+
+const {
+    notifyEnable,
+} = lineConfig;
 
 export const textToArguments = (
     text: string,
@@ -35,6 +54,19 @@ export const commandExecutor = async (
 };
 
 export const commands: CommandMethodList = {
+    "ai": {
+        description: "AI chat",
+        method: async ({source, args, reply}) => {
+            const response = await chatWithAI(source.chatId, args[1]);
+            reply(response);
+        },
+        options: [{
+            name: "question",
+            type: "string",
+            description: "The question to ask the AI",
+            required: true,
+        }],
+    },
     "chatId": {
         description: "Get chat ID",
         method: ({source, locale, reply}) => {
@@ -53,11 +85,15 @@ export const commands: CommandMethodList = {
                 chatId: source.chatId,
             });
             const pairId = pair.create();
-            reply(
+            let message: string =
                 `${locale.text("pairing_id")}: ${pairId}\n\n` +
                 `${locale.text("pairing_notice")}:\n` +
-                `/pairLink ${pairId}`,
-            );
+                `/pairLink ${pairId}`;
+            if (source.providerType === "line" && notifyEnable) {
+                const url = createNotifyAuthUrl(source.chatId);
+                message += `\n\n${url}`;
+            }
+            reply(message);
         },
     },
     "pairStatus": {

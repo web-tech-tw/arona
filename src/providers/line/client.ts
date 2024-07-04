@@ -61,23 +61,16 @@ function newMessagingApiBlobClient(): messagingApi.MessagingApiBlobClient {
  * @return {AxiosInstance}
  */
 function newNotifyClient(): AxiosInstance {
-    const {
-        notifyClientSecret,
-    } = lineConfig;
-
     // Configure client
     const notifyClientConfig: AxiosRequestConfig = {
         baseURL: "https://notify-api.line.me",
         headers: {
-            "Authorization": `Bearer ${notifyClientSecret}`,
             "User-Agent": deviceName,
         },
     };
 
     // Create a new LINE client.
-    const notifyClient = axios.create(notifyClientConfig);
-
-    return notifyClient;
+    return axios.create(notifyClientConfig);
 }
 
 const {

@@ -4,7 +4,6 @@ import {
 } from "../types";
 
 import {
-    Sender as RealSender,
     TextMessage,
     ImageMessage,
     messagingApi,

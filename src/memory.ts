@@ -8,6 +8,7 @@ import {
 
 // Import types for the store.
 import Link from "./types/link";
+import NotifyLink from "./types/notify_link";
 
 /**
  * The cache, for temporary storage.
@@ -22,5 +23,6 @@ export const cache = new NodeCache({
 export const store = await jsonFilePreset(
     "data/store.json", {
         links: [] as Array<Link>,
+        notifyLinks: [] as Array<NotifyLink>,
     },
 );

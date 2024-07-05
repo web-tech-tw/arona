@@ -1,5 +1,5 @@
 import {
-    Guild,
+    BaseGuild,
     Routes,
 } from "discord.js";
 
@@ -24,7 +24,11 @@ import {
  * @param {Guild} guild The guild to register commands in.
  * @return {Promise<void>}
  */
-export async function registerCommands(guild: Guild): Promise<void> {
+export async function registerCommands(guild: BaseGuild): Promise<void> {
+    if (!restClient) {
+        throw new Error("Client is not initialized.");
+    }
+
     const {appId} = discordConfig;
     const {id: guildId} = guild;
 
@@ -48,7 +52,7 @@ export async function registerCommands(guild: Guild): Promise<void> {
         })) || null,
     }));
 
-    await restClient?.put(
+    await restClient.put(
         Routes.applicationGuildCommands(appId, guildId),
         {body: commandList},
     );

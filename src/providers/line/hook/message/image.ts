@@ -4,13 +4,11 @@ import {
 } from "@line/bot-sdk";
 
 import {
-    toCommandSource,
-} from "../../utils";
-
-import Link from "../../../../types/link";
-import {
     LINESender,
 } from "../../types";
+import {
+    ProviderType,
+} from "../../../../types/provider";
 
 import {
     messagingBlobClient as blobClient,
@@ -27,18 +25,19 @@ export default async (event: MessageEvent): Promise<void> => {
 
     const message: ImageEventMessage = event.message as ImageEventMessage;
 
-    const {chatId} = toCommandSource(event.source);
-    const link = Link.use("line", chatId);
-    if (!link.exists()) return;
+    const sender = await LINESender.fromEventSource(event.source);
+    if (!sender.roomLink.exists()) return;
 
     const {id: messageId} = message;
     const contentStream = await blobClient.getMessageContent(
         messageId,
     );
 
-    const sender = await LINESender.fromEventSource(event.source);
     const imageBuffer = await readAll(contentStream);
-    link.toBroadcastExcept("line", (provider, chatId) =>
-        provider.image({sender, chatId, imageBuffer}),
+    sender.roomLink.toBroadcastExcept(
+        sender.providerType as ProviderType,
+        (provider, chatId) => {
+            provider.image({sender, chatId, imageBuffer});
+        },
     );
 };

@@ -3,6 +3,7 @@ import {
     ProviderBase,
 } from "../../types/provider";
 
+import Sender from "../../types/sender";
 import {
     SendProvider,
     SendTextParameters,
@@ -39,9 +40,16 @@ export default class OpenaiSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public async text(params: SendTextParameters): Promise<void> {
-        const {chatId, text} = params;
-        const response = await chatWithAI(chatId, text);
-        console.log(response);
+        const {sender, text} = params;
+        const aiChatId = sender.roomLink.bridge?.openai;
+        if (!aiChatId) {
+            throw new Error("OpenAI chat ID is not set");
+        }
+        const response = await chatWithAI(aiChatId, text);
+        const aiSender = Sender.arona();
+        sender.roomLink.toBroadcastExcept(this.type, (provider, chatId) =>
+            provider.text({sender: aiSender, chatId, text: response}),
+        );
     }
 
     /**
@@ -50,7 +58,16 @@ export default class OpenaiSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public image(params: SendImageParameters): Promise<void> {
-        console.log(`Sending image to OpenAI: ${params.chatId}`);
+        const {sender} = params;
+        const aiChatId = sender.roomLink.bridge?.openai;
+        if (!aiChatId) {
+            throw new Error("OpenAI chat ID is not set");
+        }
+        // TODO: Implement image sending
+        // const aiSender = Sender.arona();
+        // sender.roomLink.toBroadcastExcept(this.type, (provider, chatId) =>
+        //     provider.text({sender: aiSender, chatId, text: ""}),
+        // );
         return Promise.resolve();
     }
 
@@ -60,7 +77,16 @@ export default class OpenaiSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public imageUrl(params: SendImageUrlParameters): Promise<void> {
-        console.log(`Sending image URL to OpenAI: ${params.chatId}`);
+        const {sender} = params;
+        const aiChatId = sender.roomLink.bridge?.openai;
+        if (!aiChatId) {
+            throw new Error("OpenAI chat ID is not set");
+        }
+        // TODO: Implement image URL sending
+        // const aiSender = Sender.arona();
+        // sender.roomLink.toBroadcastExcept(this.type, (provider, chatId) =>
+        //     provider.text({sender: aiSender, chatId, text: ""}),
+        // );
         return Promise.resolve();
     }
 }

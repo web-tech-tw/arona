@@ -5,7 +5,7 @@ import {
 const packageBasePathUrl = new URL("./packages/", import.meta.url);
 
 const fallbackLocaleCode = "en";
-const supportedLocaleCodes = ["en", "fr"];
+const supportedLocaleCodes = ["en", "zh-TW"];
 
 /**
  * Locale
@@ -47,5 +47,14 @@ export default class Locale {
      */
     public code(): string {
         return this.localeCode;
+    }
+
+    /**
+     * Check if the code is supported
+     * @param {string} localeCode - The locale code
+     * @return {boolean}
+     */
+    public static checkCodeSupported(localeCode: string): boolean {
+        return supportedLocaleCodes.includes(localeCode);
     }
 }

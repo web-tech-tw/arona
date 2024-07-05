@@ -3,11 +3,11 @@ import {
 } from "discord.js";
 
 import {
-    CommandSource,
-} from "../../../../commands/types";
-
-import Sender from "../../../../types/sender";
-import Link from "../../../../types/link";
+    DiscordSender,
+} from "../../types";
+import {
+    ProviderType,
+} from "../../../../types/provider";
 
 /**
  * @param {Message} message
@@ -16,36 +16,28 @@ import Link from "../../../../types/link";
 export default async (message: Message): Promise<void> => {
     if (message.author.bot) return;
 
-    const source: CommandSource = {
-        providerType: "discord",
-        chatId: message.channel.id,
-        fromId: message.author.id,
-    };
+    const sender = DiscordSender.fromMessage(message);
+    if (!sender.roomLink.exists()) return;
 
-    const providerType = "discord";
-    const {
-        content: text,
-    } = message;
-
-    const link = Link.use(providerType, source.chatId);
-    if (!link.exists()) return;
-
-    const sender = new Sender({
-        providerType: providerType,
-        displayName: message.author.username,
-    });
-
+    const {content: text} = message;
     if (text) {
-        link.toBroadcastExcept(providerType, (provider, chatId) => {
-            provider.text({sender, chatId, text});
-        });
+        sender.roomLink.toBroadcastExcept(
+            sender.providerType as ProviderType,
+            (provider, chatId) => {
+                provider.text({sender, chatId, text});
+            },
+        );
     }
 
     if (message.attachments.size > 0) {
         for (const attachment of message.attachments.values()) {
-            link.toBroadcastExcept(providerType, (provider, chatId) => {
-                provider.imageUrl({sender, chatId, imageUrl: attachment.url});
-            });
+            sender.roomLink.toBroadcastExcept(
+                sender.providerType as ProviderType,
+                (provider, chatId) => {
+                    const imageUrl = attachment.url;
+                    provider.imageUrl({sender, chatId, imageUrl});
+                },
+            );
         }
     }
 };

@@ -2,6 +2,7 @@ import SenderBase from "../../types/sender";
 
 import {
     User,
+    Message,
     PhotoSize,
 } from "node-telegram-bot-api";
 
@@ -53,19 +54,29 @@ export async function getAvatarUrl(user: User): Promise<string|null> {
  */
 export class TelegramSender extends SenderBase {
     /**
-     * Create a TelegramSender.
-     * @param {User} user - The user.
+     * Create a Sender from Telegram Message.
+     * @param {Message} message - Telegram Message
      * @return {Promise<TelegramSender>}
      */
-    public static async fromMessageFromUser(
-        user: User,
+    public static async fromMessage(
+        message: Message,
     ): Promise<TelegramSender> {
-        const displayName = user.username ?? user.first_name;
-        const pictureUrl = await getAvatarUrl(user) ?? undefined;
+        if (!message.from) {
+            throw new Error("Message does not have a sender");
+        }
+
+        const providerType = "telegram";
+        const displayName = message.from.username ?? message.from.first_name;
+        const pictureUrl = await getAvatarUrl(message.from) ?? undefined;
+        const chatId = message.chat.id.toString();
+        const fromId = message.from.id.toString();
+
         return new TelegramSender({
-            providerType: "telegram",
             displayName,
             pictureUrl,
+            providerType,
+            chatId,
+            fromId,
         });
     }
 }

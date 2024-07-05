@@ -1,5 +1,3 @@
-import Locale from "../../../../../locales";
-
 import Link from "../../../../../types/link";
 import {
     MatrixSender,
@@ -16,7 +14,6 @@ import {
 } from "../../../../../commands";
 import {
     CommandMethodParameters,
-    CommandSource,
 } from "../../../../../commands/types";
 
 import {
@@ -28,29 +25,24 @@ export default async (
     event: MessageEvent<TextualMessageEventContent>,
 ): Promise<undefined> => {
     const text = event.textBody;
+    const sender = await MatrixSender.fromRoomEvent(roomId, event);
 
     const args = textToArguments(text, "/");
-    const source: CommandSource = {
-        providerType: "matrix",
-        chatId: roomId,
-        fromId: event.sender,
-    };
     if (args) {
-        const locale = new Locale("en");
+        const locale = sender.roomLink.locale;
+        const source = sender.commandSource;
         const reply = async (text: string): Promise<void> => {
             if (!client) {
                 throw new Error("Client is not initialized");
             }
 
-            const sender = new MatrixSender({});
-            text = `${sender.prefix}\n${text}`;
             client.sendMessage(roomId, {
                 msgtype: "m.notice",
-                body: text,
+                body: MatrixSender.systemMessage(text),
             });
         };
         const params: CommandMethodParameters = {
-            args, source, locale, reply,
+            args, source, locale, reply, sender,
         };
         await commandExecutor(params);
         return;
@@ -58,8 +50,6 @@ export default async (
 
     const link = Link.use("matrix", roomId);
     if (!link.exists()) return;
-
-    const sender = await MatrixSender.fromSenderId(event.sender);
     link.toBroadcastExcept("matrix", (provider, chatId) => {
         provider.text({sender, chatId, text});
     });

@@ -8,14 +8,15 @@ import {
 } from "../../../commands";
 
 import {
-    CommandSource,
     CommandMethodParameters,
 } from "../../../commands/types";
 
-import Link from "../../../types/link";
 import {
     TelegramSender,
 } from "../types";
+import {
+    ProviderType,
+} from "../../../types/provider";
 
 import {
     client,
@@ -25,8 +26,6 @@ import {
     readAll,
 } from "../../../utils";
 
-import Locale from "../../../locales";
-
 export default async (message: Message) => {
     if (!client) {
         throw new Error("Client is not initialized");
@@ -35,44 +34,41 @@ export default async (message: Message) => {
         throw new Error("Message does not have a sender");
     }
 
+    const sender = await TelegramSender.fromMessage(message);
     const text = message.text ?? "";
 
     const args = textToArguments(text, "/");
-    const source: CommandSource = {
-        providerType: "telegram",
-        chatId: message.chat.id.toString(),
-        fromId: message.from?.id.toString() ?? "",
-    };
     if (args) {
-        const locale = new Locale("en");
+        const locale = sender.roomLink.locale;
+        const source = sender.commandSource;
         const reply = async (text: string): Promise<void> => {
             if (!client) {
                 throw new Error("Client is not initialized");
             }
-            const sender = new TelegramSender({});
-            text = `${sender.prefix}\n${text}`;
+            if (!sender.chatId) {
+                throw new Error("Chat ID is not set");
+            }
             client.sendMessage(
-                source.chatId,
-                text,
+                sender.chatId,
+                TelegramSender.systemMessage(text),
             );
         };
         const params: CommandMethodParameters = {
-            args, source, locale, reply,
+            args, source, locale, reply, sender,
         };
         await commandExecutor(params);
         return;
     }
 
-    const providerType = "telegram";
+    if (!sender.roomLink.exists()) return;
 
-    const link = Link.use(providerType, source.chatId);
-    if (!link.exists()) return;
-
-    const sender = await TelegramSender.fromMessageFromUser(message.from);
     if (text) {
-        link.toBroadcastExcept(providerType, (provider, chatId) => {
-            provider.text({sender, chatId, text});
-        });
+        sender.roomLink.toBroadcastExcept(
+            sender.providerType as ProviderType,
+            (provider, chatId) => {
+                provider.text({sender, chatId, text});
+            },
+        );
     }
 
     if (message.photo) {
@@ -82,8 +78,11 @@ export default async (message: Message) => {
             throw new Error("Failed to get file stream");
         }
         const imageBuffer = await readAll(stream);
-        link.toBroadcastExcept(providerType, (provider, chatId) => {
-            provider.image({sender, chatId, imageBuffer});
-        });
+        sender.roomLink.toBroadcastExcept(
+            sender.providerType as ProviderType,
+            (provider, chatId) => {
+                provider.image({sender, chatId, imageBuffer});
+            },
+        );
     }
 };

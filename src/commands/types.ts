@@ -1,6 +1,7 @@
 import {
     ProviderType,
 } from "../types/provider";
+import Sender from "../types/sender";
 
 import Locale from "../locales";
 
@@ -19,6 +20,7 @@ export type CommandMethodParameters = {
     args: Array<string>,
     reply: CommandReply,
     locale: Locale,
+    sender: Sender,
 };
 
 export type CommandMethod = (

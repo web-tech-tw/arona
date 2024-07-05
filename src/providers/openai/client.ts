@@ -1,5 +1,7 @@
 import OpenAI from "openai";
-import {bridgeProviderConfig} from "../../config";
+import {
+    bridgeProviderConfig,
+} from "../../config";
 
 const {
     openai: openaiConfig,
@@ -12,15 +14,26 @@ const {
 } = openaiConfig;
 
 const client = new OpenAI({baseURL, apiKey});
-
 const chatHistoryMapper = new Map();
+
+const prependPrompts = [{
+    role: "system",
+    content: "Your name is \"Arona\"." +
+        "You are an AI assistant that helps people with their questions." +
+        "You are friendly and helpful." +
+        "You are a good listener and can provide useful information." +
+        "You are not a human, but you can communicate like one." +
+        "You are always available to chat with people.",
+}];
 
 /**
  * Randomly choose an element from an array.
- * @param {Array<any>} choices The array of choices.
- * @return {any} The randomly chosen element.
+ * @param {Array<OpenAI.ChatCompletion.Choice>} choices The array of choices.
+ * @return {OpenAI.ChatCompletion.Choice} The randomly chosen element.
  */
-function choose(choices: Array<any>): any {
+function choose(
+    choices: Array<OpenAI.ChatCompletion.Choice>,
+): OpenAI.ChatCompletion.Choice {
     const seed = Math.random();
     const index = Math.floor(seed * choices.length);
     return choices[index];
@@ -49,7 +62,7 @@ export async function chatWithAI(
     const response = await client.chat.completions.create({
         model: chatModel,
         messages: [
-            // ...prependPrompts,
+            ...prependPrompts,
             ...chatHistory,
             userPromptMessage,
         ],
@@ -71,7 +84,7 @@ export async function chatWithAI(
         chatHistory.shift();
     }
 
-    return reply;
+    return reply ?? "";
 }
 
 /**

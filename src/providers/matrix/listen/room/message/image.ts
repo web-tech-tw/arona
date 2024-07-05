@@ -20,12 +20,11 @@ export default async (
         throw new Error("Client is not initialized");
     }
 
-    const link = Link.use("matrix", roomId);
-    if (!link.exists()) return;
-
-    const sender = await MatrixSender.fromSenderId(event.sender);
+    const sender = await MatrixSender.fromRoomEvent(roomId, event);
     const imageUrl = client.mxcToHttp(event.content.url);
 
+    const link = Link.use("matrix", roomId);
+    if (!link.exists()) return;
     link.toBroadcastExcept("matrix", (provider, chatId) => {
         provider.imageUrl({sender, chatId, imageUrl});
     });

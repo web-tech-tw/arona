@@ -10,10 +10,6 @@ import {
     messagingClient,
 } from "./client";
 
-import {
-    CommandSource,
-} from "../../commands/types";
-
 /**
  * Get a profile from the source.
  * @param {EventSource} source
@@ -77,35 +73,4 @@ export function getStickerImageUrl(stickerId: string): string {
     const remoteFilename =
         `/stickershop/v1/sticker/${stickerId}/android/sticker.png`;
     return remoteHostname + remoteFilename;
-}
-
-/**
- * Get information of the source.
- * @param {EventSource} source
- * @return {CommandSource}
- */
-export function toCommandSource(source: EventSource): CommandSource {
-    const providerType = "line";
-    switch (source.type) {
-    case "user":
-        return {
-            providerType,
-            chatId: source.userId,
-            fromId: source.userId,
-        };
-    case "group":
-        return {
-            providerType,
-            chatId: source.groupId,
-            fromId: source.userId ?? "",
-        };
-    case "room":
-        return {
-            providerType,
-            chatId: source.roomId,
-            fromId: source.userId ?? "",
-        };
-    default:
-        throw new Error("Invalid source type.");
-    }
 }

@@ -50,7 +50,10 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public async text(params: SendTextParameters): Promise<void> {
-        const channel = await chatClient?.channels.fetch(params.chatId);
+        if (!chatClient) {
+            throw new Error("Client is not initialized.");
+        }
+        const channel = await chatClient.channels.fetch(params.chatId);
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
@@ -64,7 +67,10 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public async image(params: SendImageParameters): Promise<void> {
-        const channel = await chatClient?.channels.fetch(params.chatId);
+        if (!chatClient) {
+            throw new Error("Client is not initialized.");
+        }
+        const channel = await chatClient.channels.fetch(params.chatId);
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
@@ -80,7 +86,10 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
      * @return {Promise<void>}
      */
     public async imageUrl(params: SendImageUrlParameters): Promise<void> {
-        const channel = await chatClient?.channels.fetch(params.chatId);
+        if (!chatClient) {
+            throw new Error("Client is not initialized.");
+        }
+        const channel = await chatClient.channels.fetch(params.chatId);
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }

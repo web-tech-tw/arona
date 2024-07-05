@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import SenderBase from "../../types/sender";
 
 import {
@@ -7,7 +6,11 @@ import {
 
 import {
     MatrixClient,
+    MessageEvent,
+    MessageEventContent,
 } from "matrix-bot-sdk";
+
+const providerType = "matrix";
 
 /**
  * MatrixListenerClient
@@ -18,10 +21,10 @@ export class MatrixListenerClient extends MatrixClient {
     /**
      * Starts syncing the client with an optional filter
      * @override
-     * @param {any} filter The filter to use, or null for none
-     * @return {Promise<any>} Resolves when the client has started syncing
+     * @param {unknown} filter The filter to use, or null for none
+     * @return {Promise<unknown>} Resolves when the client has started syncing
      */
-    async start(filter?: any): Promise<any> {
+    async start(filter?: unknown): Promise<unknown> {
         this.identity = await this.getUserId();
         const joinedRooms = await this.getJoinedRooms();
         await this.crypto.prepare(joinedRooms);
@@ -34,22 +37,31 @@ export class MatrixListenerClient extends MatrixClient {
  */
 export class MatrixSender extends SenderBase {
     /**
-     * Create a Sender from Matrix Sender.
-     * @param {string} senderId - Matrix Sender
+     * Creates a new MatrixSender from a Matrix Room Event
+     * @param {string} roomId - Matrix Room ID
+     * @param {MessageEvent} event - Matrix Message Event
      * @return {Promise<Sender>}
      */
-    static async fromSenderId(senderId: string): Promise<MatrixSender> {
+    static async fromRoomEvent(
+        roomId: string,
+        event: MessageEvent<MessageEventContent>,
+    ): Promise<MatrixSender> {
         if (!client) {
             throw new Error("Client is not initialized");
         }
 
-        const profile = await client.getUserProfile(senderId);
+        const profile = await client.getUserProfile(event.sender);
         const displayName = profile.displayname;
         const pictureUrl = client.mxcToHttp(profile.avatar_url);
+        const chatId = roomId;
+        const fromId = event.sender;
+
         return new MatrixSender({
             displayName,
             pictureUrl,
-            providerType: "matrix",
+            providerType,
+            chatId,
+            fromId,
         });
     }
 }

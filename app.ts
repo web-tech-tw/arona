@@ -21,6 +21,7 @@ import LINESend from "./src/providers/line/send";
 import MatrixSend from "./src/providers/matrix/send";
 import DiscordSend from "./src/providers/discord/send";
 import TelegramSend from "./src/providers/telegram/send";
+import OpenaiSend from "./src/providers/openai/send";
 
 import {
     hookRouter,
@@ -35,6 +36,7 @@ await registerSendProviders([
     new MatrixSend(),
     new DiscordSend(),
     new TelegramSend(),
+    new OpenaiSend(),
 ]);
 
 // Register all listeners.

@@ -15,6 +15,8 @@ import {
     senders,
 } from "../registry";
 
+import Locale from "../locales";
+
 /**
  * The callback to send message.
  */
@@ -31,6 +33,7 @@ type LinkBridgeMapping = {[T in ProviderType]: string};
  */
 export default class Link {
     public key: string;
+    public localeCode: string = "en";
     public bridge?: LinkBridgeMapping;
 
     /**
@@ -76,6 +79,18 @@ export default class Link {
             return null;
         }
         return this.bridge[chatTo];
+    }
+
+    /**
+     * Set the locale code.
+     * @param {string} localeCode - The locale code.
+     * @return {void}
+     */
+    setLocaleCode(localeCode: string): void {
+        if (!Locale.checkCodeSupported(localeCode)) {
+            throw new Error("Unsupported locale code");
+        }
+        this.localeCode = localeCode;
     }
 
     /**
@@ -206,5 +221,13 @@ export default class Link {
                 callback(provider, chatId);
             }
         });
+    }
+
+    /**
+     * Get the locale.
+     * @return {Locale} The locale.
+     */
+    get locale(): Locale {
+        return new Locale(this.localeCode);
     }
 }

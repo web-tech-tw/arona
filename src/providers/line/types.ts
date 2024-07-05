@@ -9,6 +9,8 @@ import {
     getProfileFromSource,
 } from "./utils";
 
+const providerType = "line";
+
 export type Profile = {
     displayName: string;
     userId: string;
@@ -29,10 +31,32 @@ export class LINESender extends SenderBase {
         if (!profile) {
             throw new Error("Failed to get profile from source");
         }
+
+        let chatId: string;
+        let fromId: string;
+        switch (source.type) {
+        case "user":
+            chatId = source.userId;
+            fromId = source.userId;
+            break;
+        case "group":
+            chatId = source.groupId;
+            fromId = source.userId ?? "";
+            break;
+        case "room":
+            chatId = source.roomId;
+            fromId = source.userId ?? "";
+            break;
+        default:
+            throw new Error("Invalid source type.");
+        }
+
         return new LINESender({
             displayName: profile.displayName,
             pictureUrl: profile.pictureUrl,
-            providerType: "line",
+            providerType,
+            chatId,
+            fromId,
         });
     }
 

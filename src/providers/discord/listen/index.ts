@@ -15,6 +15,10 @@ import {
     chatClient,
 } from "../client";
 
+import {
+    registerCommands,
+} from "./interaction_create/commands";
+
 import interactionCreate from "./interaction_create";
 import messageCreate from "./message_create";
 import guildCreate from "./guild_create";
@@ -42,8 +46,17 @@ export default class DiscordListen
      * Listen.
      */
     async listen(): Promise<void> {
+        if (!chatClient) {
+            throw new Error("Client is not initialized.");
+        }
+
+        const allGuilds = await chatClient.guilds.fetch();
+        for (const guild of allGuilds.values()) {
+            await registerCommands(guild);
+        }
+
         for (const [key, trigger] of Object.entries(events)) {
-            chatClient?.on(key, trigger);
+            chatClient.on(key, trigger);
         }
     }
 }

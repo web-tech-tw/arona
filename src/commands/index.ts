@@ -11,15 +11,20 @@ import {
     providers,
 } from "../types/provider";
 
-import Pair from "../types/pair";
-import Link from "../types/link";
+import {
+    nanoid,
+} from "nanoid";
 
 import {
     chatWithAI,
 } from "../providers/openai/client";
+
 import {
     createNotifyAuthUrl,
 } from "../providers/line/client";
+
+import Pair from "../types/pair";
+import Link from "../types/link";
 import NotifyLink from "../types/notify_link";
 
 const {
@@ -65,6 +70,50 @@ export const commands: CommandMethodList = {
             name: "question",
             type: "string",
             description: "The question to ask the AI",
+            required: true,
+        }],
+    },
+    "aiLink": {
+        description: "Link with AI chat",
+        method: async ({source, reply}) => {
+            const link = Link.use(
+                source.providerType,
+                source.chatId,
+            );
+            const aiChatId = nanoid();
+            link.connect("openai", aiChatId);
+            link.save();
+            reply("AI chat linked");
+        },
+    },
+    "aiUnlink": {
+        description: "Unlink with AI chat",
+        method: async ({source, reply}) => {
+            const link = Link.use(
+                source.providerType,
+                source.chatId,
+            );
+            link.disconnect("openai");
+            link.save();
+            reply("AI chat unlinked");
+        },
+    },
+    "setLocaleCode": {
+        description: "Set locale",
+        method: async ({args, source, reply}) => {
+            const localeCode = args[1];
+            const link = Link.use(
+                source.providerType,
+                source.chatId,
+            );
+            link.setLocaleCode(localeCode);
+            link.save();
+            reply(`Locale set to ${localeCode}`);
+        },
+        options: [{
+            name: "locale",
+            type: "string",
+            description: "The locale to set",
             required: true,
         }],
     },

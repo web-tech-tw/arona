@@ -62,7 +62,7 @@ export function sendTextMessage(
     text: string,
 ): Promise<AxiosResponse> {
     const message: Message = {
-        message: `${sender.prefix}\n${text}`,
+        message: `\n${sender.prefix}\n${text}`,
     };
     return sendMessage(chatId, message);
 }
@@ -81,7 +81,7 @@ export function sendImageMessage(
     imageUrl: string,
 ): Promise<AxiosResponse> {
     const message: Message = {
-        message: `${sender.prefix}\nSent an image.`,
+        message: `\n${sender.prefix}\nSent an image.`,
         imageFullsize: imageUrl,
         imageThumbnail: imageUrl,
     };

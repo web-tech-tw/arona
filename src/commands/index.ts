@@ -19,7 +19,8 @@ import {
 } from "../providers/openai/client";
 import {
     createNotifyAuthUrl,
-} from "../providers/line/send/notify";
+} from "../providers/line/client";
+import NotifyLink from "../types/notify_link";
 
 const {
     line: lineConfig,
@@ -67,6 +68,16 @@ export const commands: CommandMethodList = {
             required: true,
         }],
     },
+    "datetime": {
+        description: "Get current date and time",
+        method: ({locale, reply}) => {
+            const date = new Date();
+            reply(
+                `${locale.text("current_datetime")}:\n` +
+                `${date}`,
+            );
+        },
+    },
     "chatId": {
         description: "Get chat ID",
         method: ({source, locale, reply}) => {
@@ -89,9 +100,16 @@ export const commands: CommandMethodList = {
                 `${locale.text("pairing_id")}: ${pairId}\n\n` +
                 `${locale.text("pairing_notice")}:\n` +
                 `/pairLink ${pairId}`;
-            if (source.providerType === "line" && notifyEnable) {
-                const url = createNotifyAuthUrl(source.chatId);
-                message += `\n\n${url}`;
+
+            const notifyLink = NotifyLink.use(source.chatId);
+            if (
+                source.providerType === "line" &&
+                notifyEnable && !notifyLink.exists()
+            ) {
+                message += "\n\n";
+                message += locale.text("notify_enable_notice");
+                message += "\n";
+                message += createNotifyAuthUrl(source.chatId);
             }
             reply(message);
         },
@@ -154,7 +172,18 @@ export const commands: CommandMethodList = {
             link.save();
             pair.delete();
 
-            reply(locale.text("pairing_success"));
+            let message: string = locale.text("pairing_success");
+            const notifyLink = NotifyLink.use(source.chatId);
+            if (
+                source.providerType === "line" &&
+                notifyEnable && !notifyLink.exists()
+            ) {
+                message += "\n\n";
+                message += locale.text("notify_enable_notice");
+                message += "\n";
+                message += createNotifyAuthUrl(source.chatId);
+            }
+            reply(message);
         },
         options: [{
             name: "pairId",
@@ -176,6 +205,13 @@ export const commands: CommandMethodList = {
             }
             link.disconnect(source.providerType);
             link.save();
+
+            if (source.providerType === "line" && notifyEnable) {
+                const notifyLink = NotifyLink.use(source.chatId);
+                if (notifyLink.exists()) {
+                    notifyLink.remove();
+                }
+            }
             reply(locale.text("pairing_removed"));
         },
     },

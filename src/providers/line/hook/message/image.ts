@@ -16,6 +16,10 @@ import {
     messagingBlobClient as blobClient,
 } from "../../client";
 
+import {
+    readAll,
+} from "../../../../utils";
+
 export default async (event: MessageEvent): Promise<void> => {
     if (!blobClient) {
         throw new Error("Client is not initialized.");
@@ -32,14 +36,8 @@ export default async (event: MessageEvent): Promise<void> => {
         messageId,
     );
 
-    const contentChunks: Buffer[] = [];
-    for await (const chunk of contentStream) {
-        contentChunks.push(chunk as never);
-    }
-
     const sender = await LINESender.fromEventSource(event.source);
-    const imageBuffer = Buffer.concat(contentChunks);
-
+    const imageBuffer = await readAll(contentStream);
     link.toBroadcastExcept("line", (provider, chatId) =>
         provider.image({sender, chatId, imageBuffer}),
     );

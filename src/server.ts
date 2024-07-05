@@ -14,6 +14,10 @@ import express, {
 } from "express";
 
 import {
+    existsSync,
+} from "fs";
+
+import {
     readFile,
     writeFile,
     unlink,
@@ -54,6 +58,19 @@ export function staticFileHttpUrl(
     const name = `file_${filename}`;
     const {baseUrl} = httpConfig();
     return `${baseUrl}/static/${name}`;
+}
+
+/**
+ * Check if a static file exists.
+ * @param {string} filename - The filename.
+ * @return {boolean} - The result.
+ */
+export function existsStaticFile(
+    filename: string,
+): boolean {
+    const name = `file_${filename}`;
+    const pathUrl = new URL(name, staticBasePathUrl);
+    return existsSync(pathUrl);
 }
 
 /**

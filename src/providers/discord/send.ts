@@ -69,7 +69,7 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
             throw new Error("Channel is not a text channel");
         }
         channel.send({
-            content: params.sender.prefix,
+            content: `${params.sender.prefix}\nSent an image.`,
             files: [params.imageBuffer],
         });
     }
@@ -84,6 +84,10 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
         if (!channel || !channel.isTextBased()) {
             throw new Error("Channel is not a text channel");
         }
-        channel.send(`${params.sender.prefix}\n${params.imageUrl}`);
+        channel.send(
+            `${params.sender.prefix}\n` +
+            "Sent an image\n" +
+            `${params.imageUrl}`,
+        );
     }
 }

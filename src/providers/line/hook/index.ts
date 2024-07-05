@@ -27,7 +27,7 @@ import {
 import message from "./message";
 import {
     authNotifyCode,
-} from "../send/notify";
+} from "../client";
 
 type EventMethod = (event: WebhookEvent) =>
     Promise<void> | void;
@@ -136,17 +136,27 @@ export default class LINEHook extends ProviderBase implements HookProvider {
     async notifyAuth(req: Request, res: Response): Promise<void> {
         const {state, code} = req.query;
         if (!state || !code) {
-            res.status(400).json({
-                status: "error",
-            });
+            res.status(400).send(`
+                <div><b>LINE Notify has not been authorized!</b></div>
+                <div>Missing state or code.</div>
+            `);
             return;
         }
-        await authNotifyCode(
-            state as string,
-            code as string,
-        );
-        res.status(200).json({
-            status: "success",
-        });
+        try {
+            await authNotifyCode(
+                state as string,
+                code as string,
+            );
+            res.status(200).send(`
+                <div><b>LINE Notify has been authorized!</b></div>
+                <div>You can close this page now.</div>
+            `);
+        } catch (e: unknown) {
+            console.error(`Error occurred with notifyAuth: ${e}`);
+            res.status(500).send(`
+                <div><b>LINE Notify has not been authorized!</b></div>
+                <div>Internal error</div>
+            `);
+        }
     }
 }

@@ -11,7 +11,7 @@ export type CommandSource = {
 };
 
 export type CommandReply = (
-    message: string,
+    text: string,
 ) => Promise<void> | void;
 
 export type CommandMethodParameters = {

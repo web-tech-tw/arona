@@ -40,6 +40,8 @@ export default async (event: MessageEvent): Promise<void> => {
                 throw new Error("Client is not initialized");
             }
 
+            const sender = new LINESender({});
+            text = `${sender.prefix}\n${text}`;
             messagingClient.replyMessage({
                 replyToken: event.replyToken,
                 messages: [{

@@ -97,13 +97,13 @@ export function toCommandSource(source: EventSource): CommandSource {
         return {
             providerType,
             chatId: source.groupId,
-            fromId: source.userId || "",
+            fromId: source.userId ?? "",
         };
     case "room":
         return {
             providerType,
             chatId: source.roomId,
-            fromId: source.userId || "",
+            fromId: source.userId ?? "",
         };
     default:
         throw new Error("Invalid source type.");

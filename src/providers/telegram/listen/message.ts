@@ -21,20 +21,27 @@ import {
     client,
 } from "../client";
 
+import {
+    readAll,
+} from "../../../utils";
+
 import Locale from "../../../locales";
 
 export default async (message: Message) => {
     if (!client) {
         throw new Error("Client is not initialized");
     }
+    if (!message.from) {
+        throw new Error("Message does not have a sender");
+    }
 
-    const text = message.text || "";
+    const text = message.text ?? "";
 
     const args = textToArguments(text, "/");
     const source: CommandSource = {
         providerType: "telegram",
         chatId: message.chat.id.toString(),
-        fromId: message.from?.id.toString() || "",
+        fromId: message.from?.id.toString() ?? "",
     };
     if (args) {
         const locale = new Locale("en");
@@ -42,6 +49,8 @@ export default async (message: Message) => {
             if (!client) {
                 throw new Error("Client is not initialized");
             }
+            const sender = new TelegramSender({});
+            text = `${sender.prefix}\n${text}`;
             client.sendMessage(
                 source.chatId,
                 text,
@@ -59,7 +68,7 @@ export default async (message: Message) => {
     const link = Link.use(providerType, source.chatId);
     if (!link.exists()) return;
 
-    const sender = TelegramSender.fromMessageFromUser(message.from);
+    const sender = await TelegramSender.fromMessageFromUser(message.from);
     if (text) {
         link.toBroadcastExcept(providerType, (provider, chatId) => {
             provider.text({sender, chatId, text});
@@ -68,15 +77,11 @@ export default async (message: Message) => {
 
     if (message.photo) {
         const photo = message.photo[message.photo.length - 1];
-        const stream = client?.getFileStream(photo.file_id);
+        const stream = client.getFileStream(photo.file_id);
         if (!stream) {
             throw new Error("Failed to get file stream");
         }
-        const contentChunks: Buffer[] = [];
-        for await (const chunk of stream) {
-            contentChunks.push(chunk as never);
-        }
-        const imageBuffer = Buffer.concat(contentChunks);
+        const imageBuffer = await readAll(stream);
         link.toBroadcastExcept(providerType, (provider, chatId) => {
             provider.image({sender, chatId, imageBuffer});
         });

@@ -42,6 +42,8 @@ export default async (
                 throw new Error("Client is not initialized");
             }
 
+            const sender = new MatrixSender({});
+            text = `${sender.prefix}\n${text}`;
             client.sendMessage(roomId, {
                 msgtype: "m.notice",
                 body: text,

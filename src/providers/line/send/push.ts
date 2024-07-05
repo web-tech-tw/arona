@@ -64,7 +64,7 @@ export function sendImageMessage(
     const message: ImageMessage = {
         type: "image",
         originalContentUrl: imageUrl,
-        previewImageUrl: options.thumbnailUrl || imageUrl,
+        previewImageUrl: options.thumbnailUrl ?? imageUrl,
     };
     return chatClient.pushMessage({
         to: chatId,

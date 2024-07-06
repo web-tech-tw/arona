@@ -1,0 +1,12 @@
+{
+	"invalid_arguments": "Invalid arguments",
+	"current_datetime": "Current date and time",
+	"chat_id_here": "Here is your chat ID",
+	"pairing_id": "Pairing ID",
+	"pairing_id_invalid": "Invalid pairing ID",
+	"pairing_notice": "Please send the following command to the target chat room",
+	"pairing_success": "Pairing successful",
+	"pairing_not_exists": "No pairing exists",
+	"pairing_removed": "Pairing removed",
+	"notify_enable_notice": "LINE Notify has been enabled, please authorize the \"LINE Notify\" bot to send messages to your chat, and invite the \"LINE Notify\" bot into the chat, or we will never could be sent any message to you:"
+}

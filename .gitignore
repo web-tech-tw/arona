@@ -2,7 +2,8 @@
 node_modules
 /dist
 /data
-.env
+/static/file_*
+config.yaml
 
 # Log files
 npm-debug.log*

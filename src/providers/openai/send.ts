@@ -45,6 +45,9 @@ export default class OpenaiSend extends ProviderBase implements SendProvider {
         if (!aiChatId) {
             throw new Error("OpenAI chat ID is not set");
         }
+        if (!text.startsWith("Arona")) {
+            return;
+        }
         const response = await chatWithAI(aiChatId, text);
         const aiSender = Sender.arona();
         sender.roomLink.toBroadcastExcept(this.type, (provider, chatId) =>

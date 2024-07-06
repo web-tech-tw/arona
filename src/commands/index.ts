@@ -17,10 +17,6 @@ import {
 } from "nanoid";
 
 import {
-    chatWithAI,
-} from "../providers/openai/client";
-
-import {
     createNotifyAuthUrl,
 } from "../providers/line/client";
 
@@ -80,24 +76,6 @@ export const commandExecutor = async (
 };
 
 export const commands: CommandMethodList = {
-    "ai": {
-        description: "Query with artificial intelligence",
-        method: async ({source, args, reply}) => {
-            if (!openaiEnable) {
-                reply("AI is not enabled");
-                return;
-            }
-            const question = args.slice(1).join(" ");
-            const response = await chatWithAI(source.chatId, question);
-            reply(response);
-        },
-        options: [{
-            name: "question",
-            type: "string",
-            description: "The question to ask the AI",
-            required: true,
-        }],
-    },
     "aiLink": {
         description: "Link with artificial intelligence conversation",
         method: async ({source, reply}) => {

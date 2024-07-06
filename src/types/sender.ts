@@ -1,4 +1,8 @@
 import {
+    httpConfig,
+} from "../config";
+
+import {
     ProviderType,
     providers,
 } from "./provider";
@@ -88,9 +92,12 @@ export default class Sender {
      * @return {Sender}
      */
     public static arona(): Sender {
-        const sender = this.system();
-        sender.displayName = "Arona";
-        return sender;
+        const {baseUrl} = httpConfig();
+        return new Sender({
+            providerType: "openai",
+            displayName: "Arona",
+            pictureUrl: `${baseUrl}/static/arona.png`,
+        });
     }
 
     /**

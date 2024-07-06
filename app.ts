@@ -6,7 +6,13 @@ import {
 } from "./src/config";
 
 // Import the application.
-import {app, indexHandler, staticHandler} from "./src/server";
+import {
+    app,
+    indexHandler,
+    heartHandler,
+    staticHandler,
+    checkHeartCode,
+} from "./src/server";
 
 // Import listen providers.
 import MatrixListen from "./src/providers/matrix/listen";
@@ -57,6 +63,9 @@ app.get("/", indexHandler);
 // This route is used to serve static files.
 app.use("/static", staticHandler);
 
+// This route is used to handle the heart.
+app.get("/heart", heartHandler);
+
 // This route is used to handle the hooks.
 app.use("/hooks", hookRouter);
 
@@ -72,4 +81,5 @@ app.listen(bindPort, bindHost, () => {
     console.info("===");
     console.info("The perfectest bridging for every messenger.");
     console.info(`Listening on http://${bindHost}:${bindPort}`);
+    checkHeartCode();
 });

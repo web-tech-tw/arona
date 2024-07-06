@@ -6,6 +6,8 @@ import {
 } from "./config";
 
 // Import dependencies.
+import axios from "axios";
+
 import express, {
     Application,
     Request,
@@ -14,14 +16,18 @@ import express, {
 } from "express";
 
 import {
+    nanoid,
+} from "nanoid";
+
+import {
     existsSync,
-} from "fs";
+} from "node:fs";
 
 import {
     readFile,
     writeFile,
     unlink,
-} from "fs/promises";
+} from "node:fs/promises";
 
 // Create a new Express application.
 export const app: Application = express();
@@ -39,6 +45,48 @@ export const indexHandler = async (
         </div>
     `);
 };
+
+// Define the heart code.
+const heartCode = nanoid();
+
+// Define the heart handler.
+export const heartHandler = async (
+    _req: Request,
+    res: Response,
+): Promise<Response> => {
+    return res.status(200).json({
+        heart: heartCode,
+    });
+};
+
+/**
+ * Check if the heart code is correct.
+ * @return {Promise<void>}
+ */
+export async function checkHeartCode(): Promise<void> {
+    const {baseUrl} = httpConfig();
+    let heartCodeActual = "";
+    try {
+        const response = await axios.get(`${baseUrl}/heart`);
+        heartCodeActual = response.data.heart;
+    } catch (error: unknown) {
+        console.error(error);
+        throw new Error(
+            "Cannot check the heart code, " +
+            "base URL might be incorrect, " +
+            "or the server is not running, " +
+            "please check the configuration.",
+        );
+    }
+    if (heartCodeActual !== heartCode) {
+        throw new Error(
+            "Heart code is incorrect, " +
+            "the api server of base URL pointed " +
+            "might be not the same to this one, " +
+            "please check the configuration.",
+        );
+    }
+}
 
 // Define the static directory path.
 export const staticBasePathUrl = new URL("../static/", import.meta.url);

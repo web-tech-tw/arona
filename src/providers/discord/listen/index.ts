@@ -17,7 +17,7 @@ import {
 
 import {
     registerCommands,
-} from "./interaction_create/commands";
+} from "../client";
 
 import interactionCreate from "./interaction_create";
 import messageCreate from "./message_create";
@@ -51,9 +51,9 @@ export default class DiscordListen
         }
 
         const allGuilds = await chatClient.guilds.fetch();
-        for (const guild of allGuilds.values()) {
-            await registerCommands(guild);
-        }
+        await Promise.all(Array.from(allGuilds.values()).map(
+            (guild) => registerCommands(guild),
+        ));
 
         for (const [key, trigger] of Object.entries(events)) {
             chatClient.on(key, trigger);

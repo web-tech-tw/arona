@@ -10,10 +10,6 @@ import {
     commands,
 } from "../../../../commands";
 
-import {
-    CommandSource,
-} from "../../../../commands/types";
-
 const snakeToCamelCase = (str) =>
     str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
         group
@@ -36,11 +32,7 @@ export default async (interaction: Interaction) => {
         const args = [actionName, ...interaction.options.data.map(
             (option) => option.value?.toString() ?? "",
         )];
-        const source: CommandSource = {
-            providerType: "discord",
-            chatId: interaction.channelId,
-            fromId: interaction.user.id,
-        };
+        const source = sender.commandSource;
         const reply = async (text: string) => {
             await interaction.reply(
                 DiscordSender.systemMessage(text),

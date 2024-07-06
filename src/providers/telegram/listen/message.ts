@@ -8,10 +8,6 @@ import {
 } from "../../../commands";
 
 import {
-    CommandMethodParameters,
-} from "../../../commands/types";
-
-import {
     TelegramSender,
 } from "../types";
 import {
@@ -39,24 +35,20 @@ export default async (message: Message) => {
 
     const args = textToArguments(text, "/");
     if (args) {
-        const locale = sender.roomLink.locale;
-        const source = sender.commandSource;
-        const reply = async (text: string): Promise<void> => {
-            if (!client) {
-                throw new Error("Client is not initialized");
-            }
-            if (!sender.chatId) {
-                throw new Error("Chat ID is not set");
-            }
-            client.sendMessage(
-                sender.chatId,
-                TelegramSender.systemMessage(text),
-            );
-        };
-        const params: CommandMethodParameters = {
-            args, source, locale, reply, sender,
-        };
-        await commandExecutor(params);
+        await commandExecutor(
+            args, sender, async (text: string): Promise<void> => {
+                if (!client) {
+                    throw new Error("Client is not initialized");
+                }
+                if (!sender.chatId) {
+                    throw new Error("Chat ID is not set");
+                }
+                client.sendMessage(
+                    sender.chatId,
+                    TelegramSender.systemMessage(text),
+                );
+            },
+        );
         return;
     }
 

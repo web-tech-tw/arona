@@ -3,6 +3,7 @@ import {
 } from "../config";
 
 import {
+    CommandReply,
     CommandMethodList,
     CommandMethodParameters,
 } from "./types";
@@ -23,47 +24,71 @@ import {
     createNotifyAuthUrl,
 } from "../providers/line/client";
 
+import Sender from "../types/sender";
 import Pair from "../types/pair";
 import Link from "../types/link";
 import NotifyLink from "../types/notify_link";
 
 const {
     line: lineConfig,
+    openai: openaiConfig,
 } = bridgeProviderConfig();
 
 const {
     notifyEnable,
 } = lineConfig;
 
+const {
+    enable: openaiEnable,
+} = openaiConfig;
+
 export const textToArguments = (
     text: string,
     trigger: string,
+    limit: number = -1,
 ): Array<string> | null => {
     if (!text.startsWith(trigger)) {
         return null;
     }
-    return text.substring(1).split(" ");
+    const commad = text.substring(trigger.length);
+    return commad.split(" ", limit);
 };
 
 export const commandExecutor = async (
-    params: CommandMethodParameters,
+    args: Array<string>,
+    sender: Sender,
+    reply: CommandReply,
 ): Promise<void> => {
-    const {args} = params;
     const key = args[0];
     if (!(key in commands)) {
         return;
     }
     const {
-        method,
-    } = commands[key];
+        commandSource: source,
+        roomLink: {locale},
+    } = sender;
+    const {method, options} = commands[key];
+    const optionsLength = options?.length ?? 0;
+    if (args.length - 1 < optionsLength) {
+        reply(locale.text("invalid_arguments"));
+        return;
+    }
+    const params: CommandMethodParameters = {
+        args, source, locale, reply, sender,
+    };
     await method(params);
 };
 
 export const commands: CommandMethodList = {
     "ai": {
-        description: "AI chat",
+        description: "Query with artificial intelligence",
         method: async ({source, args, reply}) => {
-            const response = await chatWithAI(source.chatId, args[1]);
+            if (!openaiEnable) {
+                reply("AI is not enabled");
+                return;
+            }
+            const question = args.slice(1).join(" ");
+            const response = await chatWithAI(source.chatId, question);
             reply(response);
         },
         options: [{
@@ -74,8 +99,12 @@ export const commands: CommandMethodList = {
         }],
     },
     "aiLink": {
-        description: "Link with AI chat",
+        description: "Link with artificial intelligence conversation",
         method: async ({source, reply}) => {
+            if (!openaiEnable) {
+                reply("AI is not enabled");
+                return;
+            }
             const link = Link.use(
                 source.providerType,
                 source.chatId,
@@ -87,8 +116,12 @@ export const commands: CommandMethodList = {
         },
     },
     "aiUnlink": {
-        description: "Unlink with AI chat",
+        description: "Unlink from artificial intelligence conversation",
         method: async ({source, reply}) => {
+            if (!openaiEnable) {
+                reply("AI is not enabled");
+                return;
+            }
             const link = Link.use(
                 source.providerType,
                 source.chatId,
@@ -98,8 +131,8 @@ export const commands: CommandMethodList = {
             reply("AI chat unlinked");
         },
     },
-    "setLocaleCode": {
-        description: "Set locale",
+    "setLocale": {
+        description: "Set locale code for the chat",
         method: async ({args, source, reply}) => {
             const localeCode = args[1];
             const link = Link.use(
@@ -128,7 +161,7 @@ export const commands: CommandMethodList = {
         },
     },
     "chatId": {
-        description: "Get chat ID",
+        description: "Get the ID of the chat",
         method: ({source, locale, reply}) => {
             const {chatId} = source;
             reply(
@@ -138,7 +171,7 @@ export const commands: CommandMethodList = {
         },
     },
     "pair": {
-        description: "Pair with another chat",
+        description: "Start pairing with another chat",
         method: ({source, locale, reply}) => {
             const pair = new Pair({
                 chatFrom: source.providerType,
@@ -189,7 +222,7 @@ export const commands: CommandMethodList = {
         },
     },
     "pairLink": {
-        description: "Link with another chat",
+        description: "Link the chat with the pairing",
         method: async ({source, args, locale, reply}) => {
             const pair = Pair.find(args[1]);
             if (!pair || pair.chatFrom === source.providerType) {
@@ -242,7 +275,7 @@ export const commands: CommandMethodList = {
         }],
     },
     "pairUnlink": {
-        description: "Unlink with another chat",
+        description: "Unlink the chat from the pairing",
         method: async ({source, locale, reply}) => {
             const link = Link.use(
                 source.providerType,
@@ -264,4 +297,30 @@ export const commands: CommandMethodList = {
             reply(locale.text("pairing_removed"));
         },
     },
+    "help": {
+        description: "Show the help message",
+        method: ({reply}) => {
+            const message = helpMessage();
+            reply(message);
+        },
+    },
 };
+
+/**
+ * Generate help message
+ * @return {string}
+ */
+function helpMessage(): string {
+    return "Commands: " + Object.entries(commands).map(
+        ([key, {description, options}]) => {
+            let message = `/${key}: ${description}`;
+            if (options) {
+                message += "\n  " + options.map(
+                    ({name, description}) =>
+                        `${name} - ${description}`,
+                ).join("\n");
+            }
+            return message;
+        },
+    ).join("\n\n");
+}

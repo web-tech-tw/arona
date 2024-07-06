@@ -12,9 +12,6 @@ import {
     commandExecutor,
     textToArguments,
 } from "../../../../../commands";
-import {
-    CommandMethodParameters,
-} from "../../../../../commands/types";
 
 import {
     client,
@@ -29,22 +26,18 @@ export default async (
 
     const args = textToArguments(text, "/");
     if (args) {
-        const locale = sender.roomLink.locale;
-        const source = sender.commandSource;
-        const reply = async (text: string): Promise<void> => {
-            if (!client) {
-                throw new Error("Client is not initialized");
-            }
+        await commandExecutor(
+            args, sender, async (text: string): Promise<void> => {
+                if (!client) {
+                    throw new Error("Client is not initialized");
+                }
 
-            client.sendMessage(roomId, {
-                msgtype: "m.notice",
-                body: MatrixSender.systemMessage(text),
-            });
-        };
-        const params: CommandMethodParameters = {
-            args, source, locale, reply, sender,
-        };
-        await commandExecutor(params);
+                client.sendMessage(roomId, {
+                    msgtype: "m.notice",
+                    body: MatrixSender.systemMessage(text),
+                });
+            },
+        );
         return;
     }
 

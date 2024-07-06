@@ -4,7 +4,7 @@ import {
 
 import {
     registerCommands,
-} from "../interaction_create/commands";
+} from "../../client";
 
 /**
  * @param {Guild} guild

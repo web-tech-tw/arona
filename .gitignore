@@ -4,6 +4,8 @@ node_modules
 /data
 /static/file_*
 config.yaml
+docs/.vitepress/dist
+docs/.vitepress/cache
 
 # Log files
 npm-debug.log*

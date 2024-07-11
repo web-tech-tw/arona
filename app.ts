@@ -79,7 +79,7 @@ const {
 app.listen(bindPort, bindHost, () => {
     console.info("Arona");
     console.info("===");
-    console.info("The perfectest bridging for every messenger.");
+    console.info("A simple bridge for every messenger.");
     console.info(`Listening on http://${bindHost}:${bindPort}`);
     checkHeartCode();
 });

@@ -1,7 +1,7 @@
 {
   "name": "arona",
   "version": "1.0.0",
-  "description": "The bridge for Matrix to connect with LINE via Messaging API.",
+  "description": "A simple bridge for every messenger.",
   "author": "Taiwan Web Technology Promotion Organization",
   "license": "MIT",
   "main": "app.ts",
@@ -11,7 +11,10 @@
     "start": "tsx app.ts",
     "matrix-access": "tsx matrix_access.ts",
     "lint": "eslint \"app.ts\" \"matrix_access.ts\" \"src/**/*.ts\"",
-    "lint:fix": "eslint \"app.ts\" \"matrix_access.ts\" \"src/**/*.ts\" --fix"
+    "lint:fix": "eslint \"app.ts\" \"matrix_access.ts\" \"src/**/*.ts\" --fix",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@line/bot-sdk": "^9.2.2",
@@ -40,6 +43,7 @@
     "@typescript-eslint/parser": "^7.9.0",
     "eslint": "^8.56.0",
     "eslint-config-google": "^0.14.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitepress": "^1.3.0"
   }
 }

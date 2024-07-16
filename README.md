@@ -1,10 +1,8 @@
 # Arona
 
-The perfectest bridging for every messenger.
+A simple bridge for every messenger.
 
-[Bridge](https://matrix.org/bridges/) is the idea makes **[Matrix](https://matrix.org)** cross connecting every Instant Message Providers.
-
-![Arona](icon.min.png)
+![Arona](docs/statics/icon.min.png)
 
 ## Documentation
 

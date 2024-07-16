@@ -40,7 +40,7 @@ export const indexHandler = async (
     return res.status(200).send(`
         <div>
             <b>Arona</b><br />
-            The perfectest bridging for every messenger.<br />
+            A simple bridge for every messenger.<br />
             <a href="https://github.com/web-tech-tw/arona">GitHub</a>
         </div>
     `);

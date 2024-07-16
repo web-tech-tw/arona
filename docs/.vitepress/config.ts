@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitepress'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Arona",
+  base: isProduction ? "/arona/" : "/",
   description: "A simple bridge for every messenger.",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config

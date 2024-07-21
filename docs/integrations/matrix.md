@@ -1,6 +1,10 @@
 # Matrix
 
-Matrix is a powerful tool for managing your data. It allows you to create a table of data with rows and columns. You can use it to store data, perform calculations, and visualize data. Matrix is a great tool for organizing and analyzing data.
+[Matrix](https://matrix.org) is a instant messaging protocol that allows you to communicate with other users in real-time.
+
+You can use the Matrix integration to send messages to a Matrix room from your bot.
+
+![Matrix](../statics/brands/Matrix.png)
 
 ## Prerequisites
 
@@ -19,4 +23,4 @@ To set up the Matrix integration, you need to create a Matrix room in your Matri
 3. Click on the "Create room" button.
 4. Enter the room name and description.
 
-![Matrix Pairing](../statics/matrix_pairing.png)
+![Matrix Pairing](../statics/screenshots/matrix_pairing.png)

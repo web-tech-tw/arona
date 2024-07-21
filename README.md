@@ -10,4 +10,4 @@ Matrix room: [`#line:matrix.org`](https://matrix.to/#/#line:matrix.org)
 
 ## Documentation
 
-The documents and instructions is available [the website](https://web-tech-tw.github.io/arona).
+The documents and instructions are available on [our website](https://web-tech-tw.github.io/arona).

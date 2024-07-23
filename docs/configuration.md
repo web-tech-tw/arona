@@ -2,6 +2,14 @@
 
 To configure the Arona, you need to create a configuration file named `config.yaml` in the root directory of the project.
 
+> **⚠️ Public Access From The Internet Required**
+>
+> You must fill the `baseUrl` field in the `config.yaml` file with the URL that can be accessed from the internet.
+>
+> Otherwise, the bridge will not work properly. (Throwing an error like `Error: Cannot check the heart code...`)
+>
+> If you don't have a public IP address, see the [Localtunnel](get-started#localtunnel-optional) section.
+
 ## Configuration File
 
 The configuration file is a YAML file that contains the configuration for the Arona.
@@ -20,7 +28,7 @@ bridge:
 bridgeProvider:
   # OpenAI
   openai:
-    enable: true
+    enable: false
     # https://github.com/ai-tech-tw/openai
     baseUrl: "https://web-tech-tw.eu.org/openai/v1"
     apiKey: "YourGeminiApiKey"
@@ -28,16 +36,16 @@ bridgeProvider:
 
   # LINE
   line:
-    enable: true
+    enable: false
     channelAccessToken: "YourChannelAccessToken"
     channelSecret: "YourChannelSecret"
-    useNotify: true
+    useNotify: false
     notifyClientId: "YourClientID"
     notifyClientSecret: "YourClientSecret"
 
   # Matrix
   matrix:
-    enable: true
+    enable: false
     homeserverUrl: "https://matrix.org"
     accessToken: "YourSecretAccessToken"
 
@@ -52,6 +60,10 @@ bridgeProvider:
     enable: false
     botToken: "YourBotToken"
 ```
+
+Configuration File is related to what you want to do with Arona.
+
+You can [enable or disable the providers you want to use](#bridgeprovider).
 
 ## Configuration Options
 
@@ -82,9 +94,9 @@ The `http` option is used to configure the HTTP server.
 
 The `bridge` option is used to configure the bridge.
 
-| Option   | Description                          |
-| -------- | ------------------------------------ |
-| `public` | Whether the bridge is public or not. |
+| Option   | Description                                      |
+| -------- | ------------------------------------------------ |
+| `public` | Whether the bridge can be used by public or not. |
 
 ### `bridgeProvider`
 

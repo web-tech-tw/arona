@@ -2,6 +2,8 @@
 
 OpenAI is a research lab consisting of the for-profit OpenAI LP and the non-profit OpenAI Inc. The organization aims to ensure that artificial general intelligence (AGI) benefits all of humanity. OpenAI is funded by a group of technology executives and investors, including Elon Musk, Reid Hoffman, and Peter Thiel.
 
+![OpenAI](../statics/brands/OpenAI.png)
+
 ## Introduction
 
 The OpenAI integration allows you to interact with the OpenAI API to generate text, images, and more. You can use this integration to create AI-powered workflows that generate content, answer questions, and more.

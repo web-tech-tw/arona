@@ -5,7 +5,7 @@ hero:
   name: Arona
   text: "A simple bridge for every messenger."
   tagline: Sending your messages from anywhere to everywhere!
-  image: statics/icon.min.png
+  image: https://raw.githubusercontent.com/web-tech-tw/arona/main/docs/statics/icon.min.png
   actions:
     - theme: brand
       text: GitHub

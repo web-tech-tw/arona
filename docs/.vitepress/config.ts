@@ -85,6 +85,9 @@ export default defineConfig({
     footer: {
       message: "MIT Licensed",
       copyright: "Copyright © 2024 Taiwan Web Technology Promotion Organization (Web Tech TW)"
-    }
+    },
+    search: {
+      provider: 'local'
+    },
   },
 })

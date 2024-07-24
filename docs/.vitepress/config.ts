@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import { pagefindPlugin } from 'vitepress-plugin-pagefind'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -86,8 +87,10 @@ export default defineConfig({
       message: "MIT Licensed",
       copyright: "Copyright © 2024 Taiwan Web Technology Promotion Organization (Web Tech TW)"
     },
-    search: {
-      provider: 'local'
-    },
+  },
+  vite: {
+    plugins: [
+      pagefindPlugin(),
+    ],
   },
 })

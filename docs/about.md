@@ -1,15 +1,15 @@
 # 🔮 About
 
-Hello!
-
-This is the bridge for LINE and Matrix,
-
-to communicate with the chat room which belongs to both of the different providers.
+This is the bridge to exchange messages from different instant messaging platforms.
 
 ![logo](statics/icon.min.png)
 
-The bridge is using [line-bot-sdk-python](https://github.com/line/line-bot-sdk-python) and [matrix-nio](https://github.com/poljar/matrix-nio) for transporting.
+It's powered by opensource ecosystem. Thanks every contributor for their effort.
 
-[Instruction of Matrix Bridges](https://matrix.org/bridges/)
+Arona is a simple bridge for every messenger, helps sending your messages from anywhere to everywhere!
 
-This is the documentation for Arona, the perfectest bridging for every messenger.
+Aims to provide a way to exchange messages between different platforms, such as LINE, Matrix, Telegram, and Discord.
+
+Make messages can be sent to any platform, let talks can be free and unlimited.
+
+Let's make the world more connected and more friendly.

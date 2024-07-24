@@ -31,7 +31,9 @@
     "node-cache": "^5.1.2",
     "node-telegram-bot-api": "^0.66.0",
     "openai": "^4.52.0",
+    "pagefind": "^1.1.0",
     "tsx": "^4.15.6",
+    "vitepress-plugin-pagefind": "^0.4.9",
     "yaml": "^2.4.5"
   },
   "devDependencies": {

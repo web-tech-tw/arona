@@ -18,7 +18,7 @@ features:
   - title: Simplicity First
     details: Minimal setup with a simple and intuitive structure that makes it easy to get started.
   - title: Mutiple Platforms
-    details: It supports LINE, Telegram, Discord, and Matrix.
+    details: Send messages to multiple messaging platforms, including Discord, Telegram, Matrix, and LINE.
   - title: Open Source
     details: The project is open source and available on GitHub.
   - title: Cross-platform

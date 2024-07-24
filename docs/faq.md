@@ -1,5 +1,7 @@
 # ❓ FAQ
 
+As known as Frequently Asked Questions.
+
 ## What is Arona?
 
 Arona is a bridge for multiple messaging platforms.

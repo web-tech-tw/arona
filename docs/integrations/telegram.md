@@ -36,8 +36,37 @@ You can do this by following these steps:
 3. Start a chat with the `BotFather` bot.
 4. Use the `/newbot` command to create a new bot.
 5. Follow the instructions to create a new bot.
-6. Copy the bot token and save it in a secure location.
+6. Copy the bot token into the `botToken` field (see the [Configure](#configure) section).
 7. Add the bot to your chat you're hoping to bridging it.
 8. Start a chat with the bot and send a command to verify that it is working.
 
 Here is the official documentation for creating a Telegram bot: [Telegram Bots](https://core.telegram.org/bots)
+
+### Configure
+
+Here are the options you can configure for the Telegram integration:
+
+| Option                  | Description                             |
+| ----------------------- | --------------------------------------- |
+| [`enable`](#enable)     | Whether the provider is enabled or not. |
+| [`botToken`](#bottoken) | The bot token of the Telegram API.      |
+
+#### `enable`
+
+*type: `boolean`*
+
+Whether the provider is enabled or not.
+
+#### `botToken`
+
+*type: `string`*
+
+The bot token of the Telegram API.
+
+You can find the bot token in the `BotFather` chat after creating the bot.
+
+More information about the Telegram bot API can be found [here](https://core.telegram.org/bots/api).
+
+---
+
+> The copyright of the brand logos belongs to the respective brand owners.

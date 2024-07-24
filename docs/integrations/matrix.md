@@ -1,10 +1,11 @@
 # Matrix
 
-[Matrix](https://matrix.org) is a instant messaging protocol that allows you to communicate with other users in real-time.
-
-Matrix is an open standard that is designed to be interoperable with other messaging platforms.
+[Matrix](https://matrix.org) is an open standard, an instant messaging protocol, which is modern, secure, and feature-rich.
 
 It's a decentralized network that allows you to communicate with other users on the same network.
+
+The [Matrix Bridges](https://matrix.org/ecosystem/bridges) are designed to be interoperable with other messaging platforms,
+Arona is one of them.
 
 You can use the Matrix integration to send messages to a Matrix room from your bot.
 

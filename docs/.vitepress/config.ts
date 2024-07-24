@@ -87,14 +87,4 @@ export default defineConfig({
       copyright: "Copyright © 2024 Taiwan Web Technology Promotion Organization (Web Tech TW)"
     }
   },
-  locales: {
-    root: {
-      label: 'English',
-      lang: 'en'
-    },
-    "zh-tw": {
-      label: '正體中文',
-      lang: 'zh-tw',
-    }
-  }
 })

@@ -11,7 +11,7 @@ bridge:
 bridgeProvider:
   # OpenAI
   openai:
-    enable: true
+    enable: false
     # https://github.com/ai-tech-tw/openai
     baseUrl: "https://web-tech-tw.eu.org/openai/v1"
     apiKey: "YourGeminiApiKey"
@@ -19,16 +19,16 @@ bridgeProvider:
 
   # LINE
   line:
-    enable: true
+    enable: false
     channelAccessToken: "YourChannelAccessToken"
     channelSecret: "YourChannelSecret"
-    useNotify: true
+    useNotify: false
     notifyClientId: "YourClientID"
     notifyClientSecret: "YourClientSecret"
 
   # Matrix
   matrix:
-    enable: true
+    enable: false
     homeserverUrl: "https://matrix.org"
     accessToken: "YourSecretAccessToken"
 

@@ -17,8 +17,8 @@ hero:
 features:
   - title: Simplicity First
     details: Minimal setup with a simple and intuitive structure that makes it easy to get started.
-  - title: 4 Instant Messengers Supported
-    details: Support for LINE, Telegram, Discord and Matrix.
+  - title: Mutiple Platforms
+    details: It supports LINE, Telegram, Discord, and Matrix.
   - title: Open Source
     details: The project is open source and available on GitHub.
   - title: Cross-platform

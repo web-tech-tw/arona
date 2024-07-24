@@ -1,30 +1,31 @@
 # OpenAI
 
-OpenAI is a research lab consisting of the for-profit OpenAI LP and the non-profit OpenAI Inc. The organization aims to ensure that artificial general intelligence (AGI) benefits all of humanity. OpenAI is funded by a group of technology executives and investors, including Elon Musk, Reid Hoffman, and Peter Thiel.
+OpenAI module is used to connect to the OpenAI API to generate text, images, and more.
+
+It's compatible with any OpenAI-compatible API service, including the self-hosted OpenAI API.
 
 ![OpenAI](../statics/brands/OpenAI.png)
 
 ## Introduction
 
-The OpenAI integration allows you to interact with the OpenAI API to generate text, images, and more. You can use this integration to create AI-powered workflows that generate content, answer questions, and more.
+The OpenAI integration allows you to interact with the OpenAI API to generate text, images, and more.
+You can use this integration to create AI-powered workflows that generate content, answer questions, and more.
 
 ## Prerequisites
 
 Before you can set up the OpenAI integration, you need to have the following:
 
-- An OpenAI account
-- An OpenAI API key
-- An understanding of how to use the OpenAI API
+- An account from an OpenAI-compatible API service
+- An API key from the service
 
 ## Setting up the integration
 
 To set up the OpenAI integration, you need to create an API key in your OpenAI account. You can do this by following these steps:
 
-1. Log in to your OpenAI account.
-2. Go to the API section of your account.
-3. Click on the "Create API key" button.
-4. Copy the API key into the `apiKey` field (see the [Configure](#configure) section).
-5. Use the API key in your workflows to interact with the OpenAI API.
+1. Log in to your OpenAI-compatible API service account.
+2. Apply for an API key. If you're using the self-hosted OpenAI API, and it seems no api key is needed, you can fill in the `apiKey` field with `emptyButRequired` or any string instead (Must not be empty).
+3. Copy the API key into the `apiKey` field (see the [Configure](#configure) section).
+4. Use the API key in your workflows to interact with the OpenAI API.
 
 ### Configure
 
@@ -65,7 +66,7 @@ You should obtain this key from the provider you filled in the `baseUrl` field.
 
 If you're using the default value, you can get the key from the [Get API key | Google AI Studio](https://aistudio.google.com/botToken).
 
-If the API provider asked you to make the `apiKey` field empty, it's better to fill the filed with `null` or anything instead due to the OpenAI client module limition.
+If the API provider asked you to make the `apiKey` field empty, you should fill the filed with `emptyButRequired` or any string instead due to the OpenAI client module limition (Must not be empty).
 
 #### `chatModel`
 

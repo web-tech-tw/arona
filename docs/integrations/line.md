@@ -8,7 +8,14 @@ It's popular in Asia and has over 200 million active users worldwide.
 
 ## Introduction
 
-LINE Messaging API allows you to add LINE to your app or website to reach your customers. You can respond to messages, send stickers, images, videos, and more.
+The LINE integration allows you to send messages to a LINE chat.
+You can use this integration to send notifications, alerts, and updates to your LINE contacts.
+
+It's powered by LINE Messaging API, which allows you to add LINE to your app or website to reach your customers.
+You can respond to messages, send stickers, images, videos, and more.
+
+There is an LINE Notify integration also, helps you to send notifications from your app to LINE users.
+It will replace the LINE Messaging API with the LINE Notify API to send messages if you enable it.
 
 ## Prerequisites
 

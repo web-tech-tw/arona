@@ -5,11 +5,14 @@
 It's a decentralized network that allows you to communicate with other users on the same network.
 
 The [Matrix Bridges](https://matrix.org/ecosystem/bridges) are designed to be interoperable with other messaging platforms,
-Arona is one of them.
-
-You can use the Matrix integration to send messages to a Matrix room from your bot.
+Arona(aka. `Matrix-LINE Bridge (Messaging API)`) is one of them.
 
 ![Matrix](../statics/brands/Matrix.png)
+
+## Introduction
+
+The Matrix integration allows you to send messages to a Matrix room.
+You can use this integration to send notifications, alerts, and updates to your Matrix room.
 
 ## Prerequisites
 

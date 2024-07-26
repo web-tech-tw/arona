@@ -66,7 +66,7 @@ You should obtain this key from the provider you filled in the `baseUrl` field.
 
 If you're using the default value, you can get the key from the [Get API key | Google AI Studio](https://aistudio.google.com/botToken).
 
-If the API provider asked you to make the `apiKey` field empty, you should fill the filed with `emptyButRequired` or any string instead due to the OpenAI client module limition (Must not be empty).
+If the API provider asked you to make the `apiKey` field empty, you should fill the filed with `emptyButRequired` or any string instead due to the restriction from OpenAI client module (Must not be empty).
 
 #### `chatModel`
 

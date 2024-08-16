@@ -1,6 +1,6 @@
 FROM node:18
 
-ENV RUNTIME_ENV container
+ENV RUNTIME_ENV=container
 
 RUN useradd -u 3000 recv
 

@@ -2,8 +2,8 @@ name: Main workflow
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io

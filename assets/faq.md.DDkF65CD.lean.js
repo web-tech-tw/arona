@@ -1,1 +1,0 @@
-import{_ as a,o as e,c as o,a5 as t}from"./chunks/framework.DdR9R22r.js";const f=JSON.parse('{"title":"❓ FAQ","description":"","frontmatter":{},"headers":[],"relativePath":"faq.md","filePath":"faq.md"}'),s={name:"faq.md"},n=t("",14),r=[n];function i(c,d,l,u,h,m){return e(),o("div",{"data-pagefind-body":!0},r)}const g=a(s,[["render",i]]);export{f as __pageData,g as default};

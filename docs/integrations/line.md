@@ -46,10 +46,44 @@ You can do this by following these steps:
 10. Click on the "Create" button.
 11. Click on the "Issue" button to generate a channel access token.
 12. Copy the channel access token and channel secret into the `channelAccessToken` and `channelSecret` fields respectively (see the [Configure](#configure) section).
-13. Add the LINE bot to your chat you're hoping to bridging it.
-14. Start a chat with the bot and send a command to verify that it is working.
+13. Configure the Webhook URL in the LINE Developers Console (see the [Webhook URL](#webhook-url) section).
+14. Add the LINE bot to your chat you're hoping to bridging it.
+15. Start a chat with the bot and send a command to verify that it is working.
 
 Here is the official documentation for creating a LINE bot: [LINE Messaging API](https://developers.line.biz/en/docs/messaging-api/overview/)
+
+### Webhook URL
+
+LINE Messaging API uses webhooks to send events (such as messages) to your bot.
+
+You need to configure the Webhook URL in the LINE Developers Console to allow LINE to send events to Arona.
+
+The Webhook URL format is:
+
+```
+{baseUrl}/hooks/line
+```
+
+Where `{baseUrl}` is the base URL you configured in the `config.yaml` file (see the [Configuration](../configuration.md) page).
+
+For example:
+- If your `baseUrl` is `https://example.com`, the Webhook URL would be `https://example.com/hooks/line`
+- If your `baseUrl` is `https://example.com:443/arona/`, the Webhook URL would be `https://example.com:443/arona/hooks/line`
+
+To set up the Webhook URL in LINE Developers Console:
+
+1. Open [LINE Developers](https://developers.line.biz) and log in.
+2. Go to the LINE Developers Console.
+3. Select your provider and channel.
+4. Go to the "Messaging API" tab.
+5. In the "Webhook settings" section, enter your Webhook URL (e.g., `https://example.com/hooks/line`).
+6. Enable "Use webhook" toggle.
+7. Click "Verify" to test the webhook connection.
+
+> **⚠️ Important**
+>
+> Make sure your server is publicly accessible from the internet before setting up the webhook.
+> The Webhook URL must use HTTPS (except for local development with tools like ngrok).
 
 ### Create a LINE Notify Service Provider (Optional)
 

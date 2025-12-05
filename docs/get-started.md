@@ -141,3 +141,38 @@ http:
 ```
 
 Don't forget to restart the project after changing the configuration.
+
+### NGINX Reverse Proxy (Optional)
+
+You can use NGINX as a reverse proxy to host Arona in a sub-path. This also allows you to change the port number, add SSL certificates, and more.
+
+Here is an example configuration:
+
+**config.yaml**
+
+```yaml
+http:
+  bindHost: 127.0.0.1
+  bindPort: 3000
+  baseUrl: "https://example.com:443/arona/"
+```
+
+**nginx.conf**
+
+```nginx
+location /arona/ {
+    proxy_pass http://127.0.0.1:3000/;
+    proxy_set_header Host $host;
+}
+```
+
+With this configuration, the webhook URL for LINE would be:
+
+```
+https://example.com:443/arona/hooks/line
+```
+
+> **💡 Note**
+>
+> The trailing slashes in the `location /arona/` and `proxy_pass http://127.0.0.1:3000/` are important.
+> They ensure the path is correctly rewritten when proxying requests.

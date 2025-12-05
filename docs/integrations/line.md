@@ -47,7 +47,7 @@ You can do this by following these steps:
 11. Click on the "Issue" button to generate a channel access token.
 12. Copy the channel access token and channel secret into the `channelAccessToken` and `channelSecret` fields respectively (see the [Configure](#configure) section).
 13. Configure the Webhook URL in the LINE Developers Console (see the [Webhook URL](#webhook-url) section).
-14. Add the LINE bot to your chat you're hoping to bridging it.
+14. Add the LINE bot to your chat you're hoping to bridge.
 15. Start a chat with the bot and send a command to verify that it is working.
 
 Here is the official documentation for creating a LINE bot: [LINE Messaging API](https://developers.line.biz/en/docs/messaging-api/overview/)

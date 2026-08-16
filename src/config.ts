@@ -1,5 +1,10 @@
-import { PathLike, readFileSync } from "node:fs";
-import { parse } from "yaml";
+import {
+    PathLike,
+    readFileSync,
+} from "node:fs";
+import {
+    parse,
+} from "yaml";
 
 import {
     ProviderType,

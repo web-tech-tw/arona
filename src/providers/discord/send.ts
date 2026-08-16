@@ -54,7 +54,7 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
             throw new Error("Client is not initialized.");
         }
         const channel = await chatClient.channels.fetch(params.chatId);
-        if (!channel || !channel.isTextBased()) {
+        if (!channel || !channel.isSendable()) {
             throw new Error("Channel is not a text channel");
         }
         const message = `${params.sender.prefix}\n${params.text}`;
@@ -71,7 +71,7 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
             throw new Error("Client is not initialized.");
         }
         const channel = await chatClient.channels.fetch(params.chatId);
-        if (!channel || !channel.isTextBased()) {
+        if (!channel || !channel.isSendable()) {
             throw new Error("Channel is not a text channel");
         }
         channel.send({
@@ -90,7 +90,7 @@ export default class DiscordSend extends ProviderBase implements SendProvider {
             throw new Error("Client is not initialized.");
         }
         const channel = await chatClient.channels.fetch(params.chatId);
-        if (!channel || !channel.isTextBased()) {
+        if (!channel || !channel.isSendable()) {
             throw new Error("Channel is not a text channel");
         }
         channel.send(

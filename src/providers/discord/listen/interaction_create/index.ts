@@ -23,7 +23,7 @@ const snakeToCamelCase = (str) =>
  * @return {void}
  */
 export default async (interaction: Interaction) => {
-    if (!interaction.isCommand()) return;
+    if (!interaction.isChatInputCommand()) return;
 
     const sender = DiscordSender.fromInteraction(interaction);
     const actionName = snakeToCamelCase(interaction.commandName);

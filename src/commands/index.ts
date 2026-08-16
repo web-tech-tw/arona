@@ -50,12 +50,21 @@ export const textToArguments = (
     return commad.split(" ", limit);
 };
 
+const snakeToCamelCase = (str: string) =>
+    str.replace(/([-_][a-z])/g, (group) =>
+        group
+            .toUpperCase()
+            .replace("-", "")
+            .replace("_", ""),
+    );
+
 export const commandExecutor = async (
     args: Array<string>,
     sender: Sender,
     reply: CommandReply,
 ): Promise<void> => {
-    const key = args[0];
+    const rawKey = args[0] ?? "";
+    const key = snakeToCamelCase(rawKey.split("@")[0]);
     if (!(key in commands)) {
         return;
     }
@@ -69,8 +78,9 @@ export const commandExecutor = async (
         reply(locale.text("invalid_arguments"));
         return;
     }
+    const normalizedArgs = [key, ...args.slice(1)];
     const params: CommandMethodParameters = {
-        args, source, locale, reply, sender,
+        args: normalizedArgs, source, locale, reply, sender,
     };
     await method(params);
 };
@@ -189,8 +199,9 @@ export const commands: CommandMethodList = {
             }
             const {key, bridge} = link;
             if (bridge && Object.keys(bridge).length) {
+                const providerNames = providers as Record<string, string>;
                 reply("Linked Bridges:\n\n" + Object.entries(bridge).map(
-                    ([key, value]) => `${providers[key]}: ${value}`,
+                    ([key, value]) => `${providerNames[key] || key}: ${value}`,
                 ).join("\n") + `\n\nLink Chain: ${key}`);
             } else {
                 reply(

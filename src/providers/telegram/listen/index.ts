@@ -9,6 +9,7 @@ import {
 
 import {
     client,
+    registerCommands,
 } from "../client";
 
 import message from "./message";
@@ -37,6 +38,8 @@ export default class TelegramListen
         if (!client) {
             throw new Error("Client not initialized");
         }
+
+        await registerCommands();
 
         for (const [key, trigger] of Object.entries(events)) {
             client.on(key, trigger);

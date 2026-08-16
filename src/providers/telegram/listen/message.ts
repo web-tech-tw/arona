@@ -22,6 +22,14 @@ import {
     readAll,
 } from "../../../utils";
 
+const snakeToCamelCase = (str: string) =>
+    str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
+        group
+            .toUpperCase()
+            .replace("-", "")
+            .replace("_", ""),
+    );
+
 export default async (message: Message) => {
     if (!client) {
         throw new Error("Client is not initialized");
@@ -35,8 +43,11 @@ export default async (message: Message) => {
 
     const args = textToArguments(text, "/");
     if (args) {
+        const [rawCommand] = args[0].split("@");
+        const command = snakeToCamelCase(rawCommand);
+        const commandArgs = [command, ...args.slice(1)];
         await commandExecutor(
-            args, sender, async (text: string): Promise<void> => {
+            commandArgs, sender, async (text: string): Promise<void> => {
                 if (!client) {
                     throw new Error("Client is not initialized");
                 }

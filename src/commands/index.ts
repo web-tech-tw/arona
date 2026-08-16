@@ -50,21 +50,12 @@ export const textToArguments = (
     return commad.split(" ", limit);
 };
 
-const snakeToCamelCase = (str: string) =>
-    str.replace(/([-_][a-z])/g, (group) =>
-        group
-            .toUpperCase()
-            .replace("-", "")
-            .replace("_", ""),
-    );
-
 export const commandExecutor = async (
     args: Array<string>,
     sender: Sender,
     reply: CommandReply,
 ): Promise<void> => {
-    const rawKey = args[0] ?? "";
-    const key = snakeToCamelCase(rawKey.split("@")[0]);
+    const key = args[0];
     if (!(key in commands)) {
         return;
     }
@@ -78,9 +69,8 @@ export const commandExecutor = async (
         reply(locale.text("invalid_arguments"));
         return;
     }
-    const normalizedArgs = [key, ...args.slice(1)];
     const params: CommandMethodParameters = {
-        args: normalizedArgs, source, locale, reply, sender,
+        args, source, locale, reply, sender,
     };
     await method(params);
 };

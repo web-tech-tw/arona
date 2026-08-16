@@ -23,10 +23,26 @@ import Locale from "../locales";
 export type SendMessageCallback = (
     provider: SendProvider,
     chatId: string,
-) => void;
+) => void | Promise<void>;
 
 // eslint-disable-next-line no-unused-vars
 type LinkBridgeMapping = {[T in ProviderType]: string};
+
+/**
+ * Log a warning when a message delivery fails.
+ * @param {ProviderType} chatType - The provider type.
+ * @param {string} chatId - The chat ID.
+ * @return {Function} The error handler callback.
+ */
+const warnError = (
+    chatType: ProviderType,
+    chatId: string,
+) => (error: unknown) => {
+    console.warn(
+        `Failed to send message to ${chatType} (${chatId}):`,
+        error,
+    );
+};
 
 /**
  * The link class.
@@ -185,7 +201,9 @@ export default class Link {
         if (!chatId) {
             return;
         }
-        callback(sender, chatId);
+        Promise.resolve()
+            .then(() => callback(sender, chatId))
+            .catch(warnError(chatType, chatId));
     }
 
     /**
@@ -202,7 +220,9 @@ export default class Link {
             if (!sender) {
                 return;
             }
-            callback(sender, chatId);
+            Promise.resolve()
+                .then(() => callback(sender, chatId))
+                .catch(warnError(chatType as ProviderType, chatId));
         });
     }
 
@@ -218,7 +238,7 @@ export default class Link {
     ): void {
         this.toBroadcast((provider, chatId) => {
             if (provider.type !== except) {
-                callback(provider, chatId);
+                return callback(provider, chatId);
             }
         });
     }

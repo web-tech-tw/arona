@@ -40,6 +40,11 @@ export const client = isEnabled ?
     null;
 
 /**
+ * The Telegram bot user.
+ */
+export let botUser: TelegramBot.User | null = null;
+
+/**
  * Registers commands with the Telegram API.
  * @return {Promise<void>}
  */
@@ -47,6 +52,8 @@ export async function registerCommands(): Promise<void> {
     if (!client) {
         throw new Error("Client is not initialized.");
     }
+
+    botUser = await client.getMe();
 
     const camelToSnakeCase = (str: string) =>
         str.replace(/[A-Z]/g, (group) =>

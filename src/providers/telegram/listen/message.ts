@@ -16,6 +16,7 @@ import {
 
 import {
     client,
+    botUser,
 } from "../client";
 
 import {
@@ -43,7 +44,15 @@ export default async (message: Message) => {
 
     const args = textToArguments(text, "/");
     if (args) {
-        const [rawCommand] = args[0].split("@");
+        const [rawCommand, targetBot] = args[0].split("@");
+        if (
+            targetBot &&
+            botUser?.username &&
+            targetBot.toLowerCase() !== botUser.username.toLowerCase()
+        ) {
+            return;
+        }
+
         const command = snakeToCamelCase(rawCommand);
         const commandArgs = [command, ...args.slice(1)];
         await commandExecutor(

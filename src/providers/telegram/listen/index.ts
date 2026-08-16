@@ -13,9 +13,13 @@ import {
 } from "../client";
 
 import message from "./message";
+import pollingError from "./polling_error";
+import error from "./error";
 
 const events = {
     "message": message,
+    "polling_error": pollingError,
+    "error": error,
 };
 
 /**

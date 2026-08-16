@@ -1,5 +1,5 @@
-import {PathLike, readFileSync} from "node:fs";
-import {parse} from "yaml";
+import { PathLike, readFileSync } from "node:fs";
+import { parse } from "yaml";
 
 import {
     ProviderType,
@@ -113,7 +113,7 @@ export function bridgeProviderConfig(
  */
 export function getDataPath(): URL {
     if (!config.dataPath) {
-        return new URL("data", import.meta.url);
+        return new URL("../data/", import.meta.url);
     }
 
     if (config.dataPath instanceof URL) {

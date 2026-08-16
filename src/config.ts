@@ -1,4 +1,4 @@
-import {readFileSync} from "node:fs";
+import {PathLike, readFileSync} from "node:fs";
 import {parse} from "yaml";
 
 import {
@@ -17,11 +17,11 @@ export type BridgeConfigSchema = {
 
 export type BridgeProviderConfigSchema<T extends ProviderType> = {
     [K in T]: K extends "openai" ? BridgeProviderOpenaiConfigSchema :
-              K extends "line" ? BridgeProviderLineConfigSchema :
-              K extends "matrix" ? BridgeProviderMatrixConfigSchema :
-              K extends "discord" ? BridgeProviderDiscordConfigSchema :
-              K extends "telegram" ? BridgeProviderTelegramConfigSchema :
-              never;
+    K extends "line" ? BridgeProviderLineConfigSchema :
+    K extends "matrix" ? BridgeProviderMatrixConfigSchema :
+    K extends "discord" ? BridgeProviderDiscordConfigSchema :
+    K extends "telegram" ? BridgeProviderTelegramConfigSchema :
+    never;
 };
 
 export type BridgeProviderBaseConfigSchema = {
@@ -63,6 +63,7 @@ export type BridgeProviderTelegramConfigSchema = {
 
 export type AppConfigSchema = {
     deviceName: string;
+    dataPath: PathLike;
     http: HttpConfigSchema;
     bridge: BridgeConfigSchema;
     bridgeProvider: BridgeProviderConfigSchema<ProviderType>;
@@ -104,4 +105,20 @@ export function bridgeConfig(): BridgeConfigSchema {
 export function bridgeProviderConfig(
 ): BridgeProviderConfigSchema<ProviderType> {
     return config.bridgeProvider;
+}
+
+/**
+ * Get the data path.
+ * @return {URL}
+ */
+export function getDataPath(): URL {
+    if (!config.dataPath) {
+        return new URL("data", import.meta.url);
+    }
+
+    if (config.dataPath instanceof URL) {
+        return config.dataPath;
+    }
+
+    return new URL(`file://${config.dataPath}`);
 }

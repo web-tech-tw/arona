@@ -1,5 +1,6 @@
 import {
     bridgeProviderConfig,
+    getDataPath,
 } from "../../config";
 
 import {
@@ -16,6 +17,12 @@ import {
     MatrixListenerClient,
 } from "./types";
 
+import {
+    fileURLToPath,
+} from "node:url";
+
+const dataPath = getDataPath();
+
 const {
     matrix: matrixConfig,
 } = bridgeProviderConfig();
@@ -30,10 +37,7 @@ function newClient(): MatrixListenerClient {
         accessToken,
     } = matrixConfig;
 
-    const {
-        pathname: dataDirectoryPath,
-    } = new URL("../../../data", import.meta.url);
-
+    const dataDirectoryPath = fileURLToPath(dataPath);
     const storage = new SimpleFsStorageProvider(
         `${dataDirectoryPath}/storage.json`,
     );

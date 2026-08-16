@@ -10,6 +10,13 @@ import {
 import Link from "./types/link";
 import NotifyLink from "./types/notify_link";
 
+// Import config.
+import {
+    getDataPath,
+} from "./config";
+
+const dataPath = getDataPath();
+
 /**
  * The cache, for temporary storage.
  */
@@ -21,7 +28,8 @@ export const cache = new NodeCache({
  * The store, for persistent storage.
  */
 export const store = await jsonFilePreset(
-    "data/store.json", {
+    new URL("store.json", dataPath),
+    {
         links: [] as Array<Link>,
         notifyLinks: [] as Array<NotifyLink>,
     },

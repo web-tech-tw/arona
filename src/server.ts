@@ -28,6 +28,9 @@ import {
     writeFile,
     unlink,
 } from "node:fs/promises";
+import {
+    fileURLToPath,
+} from "node:url";
 
 // Create a new Express application.
 export const app: Application = express();
@@ -90,7 +93,7 @@ export async function checkHeartCode(): Promise<void> {
 
 // Define the static directory path.
 export const staticBasePathUrl = new URL("../static/", import.meta.url);
-export const {pathname: staticBasePath} = staticBasePathUrl;
+export const staticBasePath = fileURLToPath(staticBasePathUrl);
 
 // Define the static handler.
 export const staticHandler = staticMiddleware(staticBasePath);

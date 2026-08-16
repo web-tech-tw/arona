@@ -48,3 +48,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-service:
+    name: Deploy application as service
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via Webhook
+        env:
+          WEBHOOK_URL: ${{ vars._WEBHOOK_URL_PART_UP }}
+          WEBHOOK_SECRET: ${{ secrets._WEBHOOK_SECRET_PART_UP }}
+          WEBHOOK_DEPLOY_PATH: ${{ vars._WEBHOOK_DEPLOY_PATH }}
+        run: |
+          curl --silent --show-error --fail -X POST \
+            -H "X-Nymph-Stack-Secret: $WEBHOOK_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{\"path\": \"$WEBHOOK_DEPLOY_PATH\"}" \
+            "$WEBHOOK_URL"
